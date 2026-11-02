@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "LMS (local)",
+      "Group": "LMS",
+      "Host": "localhost",
+      "Port": 5432,
+      "MaintenanceDB": "lms",
+      "Username": "lms",
+      "SSLMode": "prefer",
+      "Comment": "Local LMS database. Password: lms (dev only)"
+    }
+  }
+}

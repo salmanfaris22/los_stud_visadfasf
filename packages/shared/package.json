@@ -1,0 +1,28 @@
+{
+  "name": "@lms/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@lms/api-client": "workspace:*",
+    "@lms/ui": "workspace:*",
+    "@tanstack/react-query": "^5.75.0",
+    "lucide-react": "^0.500.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "next": "^15.0.0"
+  },
+  "devDependencies": {
+    "@lms/config": "workspace:*",
+    "@types/react": "^19.0.0",
+    "next": "^15.3.0",
+    "typescript": "^5.8.0"
+  }
+}

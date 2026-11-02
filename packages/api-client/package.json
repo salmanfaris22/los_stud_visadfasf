@@ -1,0 +1,27 @@
+{
+  "name": "@lms/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "gen": "openapi-typescript ../../backend/api/openapi.json -o src/schema.d.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.75.0",
+    "openapi-fetch": "^0.17.0",
+    "openapi-react-query": "^0.5.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@lms/config": "workspace:*",
+    "@types/react": "^19.0.0",
+    "openapi-typescript": "^7.8.0",
+    "typescript": "^5.8.0"
+  }
+}

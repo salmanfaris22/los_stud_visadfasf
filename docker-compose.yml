@@ -1,0 +1,42 @@
+# Full stack: docker compose up -d --build   (then: docker compose run --rm api /app/seed -demo)
+name: lms
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: lms, POSTGRES_PASSWORD: lms, POSTGRES_DB: lms }
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U lms"], interval: 5s, retries: 10 }
+    ports: ["5432:5432"]
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address :9001
+    environment: { MINIO_ROOT_USER: minioadmin, MINIO_ROOT_PASSWORD: minioadmin }
+    volumes: [miniodata:/data]
+    ports: ["9000:9000", "9001:9001"]
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["8025:8025", "1025:1025"]
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://lms:lms@postgres:5432/lms?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT: minio:9000
+      SMTP_HOST: mailpit
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started }, minio: { condition: service_started } }
+    ports: ["8080:8080"]
+  student:
+    build: { context: ., dockerfile: apps/Dockerfile, args: { APP: student } }
+    environment: { API_URL: "http://api:8080", PORT: "3000" }
+    depends_on: [api]
+    ports: ["3000:3000"]
+  admin:
+    build: { context: ., dockerfile: apps/Dockerfile, args: { APP: admin } }
+    environment: { API_URL: "http://api:8080", PORT: "3000" }
+    depends_on: [api]
+    ports: ["3001:3000"]
+volumes: { pgdata: {}, miniodata: {} }

@@ -1,0 +1,18 @@
+{
+  "name": "lms",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "gen:api": "cd backend && go run ./cmd/openapi > api/openapi.json && cd .. && pnpm --filter @lms/api-client gen",
+    "e2e": "pnpm --filter @lms/e2e test"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.0",
+    "prettier": "^3.5.0"
+  }
+}
