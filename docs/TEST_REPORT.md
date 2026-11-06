@@ -79,7 +79,7 @@
 | 2 | Lists did not refresh after adding a video/task/class/quiz until page reload | E2E #11 | `invalidatePaths()` now matches templated **and** filled-in query paths |
 | 3 | Form labels not linked to inputs (accessibility) | E2E selectors | `Field` links its label to the control automatically |
 | 4 | CMS editor labels not linked | E2E #14 | Controls forward the `id` |
-| 5 | Notification badge covered the bell icon | Screenshot review | Tailwind now scans `packages/shared` |
+| 5 | Notification badge covered the bell icon | Screenshot review | Tailwind now scans `frontend/packages/shared` |
 | 6 | Disabled Previous/Next buttons stacked icon over text | Screenshot review | Disabled state renders a plain button |
 | 7 | Theme toggle could pick the wrong theme if clicked before hydration | E2E #21 | Click uses the resolved theme |
 | 8 | Closing the task dropdown crashed the page ("destroy is not a function"): new Chrome returns a Promise from `scrollIntoView`, which a brace-less `useEffect` handed to React as a cleanup | E2E journey (task dropdown) | Effects use block bodies; all similar effects fixed |
@@ -91,7 +91,7 @@
 make services                 # Postgres, Redis, MinIO, Mailpit
 cd backend && go test ./... -count=1          # unit + integration (lms_test DB)
 make api & make dev           # API :8080, student :3000, admin :3001
-pnpm --filter @lms/e2e test   # browser tests (report: e2e/playwright-report)
+make e2e                      # browser tests (report: frontend/e2e/playwright-report)
 ```
 
 Note: this network blocks `cdn.playwright.dev`. Chromium was installed by hand from the Chrome for Testing bucket into `~/Library/Caches/ms-playwright/chromium_headless_shell-1248`.

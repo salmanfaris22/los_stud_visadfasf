@@ -170,8 +170,8 @@ Protection: the iframe is not allowed to go fullscreen. The player's own fullscr
 | `@lms/ui` | Design system: tokens (light/dark, dark default), buttons, inputs, dialogs, tables, tabs, badges, `StatusBadge`, `MultiSelect`, `FileDrop`, `Markdown`, `CodeBlock`, `VideoPlayer` (watermark), `MonthCalendar`, `SubmissionItems`, `ThreadView`, confirm dialog |
 | `@lms/api-client` | `createApi()`: openapi-fetch + TanStack Query typed from the OpenAPI spec; single-flight token refresh and retry; `uploadFile()` with progress; `useRealtime()`; `errorMessage()` |
 | `@lms/shared` | Components needing both: `NotificationBell`, `ImageUpload` |
-| `apps/admin` | `app/(auth)` animated login/reset · `app/(app)` 24 pages behind a permission-aware sidebar · `features/<domain>` forms and dialogs · `lib/session` (`can()`), `lib/feedback` (toast + refetch) |
-| `apps/student` | `app/(site)` public pages rendered on the server and cached 60 s (landing, catalog, course, blog, contact, verify, sitemap, robots) · `app/(auth)` · `app/learn` YouTube-style portal (home, courses, watch, tasks, quiz, live, calendar, certificates, attendance, check-in, notifications, profile) |
+| `frontend/apps/admin` | `app/(auth)` animated login/reset · `app/(app)` 24 pages behind a permission-aware sidebar · `features/<domain>` forms and dialogs · `lib/session` (`can()`), `lib/feedback` (toast + refetch) |
+| `frontend/apps/student` | `app/(site)` public pages rendered on the server and cached 60 s (landing, catalog, course, blog, contact, verify, sitemap, robots) · `app/(auth)` · `app/learn` YouTube-style portal (home, courses, watch, tasks, quiz, live, calendar, certificates, attendance, check-in, notifications, profile) |
 
 Data fetching: public pages fetch on the server (`lib/server-api.ts`, cached 60 s, with a fallback if the API is down). Portal pages use typed TanStack Query hooks. After a mutation, `invalidatePaths()` refreshes the affected lists.
 

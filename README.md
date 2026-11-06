@@ -55,15 +55,18 @@ LMS/
 │       ├── jobs/            scheduler (live reminders, token cleanup)
 │       ├── config/          environment configuration
 │       └── server/          wiring + API integration tests
-├── apps/
-│   ├── admin/               Next.js admin & staff portal (:3001)
-│   └── student/             Next.js public website + student portal (:3000)
-├── packages/
-│   ├── ui/                  design system (buttons, dialogs, video player, markdown, calendar…)
-│   ├── api-client/          typed API client generated from OpenAPI + upload/realtime helpers
-│   ├── shared/              components needing API + UI (notification bell, image upload)
-│   └── config/              shared tsconfig
-├── e2e/                     Playwright browser tests
+├── frontend/                pnpm + Turborepo workspace (run pnpm commands here)
+│   ├── apps/
+│   │   ├── admin/           Next.js admin & staff portal (:3001)
+│   │   └── student/         Next.js public website + student portal (:3000)
+│   ├── packages/
+│   │   ├── ui/              design system (buttons, dialogs, video player, markdown, calendar…)
+│   │   ├── api-client/      typed API client (Connect/gRPC + OpenAPI) + upload/realtime helpers
+│   │   ├── shared/          components needing API + UI (notification bell, image upload)
+│   │   └── config/          shared tsconfig
+│   ├── e2e/                 Playwright browser tests
+│   └── Dockerfile           builds one app: --build-arg APP=admin|student
+├── proto/                   shared .proto contract (Go, web, mobile) · buf.yaml/buf.gen.yaml at root
 └── docs/                    architecture, API, setup, features, test report
 ```
 
@@ -84,5 +87,6 @@ LMS/
 | `make test` | Go unit + API integration tests (uses `lms_test` DB) |
 | `make e2e` | Playwright tests (API + both apps running) |
 | `make gen` | Regenerate OpenAPI + TypeScript client after API changes |
+| `make proto` | Regenerate Go + TypeScript code from `proto/` |
 | `make sqlc` | Regenerate repository code after editing `db/queries/*.sql` |
-| `pnpm typecheck` / `pnpm build` | Type-check / build all frontend packages |
+| `cd frontend && pnpm typecheck` / `pnpm build` | Type-check / build all frontend packages |
