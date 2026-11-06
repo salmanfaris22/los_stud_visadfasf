@@ -7,7 +7,8 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "gen:api": "cd backend && go run ./cmd/openapi > api/openapi.json && cd .. && pnpm --filter @lms/api-client gen",
+    "gen:api": "cd ../backend && go run ./cmd/openapi > api/openapi.json && cd ../frontend && pnpm --filter @lms/api-client gen",
+    "gen:proto": "cd .. && buf generate",
     "e2e": "pnpm --filter @lms/e2e test"
   },
   "devDependencies": {

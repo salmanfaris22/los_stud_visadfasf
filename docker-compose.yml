@@ -30,12 +30,12 @@ services:
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started }, minio: { condition: service_started } }
     ports: ["8080:8080"]
   student:
-    build: { context: ., dockerfile: apps/Dockerfile, args: { APP: student } }
+    build: { context: ./frontend, dockerfile: Dockerfile, args: { APP: student } }
     environment: { API_URL: "http://api:8080", PORT: "3000" }
     depends_on: [api]
     ports: ["3000:3000"]
   admin:
-    build: { context: ., dockerfile: apps/Dockerfile, args: { APP: admin } }
+    build: { context: ./frontend, dockerfile: Dockerfile, args: { APP: admin } }
     environment: { API_URL: "http://api:8080", PORT: "3000" }
     depends_on: [api]
     ports: ["3001:3000"]

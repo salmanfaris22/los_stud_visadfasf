@@ -8,8 +8,8 @@ coverage
 .env.local
 backend/tmp
 backend/bin
-e2e/test-results
-e2e/playwright-report
+frontend/e2e/test-results
+frontend/e2e/playwright-report
 .DS_Store
 *.tsbuildinfo
-e2e/screenshots
+frontend/e2e/screenshots

@@ -14,7 +14,8 @@ db: ## Create the lms and lms_test databases (first time)
 	psql -d postgres -tc "SELECT 1 FROM pg_database WHERE datname='lms_test'" | grep -q 1 || createdb -O lms lms_test
 
 install: ## Install Node packages and Go modules
-	pnpm install && cd backend && go mod download
+	cd frontend && pnpm install
+	cd backend && go mod download
 
 migrate: ## Apply database migrations
 	cd backend && go run ./cmd/migrate up
@@ -29,21 +30,25 @@ api: ## Run the Go API on :8080
 	cd backend && go run ./cmd/api
 
 gen: ## Regenerate OpenAPI spec + TypeScript client
-	pnpm gen:api
+	cd frontend && pnpm gen:api
+
+proto: ## Regenerate Go + TypeScript code from proto/ (buf)
+	PATH="$(CURDIR)/frontend/node_modules/.bin:$$PATH" buf generate
 
 dev: ## Run admin (:3001) and student (:3000) apps
-	pnpm dev
+	cd frontend && pnpm dev
 
 build: ## Build backend binary and both apps
-	cd backend && go build -o bin/api ./cmd/api && cd .. && pnpm build
+	cd backend && go build -o bin/api ./cmd/api
+	cd frontend && pnpm build
 
 test: ## Go unit + integration tests
 	cd backend && go test ./... -count=1
 
 e2e: ## Playwright browser tests (apps + API must be running)
-	pnpm --filter @lms/e2e test
+	cd frontend && pnpm --filter @lms/e2e test
 
 up: ## Docker: full stack
 	docker compose up -d --build
 
-.PHONY: help services db install migrate seed sqlc api gen dev build test e2e up
+.PHONY: help services db install migrate seed sqlc api gen proto dev build test e2e up

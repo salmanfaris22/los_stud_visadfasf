@@ -1,4 +1,4 @@
-# `make gen` (or `pnpm gen:proto`) regenerates every client and server stub from proto/.
+# `make proto` (or `pnpm gen:proto` in frontend/) regenerates every client and server stub from proto/.
 version: v2
 managed:
   enabled: true
@@ -18,7 +18,7 @@ plugins:
     opt: paths=source_relative
   # TypeScript messages + service descriptors for @connectrpc/connect(-query).
   - local: protoc-gen-es
-    out: packages/api-client/src/gen
+    out: frontend/packages/api-client/src/gen
     include_imports: true
     opt:
       - target=ts
