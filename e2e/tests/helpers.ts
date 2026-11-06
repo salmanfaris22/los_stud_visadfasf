@@ -6,10 +6,15 @@ export const MENTOR = { email: "mentor@lms.local", password: "Mentor@12345" };
 export const STUDENT = { email: "student@lms.local", password: "Student@12345" };
 export const stamp = () => Date.now().toString(36);
 
+/** Signs an API context in over gRPC (Connect JSON): AuthService.Login sets the session cookies. */
+export function rpcLogin(ctx: APIRequestContext, creds: { email: string; password: string }) {
+  return ctx.post("/lms.v1.AuthService/Login", { data: creds, headers: { "Content-Type": "application/json" } });
+}
+
 /** API context signed in as the given portal user (used to set up data quickly). */
 export async function apiAs(app: "admin" | "student", creds: { email: string; password: string }): Promise<APIRequestContext> {
   const ctx = await request.newContext({ baseURL: API_URL, extraHTTPHeaders: { "X-LMS-App": app, "Content-Type": "application/json" } });
-  const res = await ctx.post("/api/v1/auth/login", { data: creds });
+  const res = await rpcLogin(ctx, creds);
   expect(res.status(), await res.text()).toBe(200);
   return ctx;
 }

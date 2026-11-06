@@ -9,12 +9,12 @@ export default function AttendancePage() {
   const present = rows.filter((r) => r.status === "present" || r.status === "late").length;
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Attendance</h1>
+      <h1 className="font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">Attendance</h1>
       <p className="mb-6 text-muted-foreground">Offline classroom sessions. Scan your mentor's QR code to check in.</p>
       {q.isLoading ? <Skeleton className="h-48" /> : rows.length === 0 ? <EmptyState icon={<QrCode />} title="No classroom sessions yet" description="Only students in offline batches see attendance." /> : (
         <>
           <Card className="mb-4 p-4 text-sm">You attended <b>{present}</b> of <b>{rows.length}</b> classes ({Math.round((present / rows.length) * 100)}%).</Card>
-          <div className="divide-y rounded-xl border">
+          <div className="divide-y rounded-[20px] border bg-card">
             {rows.map((r) => (
               <div key={r.class_id} className="flex items-center gap-3 p-3 text-sm">
                 <div className="min-w-0 flex-1"><div className="font-medium">{r.title}</div><div className="text-xs text-muted-foreground">{r.batch_name} · {formatDateTime(r.starts_at)}</div></div>

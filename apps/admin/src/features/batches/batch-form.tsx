@@ -55,7 +55,7 @@ export function BatchTypesDialog({ open, onOpenChange }: { open: boolean; onOpen
   const types = useBatchTypes();
   const [name, setName] = React.useState("");
   const [offline, setOffline] = React.useState(false);
-  const [color, setColor] = React.useState("#6366f1");
+  const [color, setColor] = React.useState("#1f6feb");
   const paths = ["/api/v1/batch-types", "/api/v1/batches"];
   const create = $api.useMutation("post", "/api/v1/batch-types", feedback(qc, "Type added", paths, () => setName("")));
   const del = $api.useMutation("delete", "/api/v1/batch-types/{id}", feedback(qc, "Type deleted", paths));

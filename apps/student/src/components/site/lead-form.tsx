@@ -11,7 +11,7 @@ export function LeadForm({ courseId, source = "website", compact }: { courseId?:
   const send = $api.useMutation("post", "/api/v1/public/leads");
   if (send.isSuccess) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-2xl border bg-success/10 p-8 text-center text-success">
+      <div className="flex flex-col items-center gap-2 rounded-[20px] border bg-success/10 p-8 text-center text-success">
         <CheckCircle2 className="size-8" /><p className="font-semibold">Thanks, {f.name.split(" ")[0]}!</p><p className="text-sm">{send.data.message}</p>
       </div>
     );

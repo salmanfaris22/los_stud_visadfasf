@@ -11,15 +11,19 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
 	"time"
 
+	"connectrpc.com/connect"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 
 	dbfiles "github.com/lms/backend/db"
+	lmsv1 "github.com/lms/backend/gen/lms/v1"
+	"github.com/lms/backend/gen/lms/v1/lmsv1connect"
 	"github.com/lms/backend/internal/auth"
 	"github.com/lms/backend/internal/config"
 	"github.com/lms/backend/internal/platform/google"
@@ -80,6 +84,55 @@ func (c *client) call(method, path string, body any, want int, out any) []byte {
 		}
 	}
 	return b
+}
+
+// authClient is a typed AuthService client sharing this client's cookie jar. It calls /rpc/<procedure>
+// like the web apps do, so the refresh cookie (scoped to that path) is sent. withApp adds X-LMS-App.
+func (c *client) authClient(withApp bool) lmsv1connect.AuthServiceClient {
+	var opts []connect.ClientOption
+	if withApp {
+		opts = append(opts, connect.WithInterceptors(appHeader(c.app)))
+	}
+	return lmsv1connect.NewAuthServiceClient(c.hc, c.base+"/rpc", opts...)
+}
+
+func appHeader(app string) connect.UnaryInterceptorFunc {
+	return func(next connect.UnaryFunc) connect.UnaryFunc {
+		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+			req.Header().Set("X-LMS-App", app)
+			return next(ctx, req)
+		}
+	}
+}
+
+// login signs in over gRPC (AuthService.Login) and returns the session user.
+func (c *client) login(email, password string) (*lmsv1.Me, error) {
+	res, err := c.authClient(true).Login(context.Background(), connect.NewRequest(&lmsv1.LoginRequest{Email: email, Password: password}))
+	if err != nil {
+		return nil, err
+	}
+	return res.Msg.GetMe(), nil
+}
+
+// mustLogin fails the test unless the sign-in succeeds.
+func (c *client) mustLogin(email, password string) *lmsv1.Me {
+	c.t.Helper()
+	me, err := c.login(email, password)
+	if err != nil {
+		c.t.Fatalf("login %s: %v", email, err)
+	}
+	return me
+}
+
+// wantCode fails the test unless err is a Connect error with the given code.
+func wantCode(t *testing.T, err error, want connect.Code) {
+	t.Helper()
+	if err == nil {
+		t.Fatalf("got no error, want code %v", want)
+	}
+	if got := connect.CodeOf(err); got != want {
+		t.Fatalf("error %v has code %v, want %v", err, got, want)
+	}
 }
 
 func testDeps(t *testing.T) (*service.Deps, func()) {
@@ -143,13 +196,18 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("admin login and me", func(t *testing.T) {
-		var me M
-		admin.call("POST", "/api/v1/auth/login", M{"email": "ADMIN@test.local", "password": "Admin@12345"}, 200, &me)
-		if me["is_super_admin"] != true || me["kind"] != "staff" {
+		me := admin.mustLogin("ADMIN@test.local", "Admin@12345")
+		if !me.GetIsSuperAdmin() || me.GetKind() != "staff" {
 			t.Fatalf("unexpected me %v", me)
 		}
-		admin.call("GET", "/api/v1/auth/me", nil, 200, nil)
-		admin.call("POST", "/api/v1/auth/login", M{"email": "admin@test.local", "password": "nope"}, 401, nil)
+		got, err := admin.authClient(true).GetMe(context.Background(), connect.NewRequest(&lmsv1.GetMeRequest{}))
+		if err != nil || got.Msg.GetMe().GetEmail() != "admin@test.local" {
+			t.Fatalf("GetMe = %v, %v", got, err)
+		}
+		_, err = admin.login("admin@test.local", "nope")
+		wantCode(t, err, connect.CodeUnauthenticated)
+		// The REST auth routes are gone: sign-in is gRPC only.
+		admin.call("POST", "/api/v1/auth/login", M{"email": "admin@test.local", "password": "Admin@12345"}, 404, nil)
 	})
 
 	t.Run("course, video (vimeo) and task", func(t *testing.T) {
@@ -209,8 +267,9 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("portal rules", func(t *testing.T) {
-		student.call("POST", "/api/v1/auth/login", M{"email": "admin@test.local", "password": "Admin@12345"}, 403, nil)
-		student.call("POST", "/api/v1/auth/login", M{"email": "ann@test.local", "password": "Student@123"}, 200, nil)
+		_, err := student.login("admin@test.local", "Admin@12345")
+		wantCode(t, err, connect.CodePermissionDenied)
+		student.mustLogin("ann@test.local", "Student@123")
 		student.call("GET", "/api/v1/students", nil, 403, nil)
 		var dash M
 		student.call("GET", "/api/v1/me/dashboard", nil, 200, &dash)
@@ -288,7 +347,7 @@ func TestAPI(t *testing.T) {
 		var staff M
 		admin.call("POST", "/api/v1/staff", M{"name": "Tim Tutor", "email": "tim@test.local", "password": "Tutor@1234", "role_ids": []any{role["id"]}}, 200, &staff)
 		mentor := newClient(t, srv.URL, "admin")
-		mentor.call("POST", "/api/v1/auth/login", M{"email": "tim@test.local", "password": "Tutor@1234"}, 200, nil)
+		mentor.mustLogin("tim@test.local", "Tutor@1234")
 		var l M
 		mentor.call("GET", "/api/v1/courses", nil, 200, &l)
 		if l["total"].(float64) != 0 {
@@ -311,22 +370,35 @@ func TestAPI(t *testing.T) {
 	})
 
 	t.Run("csrf header required for cookie writes", func(t *testing.T) {
-		code, _, _ := student.raw("POST", "/api/v1/auth/change-password", M{"new_password": "whatever123"}, false)
-		if code != 403 && code != 401 {
-			t.Fatalf("write without X-LMS-App returned %d", code)
+		_, err := student.authClient(false).ChangePassword(context.Background(), connect.NewRequest(&lmsv1.ChangePasswordRequest{NewPassword: "whatever123"}))
+		if code := connect.CodeOf(err); err == nil || (code != connect.CodePermissionDenied && code != connect.CodeUnauthenticated) {
+			t.Fatalf("write without X-LMS-App: %v", err)
 		}
 	})
 
 	t.Run("refresh rotation and reuse detection", func(t *testing.T) {
 		c := newClient(t, srv.URL, "student")
-		c.call("POST", "/api/v1/auth/login", M{"email": "ann@test.local", "password": "Student@123"}, 200, nil)
-		u, _ := http.NewRequest("GET", srv.URL+"/api/v1/auth/refresh", nil)
-		old := c.hc.Jar.Cookies(u.URL)
-		c.call("POST", "/api/v1/auth/refresh", nil, 200, nil)
+		c.mustLogin("ann@test.local", "Student@123")
+		u, _ := url.Parse(srv.URL + "/rpc/lms.v1.AuthService/Refresh")
+		old := c.hc.Jar.Cookies(u)
+		sent := false
+		for _, k := range old {
+			sent = sent || k.Name == auth.RefreshCookieName("student")
+		}
+		if !sent {
+			t.Fatalf("refresh cookie is not sent to %s: %v", u.Path, old)
+		}
+		refresh := func(cl *client) error {
+			_, err := cl.authClient(true).Refresh(context.Background(), connect.NewRequest(&lmsv1.RefreshRequest{}))
+			return err
+		}
+		if err := refresh(c); err != nil {
+			t.Fatal(err)
+		}
 		thief := newClient(t, srv.URL, "student")
-		thief.hc.Jar.SetCookies(u.URL, old)
-		thief.call("POST", "/api/v1/auth/refresh", nil, 401, nil)
-		c.call("POST", "/api/v1/auth/refresh", nil, 401, nil) // reuse revoked every session of the user
+		thief.hc.Jar.SetCookies(u, old)
+		wantCode(t, refresh(thief), connect.CodeUnauthenticated)
+		wantCode(t, refresh(c), connect.CodeUnauthenticated) // reuse revoked every session of the user
 	})
 
 	t.Run("live session, audience and ics", func(t *testing.T) {
@@ -339,7 +411,7 @@ func TestAPI(t *testing.T) {
 			t.Fatalf("roster = %v", l["roster"])
 		}
 		s2 := newClient(t, srv.URL, "student")
-		s2.call("POST", "/api/v1/auth/login", M{"email": "ann@test.local", "password": "Student@123"}, 200, nil)
+		s2.mustLogin("ann@test.local", "Student@123")
 		var mine []M
 		s2.call("GET", "/api/v1/me/live?scope=upcoming", nil, 200, &mine)
 		if len(mine) != 1 {
@@ -381,7 +453,7 @@ func TestAPI(t *testing.T) {
 			return out
 		}
 		var play M
-		student.call("POST", "/api/v1/auth/login", M{"email": "ann@test.local", "password": "Student@123"}, 200, nil)
+		student.mustLogin("ann@test.local", "Student@123")
 		student.call("POST", "/api/v1/me/quizzes/"+quizID+"/start", nil, 200, &play)
 		for _, pq := range play["questions"].([]any) {
 			for _, o := range pq.(map[string]any)["options"].([]any) {
@@ -486,16 +558,15 @@ func TestAPI(t *testing.T) {
 			t.Skip("redis not reachable")
 		}
 		c := newClient(t, srv.URL, "student")
-		got429 := false
+		limited := false
 		for i := 0; i < 25; i++ {
-			code, _, _ := c.raw("POST", "/api/v1/auth/login", M{"email": "x@y.z", "password": "bad"}, true)
-			if code == 429 {
-				got429 = true
+			if _, err := c.login("x@y.z", "bad"); connect.CodeOf(err) == connect.CodeResourceExhausted {
+				limited = true
 				break
 			}
 		}
-		if !got429 {
-			t.Fatal("no 429 after 25 failed logins")
+		if !limited {
+			t.Fatal("no ResourceExhausted after 25 failed logins")
 		}
 	})
 

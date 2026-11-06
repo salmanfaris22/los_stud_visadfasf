@@ -18,7 +18,7 @@ export default function TaskPage() {
       <div className="mt-3 mb-4 flex flex-wrap items-start gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-sm text-muted-foreground">{t.course_title}</p>
-          <h1 className="font-display text-2xl font-bold sm:text-3xl">{t.title}</h1>
+          <h1 className="font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">{t.title}</h1>
         </div>
         <StatusBadge status={q.data.status} className="text-sm" />
       </div>

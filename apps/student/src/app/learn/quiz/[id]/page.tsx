@@ -69,7 +69,7 @@ export default function QuizPage() {
                   const correct = r?.correct_option_ids.includes(o.id);
                   return (
                     <label key={o.id} className={cn("flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition",
-                      !r && chosen && "border-primary bg-primary/5", r && correct && "border-success bg-success/10", r && chosen && !correct && "border-destructive bg-destructive/10", r && "cursor-default")}>
+                      !r && chosen && "border-foreground bg-signal/15", r && correct && "border-success bg-success/10", r && chosen && !correct && "border-destructive bg-destructive/10", r && "cursor-default")}>
                       {q.multi ? <Checkbox checked={chosen} disabled={!!r} onCheckedChange={() => choose(q, o.id)} /> : (
                         <input type="radio" name={q.id} checked={chosen} disabled={!!r} onChange={() => choose(q, o.id)} className="size-4 accent-[var(--primary)]" />
                       )}

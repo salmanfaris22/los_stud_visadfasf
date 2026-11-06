@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, ClipboardList, FileQuestion, Info, MessagesSquare, PlayCircle } from "lucide-react";
-import { Badge, Button, Card, EmptyState, Markdown, Progress, Skeleton, Tabs, TabsContent, TabsList, TabsTrigger, VideoPlayer } from "@lms/ui";
+import { Badge, Button, Card, EmptyState, LineBadge, Markdown, Progress, Skeleton, Tabs, TabsContent, TabsList, TabsTrigger, VideoPlayer, lineColor } from "@lms/ui";
 import { $api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { TaskRow } from "@/features/learn/cards";
@@ -18,16 +18,26 @@ function Watch() {
   if (q.isLoading) return <div className="grid gap-6 lg:grid-cols-[1fr_400px]"><Skeleton className="aspect-video" /><Skeleton className="h-96" /></div>;
   if (!q.data) return <EmptyState title="Video not available" description="You may not be enrolled in this course." />;
   const { video: v, playlist, tasks, quizzes } = q.data;
+  const color = lineColor(q.data.course_id);
+  const stop = playlist.findIndex((p) => p.id === v.id) + 1;
   return (
     <div className="mx-auto grid max-w-[1700px] gap-6 xl:grid-cols-[1fr_420px]">
       <div className="min-w-0">
-        <VideoPlayer embedUrl={v.embed_url} title={v.title} watermark={me ? `${me.name} · ${me.email}` : undefined} />
-        <h1 className="mt-4 text-xl font-bold sm:text-2xl">{v.title}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <Link href={`/learn/courses/${q.data.course_id}`} className="text-sm font-medium text-muted-foreground hover:text-foreground">{q.data.course_title}</Link>
-          <div className="flex w-40 items-center gap-2"><Progress value={q.data.progress_pct} className="h-1.5" /><span className="text-xs text-muted-foreground">{q.data.progress_pct}%</span></div>
+        {/* dark stage in both themes */}
+        <div className="rounded-[28px] bg-stage p-2 shadow-xl sm:p-3">
+          <VideoPlayer embedUrl={v.embed_url} title={v.title} watermark={me ? `${me.name} · ${me.email}` : undefined} />
+          <div className="flex items-center gap-3 px-2 pt-3 pb-1 text-white/70">
+            <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full transition-[width] duration-700" style={{ width: `${q.data.progress_pct}%`, background: color }} /></span>
+            <span className="text-xs font-semibold tabular-nums">Course {q.data.progress_pct}%</span>
+          </div>
+        </div>
+        <div className="mt-5 text-xs font-bold text-muted-foreground">{stop > 0 ? `Stop ${stop} of ${playlist.length}` : "Lesson"}</div>
+        <h1 className="mt-1 font-display text-2xl leading-tight font-extrabold sm:text-[28px]">{v.title}</h1>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <Link href={`/learn/courses/${q.data.course_id}`} className="inline-flex items-center gap-2 rounded-full border bg-card py-1 pr-3.5 pl-1 text-sm font-semibold transition hover:border-foreground/30"><LineBadge id={q.data.course_id} name={q.data.course_title} size="sm" />{q.data.course_title}</Link>
+          <div className="sr-only"><Progress value={q.data.progress_pct} /></div>
           <div className="ml-auto flex gap-2">
-            {q.data.prev_id ? <Button variant="secondary" size="sm" asChild><Link href={`/learn/watch/${q.data.prev_id}`}><ChevronLeft /> Previous</Link></Button> : <Button variant="secondary" size="sm" disabled><ChevronLeft /> Previous</Button>}
+            {q.data.prev_id ? <Button variant="outline" size="sm" asChild><Link href={`/learn/watch/${q.data.prev_id}`}><ChevronLeft /> Previous</Link></Button> : <Button variant="outline" size="sm" disabled><ChevronLeft /> Previous</Button>}
             {q.data.next_id ? <Button size="sm" asChild><Link href={`/learn/watch/${q.data.next_id}`}>Next <ChevronRight /></Link></Button> : <Button size="sm" disabled>Next <ChevronRight /></Button>}
           </div>
         </div>
@@ -44,7 +54,7 @@ function Watch() {
           <TabsContent value="quizzes">
             <div className="grid gap-3 sm:grid-cols-2">
               {quizzes.map((z) => (
-                <Card key={z.id} className="p-4">
+                <Card key={z.id} className="p-5">
                   <div className="flex items-center gap-2 font-semibold"><FileQuestion className="size-4 text-info" />{z.title}</div>
                   <p className="mt-1 text-xs text-muted-foreground">{z.question_count} questions · pass {z.pass_pct}%{z.time_limit_minutes ? ` · ${z.time_limit_minutes} min` : ""}{z.max_attempts ? ` · ${z.attempts_used}/${z.max_attempts} attempts` : ""}</p>
                   {z.attempts_used > 0 && <p className="mt-2 text-sm">Best: <b>{z.best_score}/{z.best_max}</b> {z.passed ? <Badge variant="success">Passed</Badge> : <Badge variant="warning">Not passed</Badge>}</p>}
@@ -57,9 +67,11 @@ function Watch() {
           <TabsContent value="about">{v.description ? <Markdown>{v.description}</Markdown> : <p className="text-sm text-muted-foreground">No description.</p>}</TabsContent>
         </Tabs>
       </div>
-      <aside className="xl:sticky xl:top-16 xl:h-[calc(100vh-5rem)] xl:overflow-y-auto">
-        <div className="mb-2 px-2 font-semibold">Up next · {playlist.length} videos</div>
-        <Playlist items={playlist} currentId={v.id} compact />
+      <aside className="xl:sticky xl:top-20 xl:h-[calc(100vh-6rem)] xl:overflow-y-auto">
+        <div className="rounded-[20px] border bg-card p-2 shadow-sm dark:shadow-none">
+          <div className="flex items-center justify-between px-3 pt-2 pb-2"><span className="font-display font-extrabold">Route</span><span className="text-xs font-semibold text-muted-foreground">{playlist.length} stops</span></div>
+          <Playlist items={playlist} currentId={v.id} compact color={color} />
+        </div>
       </aside>
     </div>
   );

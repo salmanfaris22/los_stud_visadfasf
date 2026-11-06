@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const sans = Inter({ subsets: ["latin"], variable: "--font-sans-family" });
-const display = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-display-family" });
+// Inter: the clean, neutral sans of the admin "lilac" look.
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans-family", display: "swap" });
 
 export const metadata: Metadata = {
   title: { default: "LMS Admin", template: "%s · LMS Admin" },
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${sans.variable} ${display.variable} font-sans`}>
+      <body className={`${sans.variable} font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>

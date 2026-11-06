@@ -19,9 +19,9 @@ export function MonthCalendar({ month, onMonth, events, onSelect }: { month: Dat
   events.forEach((e) => { const k = key(new Date(e.start)); byDay.set(k, [...(byDay.get(k) ?? []), e]); });
   const today = key(new Date());
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
+    <div className="overflow-hidden rounded-[20px] border bg-card shadow-sm dark:shadow-none">
       <div className="flex items-center justify-between border-b px-4 py-3">
-        <span className="font-semibold">{month.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</span>
+        <span className="font-display text-lg font-bold">{month.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</span>
         <div className="flex gap-1">
           <Button variant="outline" size="icon-sm" onClick={() => onMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))} aria-label="Previous month"><ChevronLeft /></Button>
           <Button variant="outline" size="sm" onClick={() => onMonth(new Date())}>Today</Button>
@@ -37,10 +37,10 @@ export function MonthCalendar({ month, onMonth, events, onSelect }: { month: Dat
           const other = d.getMonth() !== month.getMonth();
           return (
             <div key={key(d)} className={cn("min-h-24 border-r border-b p-1.5 text-xs [&:nth-child(7n)]:border-r-0", other && "bg-muted/30 text-muted-foreground")}>
-              <div className={cn("mb-1 flex size-6 items-center justify-center rounded-full", key(d) === today && "bg-primary font-bold text-primary-foreground")}>{d.getDate()}</div>
+              <div className={cn("mb-1 flex size-6 items-center justify-center rounded-full", key(d) === today && "bg-signal font-bold text-signal-foreground")}>{d.getDate()}</div>
               <div className="space-y-1">
                 {list.slice(0, 3).map((e) => (
-                  <button key={e.id} onClick={() => onSelect?.(e)} className={cn("block w-full truncate rounded px-1.5 py-0.5 text-left", toneCls[e.tone ?? "primary"])}>
+                  <button key={e.id} onClick={() => onSelect?.(e)} className={cn("block w-full truncate rounded-md px-1.5 py-0.5 text-left font-medium", toneCls[e.tone ?? "primary"])}>
                     {new Date(e.start).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })} {e.title}
                   </button>
                 ))}

@@ -49,7 +49,7 @@ export function NotificationBell({ enabled, viewAllHref }: { enabled: boolean; v
               key={n.id}
               href={n.link || "#"}
               onClick={() => !n.read_at && read.mutate({ body: { ids: [n.id] } })}
-              className={cn("flex gap-3 border-b px-4 py-3 text-sm transition last:border-0 hover:bg-muted/50", !n.read_at && "bg-primary/5")}
+              className={cn("flex gap-3 border-b px-4 py-3 text-sm transition last:border-0 hover:bg-muted/50", !n.read_at && "bg-signal/10")}
             >
               <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", n.read_at ? "bg-transparent" : "bg-primary")} />
               <span className="min-w-0 flex-1">

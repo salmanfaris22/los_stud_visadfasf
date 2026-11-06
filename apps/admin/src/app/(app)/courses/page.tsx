@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BookOpen, Plus, Users, Video } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, EmptyState, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge } from "@lms/ui";
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, EmptyState, LineBadge, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, lineColor } from "@lms/ui";
 import { $api } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
 import { Can } from "@/lib/session";
@@ -37,18 +37,23 @@ export default function CoursesPage() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {list.data?.items.map((c) => (
-            <Link key={c.id} href={`/courses/${c.id}`} className="group overflow-hidden rounded-xl border bg-card transition hover:-translate-y-0.5 hover:shadow-lg">
-              <div className="relative aspect-video bg-gradient-to-br from-primary/40 via-fuchsia-500/30 to-amber-400/30">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {c.thumbnail_url && <img src={c.thumbnail_url} alt="" className="size-full object-cover transition group-hover:scale-105" />}
-                <StatusBadge status={c.status} className="absolute top-3 left-3 bg-background/90 backdrop-blur" />
+            <Link key={c.id} href={`/courses/${c.id}`} className="group flex flex-col overflow-hidden rounded-[20px] border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:shadow-none">
+              <div className="relative aspect-video overflow-hidden" style={{ background: `color-mix(in oklab, ${lineColor(c.id)} 18%, var(--card))` }}>
+                {c.thumbnail_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.thumbnail_url} alt="" className="size-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                ) : (
+                  <div className="map-grid flex size-full items-center justify-center"><LineBadge id={c.id} name={c.title} size="xl" /></div>
+                )}
+                <StatusBadge status={c.status} className="absolute top-3 left-3 bg-card/95 shadow-sm backdrop-blur" />
+                <span className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: lineColor(c.id) }} />
               </div>
-              <div className="p-4">
-                <div className="text-xs text-muted-foreground">{c.category || "General"} · {c.level}</div>
-                <h3 className="mt-1 line-clamp-1 font-semibold">{c.title}</h3>
+              <div className="flex flex-1 flex-col p-5">
+                <div className="flex items-center gap-2.5 text-xs font-medium text-muted-foreground"><LineBadge id={c.id} name={c.title} size="sm" /><span className="capitalize">{c.category || "General"} · {c.level}</span></div>
+                <h3 className="mt-3 line-clamp-1 font-bold">{c.title}</h3>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{c.subtitle}</p>
-                <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Video className="size-3.5" />{c.video_count} videos</span>
+                <div className="mt-auto flex gap-4 pt-4 text-xs font-medium text-muted-foreground">
+                  <span className="inline-flex items-center gap-1"><Video className="size-3.5" />{c.video_count} stops</span>
                   <span className="inline-flex items-center gap-1"><Users className="size-3.5" />{c.student_count} students</span>
                 </div>
               </div>

@@ -37,7 +37,7 @@ type Handler struct {
 func Register(api huma.API, r chi.Router, s *service.Services, g *middleware.Guards, d *service.Deps) {
 	h := &Handler{s: s, g: g, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies, hub: d.Hub}
 	for _, register := range []func(huma.API){
-		h.authRoutes, h.staffRoutes, h.studentRoutes, h.courseRoutes, h.batchRoutes, h.attendanceRoutes,
+		h.staffRoutes, h.studentRoutes, h.courseRoutes, h.batchRoutes, h.attendanceRoutes,
 		h.uploadRoutes, h.submissionRoutes, h.certificateRoutes, h.liveRoutes, h.quizRoutes, h.commentRoutes,
 		h.announcementRoutes, h.notificationRoutes, h.portalRoutes, h.siteRoutes, h.adminRoutes,
 	} {

@@ -42,7 +42,7 @@ function StaffDialog({ open, onOpenChange, staffId }: { open: boolean; onOpenCha
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             {staffId && <Field label="Status"><Select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value as "active" })}><option value="active">Active</option><option value="disabled">Disabled</option></Select></Field>}
-            {me?.is_super_admin && (
+            {me?.isSuperAdmin && (
               <label className="flex items-center justify-between rounded-lg border p-3 text-sm">
                 <span><span className="font-medium">Super admin</span><span className="block text-xs text-muted-foreground">Full access, ignores roles</span></span>
                 <Switch checked={f.is_super_admin} onCheckedChange={(v) => setF({ ...f, is_super_admin: v })} />

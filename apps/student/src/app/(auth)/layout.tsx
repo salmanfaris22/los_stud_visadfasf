@@ -2,37 +2,42 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Award, CheckCircle2, GraduationCap, PlayCircle } from "lucide-react";
+import { BrandMark, TransitArt } from "@lms/ui";
 
-const cards = [
-  { icon: PlayCircle, title: "Watch", text: "Short lessons with a playlist" },
-  { icon: CheckCircle2, title: "Practice", text: "Tasks reviewed by mentors" },
-  { icon: Award, title: "Get certified", text: "Verified certificates" },
+const route = [
+  { title: "Watch", text: "Short lessons in a playlist" },
+  { title: "Practice", text: "Tasks reviewed by mentors" },
+  { title: "Get certified", text: "Verified certificates" },
 ];
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-[1fr_1.1fr]">
       <div className="flex flex-col p-6 sm:p-10">
-        <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold">
-          <span className="rounded-xl bg-gradient-to-br from-primary to-fuchsia-500 p-1.5 text-white"><GraduationCap className="size-5" /></span> LMS
+        <Link href="/" className="flex items-center gap-2.5 font-display text-lg font-extrabold">
+          <BrandMark /> LMS
         </Link>
         <div className="flex flex-1 items-center justify-center py-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="w-full max-w-sm">{children}</motion.div>
         </div>
       </div>
-      <div className="relative hidden overflow-hidden bg-[#0b0b14] lg:block">
-        <motion.div className="absolute top-10 left-10 size-[460px] rounded-full bg-primary/40 blur-[120px]" animate={{ x: [0, 90, 0], y: [0, 70, 0] }} transition={{ duration: 16, repeat: Infinity }} />
-        <motion.div className="absolute right-0 bottom-0 size-[380px] rounded-full bg-fuchsia-500/30 blur-[120px]" animate={{ x: [0, -70, 0] }} transition={{ duration: 12, repeat: Infinity }} />
-        <div className="relative flex h-full flex-col justify-center gap-5 p-16 text-white">
-          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-md font-display text-4xl leading-tight font-bold">Your learning, one tab away.</motion.h2>
-          {cards.map((c, i) => (
-            <motion.div key={c.title} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.15 }}
-              className="flex max-w-sm items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <span className="rounded-xl bg-white/10 p-3"><c.icon className="size-5" /></span>
-              <span><b className="block">{c.title}</b><span className="text-sm text-white/70">{c.text}</span></span>
-            </motion.div>
-          ))}
+      <div className="relative hidden p-3 lg:block">
+        <div className="map-grid relative flex h-full flex-col overflow-hidden rounded-[28px] border bg-card">
+          <TransitArt className="absolute -top-[6%] -right-[12%] h-[78%] w-auto opacity-95" />
+          <div className="relative mt-auto p-12">
+            <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="max-w-md font-display text-[40px] leading-[1.05] font-extrabold">
+              Your learning, one stop at a time.
+            </motion.h2>
+            <ol className="mt-8 max-w-sm">
+              {route.map((c, i) => (
+                <motion.li key={c.title} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 + i * 0.15 }} className="relative flex gap-4 pb-6 last:pb-0">
+                  {i < route.length - 1 && <span aria-hidden className="absolute top-5 bottom-0 left-[9px] w-1 rounded-full" style={{ background: "var(--line-1)" }} />}
+                  <span className={i === route.length - 1 ? "relative mt-0.5 size-[22px] shrink-0 rounded-full border-[5px] border-foreground bg-signal" : "relative mt-0.5 size-[22px] shrink-0 rounded-full border-[5px] border-foreground bg-card"} />
+                  <span><b className="block">{c.title}</b><span className="text-sm text-muted-foreground">{c.text}</span></span>
+                </motion.li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </div>

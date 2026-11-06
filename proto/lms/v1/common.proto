@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "buf/validate/validate.proto";
+
+// PageRequest is the paging input of list RPCs. 0 means the default (page 1, 20 per page).
+message PageRequest {
+  int32 page = 1 [(buf.validate.field).int32.gte = 0];
+  int32 per_page = 2 [(buf.validate.field).int32 = {
+    gte: 0
+    lte: 200
+  }];
+}
+
+// PageInfo describes the page a list RPC returned.
+message PageInfo {
+  int32 total = 1;
+  int32 page = 2;
+  int32 per_page = 3;
+}
+
+// File is a generated download (CSV, PDF, ICS) that the browser saves.
+message File {
+  string name = 1;
+  string content_type = 2;
+  bytes data = 3;
+}
+
+// Person is a compact user reference (mentor, author, host…).
+message Person {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string avatar_url = 4;
+  string bio = 5;
+}

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "google/protobuf/descriptor.proto";
+
+// Access is the access rule of one RPC. The server's access interceptor enforces it and
+// refuses to start when any RPC has none, so nothing is reachable by accident.
+message Access {
+  oneof rule {
+    // Anyone, signed in or not.
+    bool public = 1;
+    // Any signed-in user (staff or student).
+    bool signed_in = 2;
+    // Signed-in students only.
+    bool student = 3;
+    // Signed-in staff only; finer checks happen in the service.
+    bool staff = 4;
+    // Staff holding module:action (super admins always pass).
+    Permission perm = 5;
+  }
+  // Optional per-client-IP limit.
+  RateLimit rate_limit = 6;
+}
+
+// Permission is one cell of the role matrix, e.g. courses:edit.
+message Permission {
+  string module = 1;
+  string action = 2;
+}
+
+// RateLimit allows `limit` calls per `window_seconds` per client IP in a named bucket.
+message RateLimit {
+  string bucket = 1;
+  uint32 limit = 2;
+  uint32 window_seconds = 3;
+}
+
+extend google.protobuf.MethodOptions {
+  Access access = 50101;
+}

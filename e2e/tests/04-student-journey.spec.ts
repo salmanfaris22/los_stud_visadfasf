@@ -17,7 +17,8 @@ test("full journey: assigned course → watch → submit → mentor approves →
   await expect(page.getByRole("heading", { name: "Your submission" })).toBeVisible();
   await expect(page).toHaveURL(/\/learn$/);
   await page.getByRole("button", { name: /Share your repo/ }).click();
-  await page.getByRole("link", { name: new RegExp(`Journey ${s}`) }).first().click();
+  // The course card (not the "Next stop" shortcut, which jumps straight to the lesson).
+  await page.locator('a[href^="/learn/courses/"]', { hasText: `Journey ${s}` }).first().click();
   await page.getByRole("link", { name: /Start course/ }).click();
   await expect(page.locator("iframe[src*='446E-r0rXHI']")).toBeVisible();
   await expect(page.getByText(`Journey Student ${s} · ${email}`)).toBeVisible();

@@ -9,7 +9,7 @@ export const DropdownMenuTrigger = Menu.Trigger;
 export function DropdownMenuContent({ className, align = "end", ...props }: React.ComponentPropsWithoutRef<typeof Menu.Content>) {
   return (
     <Menu.Portal>
-      <Menu.Content align={align} sideOffset={6} className={cn("z-50 min-w-44 overflow-hidden rounded-xl border bg-popover p-1 text-popover-foreground shadow-xl", className)} {...props} />
+      <Menu.Content align={align} sideOffset={6} className={cn("z-50 min-w-48 animate-pop-in overflow-hidden rounded-[16px] border bg-popover p-1.5 text-popover-foreground shadow-xl", className)} {...props} />
     </Menu.Portal>
   );
 }
@@ -17,7 +17,7 @@ export function DropdownMenuContent({ className, align = "end", ...props }: Reac
 export function DropdownMenuItem({ className, destructive, ...props }: React.ComponentPropsWithoutRef<typeof Menu.Item> & { destructive?: boolean }) {
   return (
     <Menu.Item
-      className={cn("flex cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-sm outline-none select-none data-[highlighted]:bg-accent data-[disabled]:opacity-50 [&_svg]:size-4", destructive && "text-destructive data-[highlighted]:bg-destructive/10", className)}
+      className={cn("flex cursor-pointer items-center gap-2 rounded-[10px] px-2.5 py-2 text-sm font-medium outline-none select-none data-[highlighted]:bg-accent data-[disabled]:opacity-50 [&_svg]:size-4", destructive && "text-destructive data-[highlighted]:bg-destructive/10", className)}
       {...props}
     />
   );

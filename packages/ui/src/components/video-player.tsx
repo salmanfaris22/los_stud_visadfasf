@@ -31,7 +31,7 @@ export function VideoPlayer({ embedUrl, title, watermark, className }: { embedUr
   };
 
   return (
-    <div ref={box} className={cn("group relative aspect-video w-full overflow-hidden bg-black", full ? "rounded-none" : "rounded-xl", className)}>
+    <div ref={box} className={cn("group relative aspect-video w-full overflow-hidden bg-black", full ? "rounded-none" : "rounded-[20px]", className)}>
       <iframe
         key={embedUrl}
         src={embedUrl}
@@ -53,7 +53,7 @@ export function VideoPlayer({ embedUrl, title, watermark, className }: { embedUr
         type="button"
         onClick={toggle}
         aria-label={full ? "Exit fullscreen" : "Fullscreen"}
-        className="absolute right-3 bottom-14 z-20 rounded-lg bg-black/60 p-2 text-white opacity-0 backdrop-blur transition group-hover:opacity-100 focus:opacity-100"
+        className="absolute right-3 bottom-14 z-20 rounded-full bg-black/60 p-2 text-white opacity-0 backdrop-blur transition group-hover:opacity-100 focus:opacity-100"
       >
         {full ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
       </button>

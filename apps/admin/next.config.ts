@@ -10,7 +10,11 @@ const config: NextConfig = {
   poweredByHeader: false,
   // The browser talks to /api on this origin; Next forwards it to the Go API (cookies stay first-party).
   async rewrites() {
-    return [{ source: "/api/:path*", destination: `${api}/api/:path*` }];
+    return [
+      { source: "/api/:path*", destination: `${api}/api/:path*` },
+      // gRPC (Connect) calls; the Go server strips /rpc. The refresh cookie is scoped to /rpc/lms.v1.AuthService.
+      { source: "/rpc/:path*", destination: `${api}/rpc/:path*` },
+    ];
   },
   async headers() {
     return [

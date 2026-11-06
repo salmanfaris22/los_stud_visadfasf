@@ -79,7 +79,7 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
             <Field label="Video host">
               <div className="grid grid-cols-2 gap-2">
                 {PROVIDERS.map((p) => (
-                  <button type="button" key={p.id} onClick={() => setProvider(p.id)} className={cn("flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition", provider === p.id ? "border-primary bg-primary/10 font-medium" : "hover:bg-accent")}>
+                  <button type="button" key={p.id} onClick={() => setProvider(p.id)} className={cn("flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition", provider === p.id ? "border-foreground bg-signal/15 font-medium" : "hover:bg-accent")}>
                     <span className={cn("size-2.5 rounded-full", p.color)} /> {p.label}
                   </button>
                 ))}

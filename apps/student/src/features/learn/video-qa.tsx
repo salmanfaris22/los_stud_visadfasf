@@ -53,7 +53,7 @@ export function VideoQA({ videoId }: { videoId: string }) {
     <div className="space-y-6">
       <div className="text-sm font-semibold">{count} comments</div>
       <div className="flex gap-3">
-        <Avatar src={me?.avatar_url} name={me?.name} />
+        <Avatar src={me?.avatarUrl} name={me?.name} />
         <div className="flex-1 space-y-2">
           <Textarea rows={2} value={body} onChange={(e) => setBody(e.target.value)} placeholder="Ask a question about this lesson…" />
           <div className="flex justify-end"><Button disabled={!body.trim()} loading={post.isPending} onClick={() => post.mutate({ params: { path: { id: videoId } }, body: { body } })}>Comment</Button></div>

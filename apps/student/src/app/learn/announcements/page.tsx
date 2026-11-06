@@ -7,7 +7,7 @@ export default function AnnouncementsPage() {
   const q = $api.useQuery("get", "/api/v1/me/announcements", { params: { query: { limit: 100 } } });
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="mb-6 font-display text-2xl font-bold sm:text-3xl">Announcements</h1>
+      <h1 className="mb-6 font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">Announcements</h1>
       {q.isLoading ? <Skeleton className="h-48" /> : q.data?.length === 0 ? <EmptyState icon={<Megaphone />} title="No announcements" /> : (
         <div className="space-y-4">
           {q.data?.map((a) => (

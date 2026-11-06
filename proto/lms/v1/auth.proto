@@ -1,0 +1,223 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "buf/validate/validate.proto";
+import "lms/v1/options.proto";
+
+// AuthService signs users in and out and manages the signed-in user's own account.
+// Web sessions live in httpOnly cookies set by Login/Register/Refresh; the portal is chosen by
+// the X-LMS-App header (admin | student). Google sign-in stays a browser redirect
+// (/api/v1/auth/google/start), outside gRPC.
+service AuthService {
+  // Which sign-in options the portal shows.
+  rpc GetProviders(GetProvidersRequest) returns (GetProvidersResponse) {
+    option (lms.v1.access) = {public: true};
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Sign in with email and password; sets the session cookies.
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (lms.v1.access) = {
+      public: true
+      rate_limit: {
+        bucket: "login"
+        limit: 20
+        window_seconds: 60
+      }
+    };
+  }
+  // Student self sign-up; sets the session cookies.
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (lms.v1.access) = {
+      public: true
+      rate_limit: {
+        bucket: "register"
+        limit: 10
+        window_seconds: 3600
+      }
+    };
+  }
+  // Rotates the refresh cookie and issues a new access cookie.
+  rpc Refresh(RefreshRequest) returns (RefreshResponse) {
+    option (lms.v1.access) = {
+      public: true
+      rate_limit: {
+        bucket: "refresh"
+        limit: 120
+        window_seconds: 60
+      }
+    };
+  }
+  // Signs out: revokes the refresh token and clears the cookies.
+  rpc Logout(LogoutRequest) returns (LogoutResponse) {
+    option (lms.v1.access) = {public: true};
+  }
+  // The signed-in user.
+  rpc GetMe(GetMeRequest) returns (GetMeResponse) {
+    option (lms.v1.access) = {signed_in: true};
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Updates the signed-in user's own profile.
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {
+    option (lms.v1.access) = {signed_in: true};
+  }
+  // Changes the signed-in user's password.
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse) {
+    option (lms.v1.access) = {signed_in: true};
+  }
+  // Emails a password reset link (always answers the same, whether or not the email exists).
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse) {
+    option (lms.v1.access) = {
+      public: true
+      rate_limit: {
+        bucket: "forgot"
+        limit: 5
+        window_seconds: 900
+      }
+    };
+  }
+  // Sets a new password with a reset token.
+  rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse) {
+    option (lms.v1.access) = {
+      public: true
+      rate_limit: {
+        bucket: "reset"
+        limit: 10
+        window_seconds: 900
+      }
+    };
+  }
+}
+
+// Me is the signed-in user.
+message Me {
+  string id = 1;
+  // staff | student
+  string kind = 2;
+  string name = 3;
+  string email = 4;
+  string phone = 5;
+  string avatar_url = 6;
+  string bio = 7;
+  string student_code = 8;
+  bool is_super_admin = 9;
+  // The role limits the user to assigned courses / batches.
+  bool scoped = 10;
+  // all | team | own, or empty for non-sales staff.
+  string sales_scope = 11;
+  // "module:action" pairs.
+  repeated string permissions = 12;
+  // admin | student
+  string app = 13;
+}
+
+message GetProvidersRequest {}
+
+message GetProvidersResponse {
+  bool google = 1;
+  bool signup = 2;
+}
+
+message LoginRequest {
+  string email = 1 [(buf.validate.field).string = {
+    email: true
+    max_len: 200
+  }];
+  string password = 2 [(buf.validate.field).string = {
+    min_len: 1
+    max_len: 200
+  }];
+}
+
+message LoginResponse {
+  Me me = 1;
+}
+
+message RegisterRequest {
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 2
+    max_len: 120
+  }];
+  string email = 2 [(buf.validate.field).string = {
+    email: true
+    max_len: 200
+  }];
+  string phone = 3 [(buf.validate.field).string.max_len = 30];
+  string password = 4 [(buf.validate.field).string = {
+    min_len: 8
+    max_len: 200
+  }];
+}
+
+message RegisterResponse {
+  Me me = 1;
+}
+
+message RefreshRequest {}
+
+message RefreshResponse {
+  Me me = 1;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  Me me = 1;
+}
+
+message UpdateProfileRequest {
+  string name = 1 [(buf.validate.field).string = {
+    min_len: 2
+    max_len: 120
+  }];
+  string phone = 2 [(buf.validate.field).string.max_len = 30];
+  string avatar_url = 3 [(buf.validate.field).string.max_len = 600];
+  string bio = 4 [(buf.validate.field).string.max_len = 2000];
+}
+
+message UpdateProfileResponse {
+  Me me = 1;
+}
+
+message ChangePasswordRequest {
+  // Empty for accounts created with Google sign-in that have no password yet.
+  string current_password = 1 [(buf.validate.field).string.max_len = 200];
+  string new_password = 2 [(buf.validate.field).string = {
+    min_len: 8
+    max_len: 200
+  }];
+}
+
+message ChangePasswordResponse {
+  string message = 1;
+}
+
+message ForgotPasswordRequest {
+  string email = 1 [(buf.validate.field).string = {
+    email: true
+    max_len: 200
+  }];
+}
+
+message ForgotPasswordResponse {
+  string message = 1;
+}
+
+message ResetPasswordRequest {
+  string token = 1 [(buf.validate.field).string = {
+    min_len: 10
+    max_len: 200
+  }];
+  string password = 2 [(buf.validate.field).string = {
+    min_len: 8
+    max_len: 200
+  }];
+}
+
+message ResetPasswordResponse {
+  string message = 1;
+}

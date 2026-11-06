@@ -9,6 +9,11 @@ test("quiz, video Q&A and live classes for a batch student", async ({ page }) =>
   const batches = await json(await admin.get(`/api/v1/batches?course_id=${course.id}&q=Online`));
   const email = `quiz-${s}@example.com`;
   await json(await admin.post("/api/v1/students", { data: { name: `Quiz Taker ${s}`, email, password: "Quiz@12345", enrollments: [{ course_id: course.id, batch_id: batches.items[0].id }] } }));
+  // The seeded live class ages into the past, so schedule one for this batch tomorrow.
+  const liveTitle = `Live: Building your first API ${s}`;
+  const start = new Date(Date.now() + 24 * 3600_000);
+  start.setUTCMinutes(0, 0, 0);
+  await json(await admin.post("/api/v1/live", { data: { title: liveTitle, meet_url: "https://meet.google.com/abc-defg-hij", starts_at: start.toISOString(), ends_at: new Date(start.getTime() + 3600_000).toISOString(), targets: [{ type: "batch", id: batches.items[0].id }] } }));
   const curriculum = await json(await admin.get(`/api/v1/courses/${course.id}/curriculum`));
   const first = curriculum.find((v: { title: string }) => v.title === "Go in 100 seconds");
 
@@ -28,7 +33,7 @@ test("quiz, video Q&A and live classes for a batch student", async ({ page }) =>
   await expect(page.getByText(`How do goroutines work? ${s}`)).toBeVisible();
 
   await page.goto(`${STUDENT_URL}/learn/live`);
-  await expect(page.getByText("Live: Building your first API")).toBeVisible();
+  await expect(page.getByText(liveTitle)).toBeVisible();
   await expect(page.getByRole("link", { name: "Add to Google Calendar" })).toHaveAttribute("href", /calendar\.google\.com/);
   await page.goto(`${STUDENT_URL}/learn/calendar`);
   await expect(page.getByText(/Building your first API/).first()).toBeVisible();

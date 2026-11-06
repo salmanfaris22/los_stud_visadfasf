@@ -41,7 +41,7 @@ function Matrix({ catalog, value, onChange, disabled }: { catalog: Schemas["Perm
         </thead>
         <tbody>
           {catalog.modules.map((m) => {
-            const header = m.group !== group ? ((group = m.group), <tr key={"g" + m.group}><td colSpan={catalog.actions.length + 2} className="bg-muted/20 px-3 py-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">{m.group}</td></tr>) : null;
+            const header = m.group !== group ? ((group = m.group), <tr key={"g" + m.group}><td colSpan={catalog.actions.length + 2} className="bg-muted/40 px-3 py-2 text-xs font-bold text-muted-foreground">{m.group}</td></tr>) : null;
             const full = catalog.actions.every((a) => has(m.key, a));
             return (
               <React.Fragment key={m.key}>
@@ -86,7 +86,7 @@ export default function RolesPage() {
         <div className="space-y-2">
           {roles.isLoading && <Skeleton className="h-40" />}
           {roles.data?.map((r) => (
-            <button key={r.id} onClick={() => setSelected(r.id)} className={cn("w-full rounded-xl border p-3 text-left transition", selected === r.id ? "border-primary bg-primary/5" : "hover:bg-muted/40")}>
+            <button key={r.id} onClick={() => setSelected(r.id)} className={cn("w-full rounded-xl border p-3 text-left transition", selected === r.id ? "border-foreground bg-signal/15" : "hover:bg-muted/40")}>
               <div className="flex items-center gap-2 font-medium">{r.is_system ? <Lock className="size-3.5 text-muted-foreground" /> : <Shield className="size-3.5 text-primary" />}{r.name}{r.scoped && <Badge variant="info" className="ml-auto">scoped</Badge>}</div>
               <div className="mt-1 text-xs text-muted-foreground">{r.user_count} users · {Object.values(r.permissions).flat().length} permissions</div>
             </button>

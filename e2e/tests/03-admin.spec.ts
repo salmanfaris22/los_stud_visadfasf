@@ -4,11 +4,13 @@ import { ADMIN_URL, loginAdmin, stamp } from "./helpers";
 test.describe("Admin portal", () => {
   test.beforeEach(async ({ page }) => loginAdmin(page));
 
-  test("dashboard shows stats, activity and review queue", async ({ page }) => {
-    await expect(page.getByText("Students", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("Pending reviews")).toBeVisible();
-    await expect(page.getByText(/Task activity/)).toBeVisible();
-    await expect(page.getByText("Waiting for review")).toBeVisible();
+  test("dashboard shows students, task stats, calendar and notifications", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Students" })).toBeVisible();
+    await expect(page.getByText(/Tasks · 30 days/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Statistics" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Notifications" })).toBeVisible();
+    await page.getByRole("tab", { name: "Reviews" }).click();
+    await expect(page.getByRole("tab", { name: "Reviews" })).toHaveAttribute("aria-selected", "true");
   });
 
   test("build a course: Vimeo video with live preview, then a task", async ({ page }) => {

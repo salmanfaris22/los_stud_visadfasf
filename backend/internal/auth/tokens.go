@@ -52,13 +52,25 @@ func (t *Tokens) Parse(raw string) (*Claims, error) {
 func AccessCookieName(app string) string  { return "lms_" + app + "_at" }
 func RefreshCookieName(app string) string { return "lms_" + app + "_rt" }
 
-// RefreshCookiePath limits the refresh cookie to the auth endpoints.
-const RefreshCookiePath = "/api/v1/auth"
+// RefreshCookiePath limits the refresh cookie to the AuthService RPCs (Refresh, Logout) as the
+// browser sees them: the web apps proxy /rpc/* to the API.
+const RefreshCookiePath = "/rpc/lms.v1.AuthService"
+
+// LegacyRefreshCookiePath is where the REST API kept the refresh cookie; Logout clears it.
+const LegacyRefreshCookiePath = "/api/v1/auth"
 
 // CookieFactory builds auth cookies with consistent security attributes.
 type CookieFactory struct {
 	Domain string
 	Secure bool
+}
+
+// Session returns the access and refresh cookies of a signed-in session.
+func (f CookieFactory) Session(app, accessToken, refreshToken string, accessTTL, refreshTTL time.Duration) []http.Cookie {
+	return []http.Cookie{
+		f.Make(AccessCookieName(app), accessToken, "/", accessTTL),
+		f.Make(RefreshCookieName(app), refreshToken, RefreshCookiePath, refreshTTL),
+	}
 }
 
 func (f CookieFactory) Make(name, value, path string, maxAge time.Duration) http.Cookie {

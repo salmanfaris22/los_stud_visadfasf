@@ -1,0 +1,201 @@
+/*
+ * Public website skin (light SaaS look): white paper with a faint square grid, a soft
+ * pink / lilac / sky / peach glow, ink type and one violet for actions.
+ * Scoped to .site-skin so the student portal and the admin keep their own design.
+ * --site-violet can be replaced by the CMS brand colour (set inline by the site layout).
+ */
+.site-skin {
+  --site-violet: #6d45f5;
+  --site-violet-soft: color-mix(in oklab, var(--site-violet) 8%, #ffffff);
+  --site-violet-line: color-mix(in oklab, var(--site-violet) 22%, #ffffff);
+  --site-grid: #efedf6;
+  --site-cell: #f2eeff;
+  --site-tile: #fbfaff;
+  --site-butter: #fff4c9;
+  --site-butter-strong: #ffe27a;
+  --site-butter-ink: #3b3216;
+  --site-rose: #e8679c;
+  --site-glow-1: rgb(244 178 230 / 0.72);
+  --site-glow-2: rgb(196 176 255 / 0.62);
+  --site-glow-3: rgb(190 216 255 / 0.6);
+  --site-glow-4: rgb(255 222 196 / 0.6);
+  --site-shadow: 35 24 84;
+
+  --background: #ffffff;
+  --foreground: #19171f;
+  --card: #ffffff;
+  --card-foreground: #19171f;
+  --popover: #ffffff;
+  --popover-foreground: #19171f;
+  --primary: #19171f;
+  --primary-foreground: #ffffff;
+  --signal: var(--site-violet);
+  --signal-strong: color-mix(in oklab, var(--site-violet) 86%, #000000);
+  --signal-foreground: #ffffff;
+  --secondary: #f4f2fa;
+  --secondary-foreground: #19171f;
+  --muted: #f4f2f9;
+  --muted-foreground: #5d5a6b;
+  --accent: #f5f2ff;
+  --accent-foreground: #19171f;
+  --border: #ebe9f2;
+  --input: #dedbe8;
+  --ring: var(--site-violet);
+  --shadow-rgb: 35 24 84;
+
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.dark .site-skin {
+  --site-violet: #8b6bff;
+  --site-violet-soft: color-mix(in oklab, var(--site-violet) 14%, #0f0d17);
+  --site-violet-line: color-mix(in oklab, var(--site-violet) 35%, #0f0d17);
+  --site-grid: rgb(255 255 255 / 0.05);
+  --site-cell: rgb(139 107 255 / 0.1);
+  --site-tile: #141120;
+  --site-butter: #2f2710;
+  --site-butter-strong: #ffd75a;
+  --site-butter-ink: #ffe7a1;
+  --site-glow-1: rgb(214 92 196 / 0.22);
+  --site-glow-2: rgb(124 92 255 / 0.28);
+  --site-glow-3: rgb(70 120 255 / 0.2);
+  --site-glow-4: rgb(255 150 90 / 0.14);
+  --site-shadow: 0 0 0;
+
+  --background: #0f0d17;
+  --foreground: #f3f1f9;
+  --card: #17141f;
+  --card-foreground: #f3f1f9;
+  --popover: #1b1825;
+  --popover-foreground: #f3f1f9;
+  --primary: #f3f1f9;
+  --primary-foreground: #0f0d17;
+  --signal-foreground: #ffffff;
+  --secondary: #1f1b2b;
+  --secondary-foreground: #f3f1f9;
+  --muted: #1c1928;
+  --muted-foreground: #a7a2b8;
+  --accent: #221d33;
+  --accent-foreground: #f3f1f9;
+  --border: #29253a;
+  --input: #34304a;
+  --shadow-rgb: 0 0 0;
+}
+
+/* Keep the page colour behind overscroll in step with the skin. */
+body:has(.site-skin) {
+  background: #ffffff;
+}
+html.dark body:has(.site-skin) {
+  background: #0f0d17;
+}
+
+/* The website uses Mona Sans at its normal width: compact, heavy headlines. */
+.site-skin .font-display {
+  font-stretch: 100%;
+  letter-spacing: -0.035em;
+}
+
+/* Component classes live in Tailwind's components layer, so utilities such as `hidden` still override them. */
+@layer components {
+  /* Square grid. Lines sit on the page centre line, every 48px, so filled cells can be placed on it. */
+  .site-grid {
+    background-image:
+      linear-gradient(to right, var(--site-grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--site-grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: calc(50% - 24px) 0;
+  }
+
+  /* Soft four-colour glow behind the hero. */
+  .site-glow {
+    background:
+      radial-gradient(34% 30% at 52% 44%, var(--site-glow-1), transparent 70%),
+      radial-gradient(30% 28% at 60% 30%, var(--site-glow-2), transparent 70%),
+      radial-gradient(28% 34% at 26% 66%, var(--site-glow-3), transparent 70%),
+      radial-gradient(30% 30% at 76% 62%, var(--site-glow-4), transparent 70%);
+    filter: blur(36px);
+  }
+
+  /* Buttons used on the website (links styled as pills). */
+  .site-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  }
+  .site-btn:active {
+    transform: scale(0.98);
+  }
+  .site-btn:focus-visible {
+    outline: 2px solid var(--site-violet);
+    outline-offset: 3px;
+  }
+  .site-btn svg {
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+  }
+  .site-btn-md {
+    height: 2.875rem;
+    padding: 0 1.375rem;
+    font-size: 0.9375rem;
+  }
+  .site-btn-lg {
+    height: 3.75rem;
+    padding: 0 1.75rem;
+    font-size: 1.1875rem;
+  }
+  .site-btn-violet {
+    color: #ffffff;
+    /* white text keeps at least 4.5:1 against the lighter top of the gradient */
+    background: linear-gradient(180deg, color-mix(in oklab, var(--site-violet) 85%, #ffffff) 0%, var(--site-violet) 100%);
+    box-shadow:
+      0 12px 28px -10px color-mix(in oklab, var(--site-violet) 75%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 -2px 0 rgb(0 0 0 / 0.12);
+  }
+  .dark .site-btn-violet {
+    /* the dark-mode violet is lighter (for text on dark ground), so the button uses a deeper mix */
+    background: linear-gradient(180deg, color-mix(in oklab, var(--site-violet) 92%, #000000) 0%, color-mix(in oklab, var(--site-violet) 74%, #000000) 100%);
+  }
+  .site-btn-violet:hover {
+    box-shadow:
+      0 16px 34px -10px color-mix(in oklab, var(--site-violet) 85%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 -2px 0 rgb(0 0 0 / 0.12);
+  }
+  .site-btn-light {
+    color: var(--foreground);
+    background: var(--card);
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 8px 22px -12px rgb(var(--site-shadow) / 0.28);
+  }
+  .site-btn-light:hover {
+    background: var(--site-violet-soft);
+  }
+  .site-btn-white {
+    color: color-mix(in oklab, var(--site-violet) 80%, #000000);
+    background: #ffffff;
+    box-shadow: 0 12px 28px -12px rgb(20 10 60 / 0.45);
+  }
+  .site-btn-white:hover {
+    background: #f6f3ff;
+  }
+
+  /* Floating surfaces (hero cards, phone) get a soft, tinted, two-layer shadow. */
+  .site-float {
+    box-shadow:
+      0 1px 2px rgb(var(--site-shadow) / 0.06),
+      0 24px 60px -24px rgb(var(--site-shadow) / 0.28);
+  }
+  .dark .site-float {
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.7);
+  }
+}

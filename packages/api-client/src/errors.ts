@@ -1,3 +1,5 @@
+import { ConnectError } from "@connectrpc/connect";
+
 type Problem = { title?: string; detail?: string; status?: number; errors?: { message?: string; location?: string }[] };
 
 function field(location?: string) {
@@ -6,10 +8,11 @@ function field(location?: string) {
   return name ? `${name.replace(/_/g, " ")}: ` : "";
 }
 
-/** Turns an API problem (RFC 9457) or thrown error into a short message for toasts and forms. */
+/** Turns an API problem (RFC 9457), a gRPC error or a thrown error into a short message for toasts and forms. */
 export function errorMessage(err: unknown, fallback = "Something went wrong"): string {
   if (!err) return fallback;
   if (typeof err === "string") return err;
+  if (err instanceof ConnectError) return err.rawMessage || fallback;
   const p = err as Problem;
   const first = p.errors?.[0];
   if (first?.message) return `${field(first.location)}${first.message}`;

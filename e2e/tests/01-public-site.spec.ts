@@ -23,10 +23,10 @@ test.describe("Public website", () => {
   });
 
   test("enquiry form creates a lead", async ({ page }) => {
+    // v2 (sales/CRM) enquiries are phone-first: name + phone / WhatsApp.
     await page.goto(`${STUDENT_URL}/contact`);
     await page.getByLabel("Your name").fill("Playwright Visitor");
-    await page.getByLabel("Email").fill(`visitor-${Date.now()}@example.com`);
-    await page.getByLabel("Message").fill("Do you have weekend batches?");
+    await page.getByLabel("Phone / WhatsApp").fill(`+91 9${String(Date.now()).slice(-9)}`);
     await page.getByRole("button", { name: "Send enquiry" }).click();
     await expect(page.getByText(/our team will contact you/i)).toBeVisible();
   });

@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 export function Providers({ children }: { children: React.ReactNode }) {
   const [qc] = React.useState(() => new QueryClient({ defaultOptions: { queries: { staleTime: 20_000, refetchOnWindowFocus: false, retry: 1 } } }));
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="light">
       <QueryClientProvider client={qc}>
         <ApiProvider api={api}>
           <ConfirmProvider>

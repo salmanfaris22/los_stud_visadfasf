@@ -2,21 +2,37 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, useMotionValueEvent, useScroll } from "motion/react";
-import { GraduationCap, Menu, X } from "lucide-react";
-import { Button, ThemeToggle, cn } from "@lms/ui";
-import { $api } from "@/lib/api";
+import { motion } from "motion/react";
+import { Menu, X } from "lucide-react";
+import { AuthService, useRpcQuery } from "@lms/api-client";
+import { ThemeToggle, cn } from "@lms/ui";
 
-const LINKS = [{ href: "/courses", label: "Courses" }, { href: "/blog", label: "Blog" }, { href: "/contact", label: "Contact" }];
+const LINKS = [
+  { href: "/#features", label: "Features" },
+  { href: "/courses", label: "Courses" },
+  { href: "/blog", label: "Blog" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+];
+
+/** Default mark: a play button inside a ring (video lessons). */
+export function SiteMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={cn("size-8", className)} aria-hidden>
+      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" strokeWidth="3" />
+      <path d="M13.2 11.2v9.6c0 .8.86 1.28 1.54.86l7.6-4.8a1 1 0 0 0 0-1.72l-7.6-4.8c-.68-.42-1.54.06-1.54.86Z" fill="currentColor" />
+    </svg>
+  );
+}
 
 export function Brand({ name, logo }: { name: string; logo?: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2 font-display text-lg font-bold">
+    <Link href="/" className="flex items-center gap-2 rounded-full text-[22px] font-bold tracking-[-0.035em] text-[var(--site-violet)]">
       {logo ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={logo} alt={name} className="h-8 w-auto" />
+        <img src={logo} alt="" className="h-8 w-auto" />
       ) : (
-        <span className="rounded-xl bg-gradient-to-br from-primary to-fuchsia-500 p-1.5 text-white shadow-lg shadow-primary/30"><GraduationCap className="size-5" /></span>
+        <SiteMark />
       )}
       <span>{name}</span>
     </Link>
@@ -25,41 +41,66 @@ export function Brand({ name, logo }: { name: string; logo?: string }) {
 
 export function Navbar({ name, logo, signup }: { name: string; logo?: string; signup: boolean }) {
   const path = usePathname();
-  const { scrollY } = useScroll();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 12));
-  const me = $api.useQuery("get", "/api/v1/auth/me", {}, { retry: false, staleTime: 60_000 });
+  const me = useRpcQuery(AuthService.method.getMe, {}, { retry: false, staleTime: 60_000, select: (r) => r.me });
+
+  React.useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  React.useEffect(() => setOpen(false), [path]);
+
+  const active = (href: string) => !href.startsWith("/#") && path.startsWith(href);
+
   return (
-    <motion.header initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}
-      className={cn("fixed inset-x-0 top-0 z-50 transition-all", scrolled ? "border-b bg-background/75 py-2 backdrop-blur-xl" : "py-4")}>
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 sm:px-6">
+    <header className={cn("fixed inset-x-0 top-0 z-50 bg-background/85 backdrop-blur-xl transition-shadow", scrolled && "shadow-[0_1px_0_var(--border),0_8px_24px_-18px_rgb(var(--site-shadow)/0.35)]")}>
+      <div className="mx-auto grid h-[72px] max-w-7xl grid-cols-[1fr_auto] items-center gap-6 px-4 sm:px-6 md:h-[76px] lg:grid-cols-[1fr_auto_1fr]">
         <Brand name={name} logo={logo} />
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className={cn("rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground", path.startsWith(l.href) && "text-foreground")}>{l.label}</Link>
+            <Link key={l.href} href={l.href} aria-current={active(l.href) ? "page" : undefined}
+              className={cn("rounded-full px-4 py-2 text-[16px] font-medium transition-colors hover:text-foreground", active(l.href) ? "text-foreground" : "text-foreground/70")}>
+              {l.label}
+            </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center justify-end gap-2">
           <ThemeToggle />
           {me.data ? (
-            <Button asChild><Link href="/learn">My learning</Link></Button>
+            <Link href="/learn" className="site-btn site-btn-md site-btn-violet hidden sm:inline-flex">My learning</Link>
           ) : (
             <>
-              <Button variant="ghost" asChild className="hidden sm:inline-flex"><Link href="/login">Sign in</Link></Button>
-              {signup && <Button asChild className="hidden sm:inline-flex"><Link href="/register">Get started</Link></Button>}
+              <Link href="/login" className="site-btn site-btn-md site-btn-light hidden sm:inline-flex">Sign in</Link>
+              {signup && <Link href="/register" className="site-btn site-btn-md site-btn-violet hidden sm:inline-flex">Get started</Link>}
             </>
           )}
-          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(!open)} aria-label="Menu">{open ? <X /> : <Menu />}</Button>
+          <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-label={open ? "Close menu" : "Menu"}
+            className="flex size-10 items-center justify-center rounded-full text-foreground hover:bg-accent focus-visible:outline-2 focus-visible:outline-[var(--site-violet)] lg:hidden">
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
         </div>
       </div>
       {open && (
-        <motion.nav initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mx-4 mt-2 grid gap-1 rounded-2xl border bg-popover p-3 shadow-xl md:hidden">
-          {LINKS.map((l) => <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-lg px-3 py-2 text-sm hover:bg-accent">{l.label}</Link>)}
-          {!me.data && <Link href="/login" className="rounded-lg px-3 py-2 text-sm hover:bg-accent">Sign in</Link>}
-          {!me.data && signup && <Button asChild className="mt-1"><Link href="/register">Get started</Link></Button>}
+        <motion.nav aria-label="Mobile" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }}
+          className="mx-4 mb-3 grid gap-1 rounded-[24px] border bg-popover p-3 shadow-xl lg:hidden">
+          {LINKS.map((l) => (
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="rounded-full px-4 py-2.5 text-[15px] font-medium hover:bg-accent">{l.label}</Link>
+          ))}
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {me.data ? (
+              <Link href="/learn" className="site-btn site-btn-md site-btn-violet col-span-2">My learning</Link>
+            ) : (
+              <>
+                <Link href="/login" className={cn("site-btn site-btn-md site-btn-light", !signup && "col-span-2")}>Sign in</Link>
+                {signup && <Link href="/register" className="site-btn site-btn-md site-btn-violet">Get started</Link>}
+              </>
+            )}
+          </div>
         </motion.nav>
       )}
-    </motion.header>
+    </header>
   );
 }

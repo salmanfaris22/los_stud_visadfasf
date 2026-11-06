@@ -107,7 +107,9 @@ func (s *RoleService) Create(ctx context.Context, actor *auth.Principal, in dto.
 	var role repository.Role
 	err := s.tx(ctx, func(q *repository.Queries) error {
 		var err error
-		if role, err = q.CreateRole(ctx, repository.CreateRoleParams{Name: strings.TrimSpace(in.Name), Description: in.Description, Scoped: in.Scoped}); err != nil {
+		// sales_scope is required by the table; roles made without one see all sales data (the column default).
+		params := repository.CreateRoleParams{Name: strings.TrimSpace(in.Name), Description: in.Description, Scoped: in.Scoped, SalesScope: orDefault(in.SalesScope, auth.SalesAll)}
+		if role, err = q.CreateRole(ctx, params); err != nil {
 			return err
 		}
 		return SaveRolePermissions(ctx, q, role.ID, in.Permissions)
@@ -125,8 +127,13 @@ func (s *RoleService) Update(ctx context.Context, actor *auth.Principal, id uuid
 	}
 	var role repository.Role
 	err := s.tx(ctx, func(q *repository.Queries) error {
-		var err error
-		if role, err = q.UpdateRole(ctx, repository.UpdateRoleParams{ID: id, Name: strings.TrimSpace(in.Name), Description: in.Description, Scoped: in.Scoped}); err != nil {
+		// An update without sales_scope (e.g. from the v1 roles page) keeps the role's current one.
+		cur, err := q.GetRole(ctx, id)
+		if err != nil {
+			return err
+		}
+		params := repository.UpdateRoleParams{ID: id, Name: strings.TrimSpace(in.Name), Description: in.Description, Scoped: in.Scoped, SalesScope: orDefault(in.SalesScope, cur.SalesScope)}
+		if role, err = q.UpdateRole(ctx, params); err != nil {
 			return err
 		}
 		return SaveRolePermissions(ctx, q, id, in.Permissions)

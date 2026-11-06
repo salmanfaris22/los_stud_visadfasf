@@ -5,23 +5,24 @@ import { Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-[background-color,box-shadow,transform,color] duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+        default: "bg-signal text-signal-foreground shadow-[inset_0_-2px_0_rgb(0_0_0/0.12),0_1px_2px_rgb(var(--shadow-rgb)/0.12)] hover:bg-signal-strong",
+        ink: "bg-ink text-white shadow-sm hover:bg-ink/85",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
-        outline: "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+        outline: "border border-input bg-card shadow-xs hover:border-foreground/25 hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "h-auto rounded-sm px-0 text-foreground underline decoration-signal decoration-2 underline-offset-4 hover:decoration-foreground",
         success: "bg-success text-white shadow-sm hover:bg-success/90",
       },
       size: {
-        default: "h-9 px-4",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-11 rounded-xl px-6 text-base",
-        icon: "size-9",
+        default: "h-10 px-5",
+        sm: "h-8 px-3.5 text-xs",
+        lg: "h-12 px-7 text-[15px]",
+        icon: "size-10",
         "icon-sm": "size-8",
       },
     },

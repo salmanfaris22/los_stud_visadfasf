@@ -34,7 +34,7 @@ function CourseBatches({ courseId }: { courseId: string }) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {q.data.items.map((b) => (
-        <Link key={b.id} href={`/batches/${b.id}`} className="rounded-xl border p-4 transition hover:border-primary/50">
+        <Link key={b.id} href={`/batches/${b.id}`} className="rounded-xl border p-4 transition hover:border-foreground/25">
           <div className="flex items-center gap-2"><span className="size-2.5 rounded-full" style={{ background: b.type_color }} /><span className="font-medium">{b.name}</span><StatusBadge status={b.status} className="ml-auto" /></div>
           <div className="mt-1 text-xs text-muted-foreground">{b.type_name} · {b.student_count} students{b.start_date && ` · starts ${b.start_date}`}</div>
         </Link>

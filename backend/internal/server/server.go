@@ -14,6 +14,7 @@ import (
 
 	"github.com/lms/backend/internal/handler"
 	"github.com/lms/backend/internal/middleware"
+	"github.com/lms/backend/internal/rpc"
 	"github.com/lms/backend/internal/service"
 )
 
@@ -24,19 +25,33 @@ type App struct {
 }
 
 // New builds the HTTP application. Deps may have nil infrastructure (used for OpenAPI generation).
+// It panics when the gRPC API is misconfigured (an RPC without an access rule).
 func New(d *service.Deps) *App {
 	huma.DefaultArrayNullable = false
 	svcs := service.New(d)
-
-	r := chi.NewMux()
-	r.Use(chimw.RequestID)
-	if d.Cfg.TrustProxy {
-		r.Use(chimw.RealIP)
+	rpcHandler, err := rpc.Handler(svcs, d)
+	if err != nil {
+		panic(err)
 	}
-	r.Use(chimw.Recoverer, middleware.SecurityHeaders, middleware.Logger,
+
+	root := chi.NewMux()
+	root.Use(chimw.RequestID)
+	if d.Cfg.TrustProxy {
+		root.Use(chimw.RealIP)
+	}
+	root.Use(chimw.Recoverer, middleware.SecurityHeaders, middleware.Logger,
 		middleware.CORS(d.Cfg.AdminAppURL, d.Cfg.StudentAppURL),
-		middleware.Authenticate(d.Tokens, svcs.Access),
-		chimw.Compress(5, "application/json", "text/csv", "text/calendar"))
+		middleware.Authenticate(d.Tokens, svcs.Access))
+
+	// gRPC / gRPC-Web / Connect. Native gRPC clients call /lms.v1.<Service>/<Method>; the web
+	// apps proxy /rpc/* here (the refresh cookie is scoped to that path). Connect negotiates its
+	// own compression, so these routes skip the gzip middleware below.
+	root.Handle("/lms.v1.*", rpcHandler)
+	root.Handle("/grpc.*", rpcHandler)
+	root.Handle("/rpc/*", http.StripPrefix("/rpc", rpcHandler))
+
+	// REST (huma), redirects, files and WebSocket: gzip JSON / CSV / ICS responses.
+	r := root.With(chimw.Compress(5, "application/json", "text/csv", "text/calendar"))
 	r.Get("/healthz", health(d))
 
 	cfg := huma.DefaultConfig("LMS API", "1.0.0")
@@ -51,7 +66,7 @@ func New(d *service.Deps) *App {
 
 	guards := middleware.NewGuards(api, d.Redis)
 	handler.Register(api, r, svcs, guards, d)
-	return &App{Router: r, API: api, Services: svcs}
+	return &App{Router: root, API: api, Services: svcs}
 }
 
 // health reports dependency status (used by Docker / load balancers).

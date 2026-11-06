@@ -13,10 +13,14 @@ import (
 // CORS allows the two frontends (and credentials) to call the API directly.
 func CORS(origins ...string) func(http.Handler) http.Handler {
 	return cors.Handler(cors.Options{
-		AllowedOrigins:   origins,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type", "Authorization", "X-LMS-App"},
-		ExposedHeaders:   []string{"Content-Disposition", "Retry-After"},
+		AllowedOrigins: origins,
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization", "X-LMS-App",
+			// Connect / gRPC-Web request headers.
+			"Connect-Protocol-Version", "Connect-Timeout-Ms", "Connect-Content-Encoding", "Connect-Accept-Encoding",
+			"Grpc-Timeout", "X-Grpc-Web", "X-User-Agent"},
+		ExposedHeaders: []string{"Content-Disposition", "Retry-After",
+			"Grpc-Status", "Grpc-Message", "Grpc-Status-Details-Bin", "Connect-Content-Encoding", "Connect-Accept-Encoding"},
 		AllowCredentials: true,
 		MaxAge:           600,
 	})

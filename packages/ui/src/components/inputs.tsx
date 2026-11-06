@@ -54,10 +54,10 @@ export function MultiSelect({ options, value, onChange, placeholder = "Select…
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button type="button" className={cn("flex min-h-9 w-full flex-wrap items-center gap-1 rounded-lg border border-input bg-transparent px-2 py-1 text-left text-sm shadow-xs", className)}>
+        <button type="button" className={cn("flex min-h-9 w-full flex-wrap items-center gap-1 rounded-xl border border-input bg-card px-2 py-1 text-left text-sm shadow-xs", className)}>
           {selected.length === 0 && <span className="px-1 text-muted-foreground">{placeholder}</span>}
           {selected.map((o) => (
-            <span key={o.value} className="inline-flex items-center gap-1 rounded-md bg-secondary px-1.5 py-0.5 text-xs">
+            <span key={o.value} className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium">
               {o.label}
               <X className="size-3 cursor-pointer opacity-60 hover:opacity-100" onClick={(e) => { e.stopPropagation(); toggle(o.value); }} />
             </span>
@@ -70,7 +70,7 @@ export function MultiSelect({ options, value, onChange, placeholder = "Select…
         <div className="max-h-64 overflow-y-auto">
           {shown.length === 0 && <p className="p-3 text-center text-sm text-muted-foreground">{emptyText}</p>}
           {shown.map((o) => {
-            const header = o.group && o.group !== lastGroup ? ((lastGroup = o.group), <div key={"g-" + o.group} className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase">{o.group}</div>) : null;
+            const header = o.group && o.group !== lastGroup ? ((lastGroup = o.group), <div key={"g-" + o.group} className="px-2 pt-2 pb-1 text-xs font-semibold text-muted-foreground">{o.group}</div>) : null;
             return (
               <React.Fragment key={o.value}>
                 {header}
@@ -110,10 +110,10 @@ export function FileDrop({ onFiles, accept, multiple = true, maxBytes, hint, dis
       onDragOver={(e) => { e.preventDefault(); setOver(true); }}
       onDragLeave={() => setOver(false)}
       onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled) take(e.dataTransfer.files); }}
-      className={cn("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-4 py-6 text-center transition", over ? "border-primary bg-primary/5" : "hover:border-primary/50 hover:bg-muted/40", disabled && "pointer-events-none opacity-50", className)}
+      className={cn("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[18px] border-2 border-dashed px-4 py-7 text-center transition", over ? "border-foreground bg-signal/10" : "hover:border-foreground/40 hover:bg-muted/40", disabled && "pointer-events-none opacity-50", className)}
     >
-      <UploadCloud className="size-7 text-primary" />
-      <div className="text-sm font-medium">Drop files here or <span className="text-primary">browse</span></div>
+      <span className="flex size-11 items-center justify-center rounded-full bg-signal/25 dark:text-signal"><UploadCloud className="size-5" /></span>
+      <div className="text-sm font-medium">Drop files here or <span className="underline decoration-signal decoration-2 underline-offset-4">browse</span></div>
       {hint && <div className="text-xs text-muted-foreground">{hint}</div>}
       <input ref={ref} type="file" hidden accept={accept} multiple={multiple} onChange={(e) => { take(e.target.files); e.target.value = ""; }} />
     </div>

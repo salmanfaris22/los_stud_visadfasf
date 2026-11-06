@@ -15,10 +15,10 @@ export function TBody({ className, ...props }: React.HTMLAttributes<HTMLTableSec
   return <tbody className={cn("[&_tr:last-child]:border-0", className)} {...props} />;
 }
 export function TR({ className, ...props }: React.HTMLAttributes<HTMLTableRowElement>) {
-  return <tr className={cn("border-b transition-colors hover:bg-muted/40", className)} {...props} />;
+  return <tr className={cn("border-b transition-colors hover:bg-muted/50", className)} {...props} />;
 }
 export function TH({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) {
-  return <th className={cn("h-10 px-3 text-left align-middle text-xs font-medium tracking-wide whitespace-nowrap text-muted-foreground uppercase", className)} {...props} />;
+  return <th className={cn("h-10 px-3 text-left align-middle text-xs font-semibold whitespace-nowrap text-muted-foreground", className)} {...props} />;
 }
 export function TD({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn("px-3 py-3 align-middle", className)} {...props} />;

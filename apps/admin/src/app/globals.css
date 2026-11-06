@@ -1,3 +1,106 @@
 @import "@lms/ui/styles.css";
 @source "../";
 @source "../../../../packages/shared/src";
+
+/*
+ * Admin "lilac" skin: soft grey page, white rounded cards, ink pill buttons,
+ * lavender for the current item and soft accents, and a floating ink icon rail.
+ * Only the admin app loads this file, so the student portal keeps the Transit look.
+ */
+:root {
+  --radius: 1rem;
+  --background: #ecebef;
+  --foreground: #16151b;
+  --card: #ffffff;
+  --card-foreground: #16151b;
+  --popover: #ffffff;
+  --popover-foreground: #16151b;
+  --primary: #141318;
+  --primary-foreground: #ffffff;
+  --signal: #d4c6f6;
+  --signal-strong: #b9a3f0;
+  --signal-foreground: #1d1633;
+  --secondary: #f3f2f6;
+  --secondary-foreground: #16151b;
+  --muted: #f3f2f6;
+  --muted-foreground: #6e6c78;
+  --accent: #f1eefa;
+  --accent-foreground: #16151b;
+  --border: #e9e7ee;
+  --input: #dddbe4;
+  --ring: #8e72e6;
+  --sidebar: #ffffff;
+  --rail: #141318;
+  --rail-foreground: #f4f3f7;
+  --rail-muted: #8f8d99;
+  --rail-accent: #25232c;
+  --rail-border: #2a2832;
+  --track: #e6e3ee;
+  --shadow-rgb: 40 32 70;
+
+  /* Lilac palette used by the dashboard cards */
+  --lilac: #cdbdf5;
+  --lilac-soft: #ece6fc;
+  --lilac-deep: #8e72e6;
+  --blush: #f6d3ea;
+  --blush-soft: #fbe9f4;
+  --mint-soft: #dcefdd;
+  --sky-soft: #dde8fb;
+
+  /* Headings: medium-weight, normal width, tight tracking */
+  --font-weight-extrabold: 600;
+}
+
+.dark {
+  --background: #0f0e13;
+  --foreground: #efedf5;
+  --card: #18171e;
+  --card-foreground: #efedf5;
+  --popover: #1d1c24;
+  --popover-foreground: #efedf5;
+  --primary: #efedf5;
+  --primary-foreground: #141318;
+  --signal: #b9a5f2;
+  --signal-strong: #cfc0f7;
+  --signal-foreground: #17112b;
+  --secondary: #22212a;
+  --secondary-foreground: #efedf5;
+  --muted: #201f27;
+  --muted-foreground: #9d9aaa;
+  --accent: #26232f;
+  --accent-foreground: #efedf5;
+  --border: #29272f;
+  --input: #34313d;
+  --ring: #b9a5f2;
+  --sidebar: #141318;
+  --rail: #060509;
+  --rail-foreground: #f4f3f7;
+  --rail-muted: #8f8d99;
+  --rail-accent: #1c1a22;
+  --rail-border: #222029;
+  --track: #2b2934;
+  --shadow-rgb: 0 0 0;
+
+  --lilac: #5b4a96;
+  --lilac-soft: #2a2440;
+  --lilac-deep: #b9a5f2;
+  --blush: #6b3f5f;
+  --blush-soft: #33232f;
+  --mint-soft: #1f2e24;
+  --sky-soft: #1d2638;
+}
+
+@layer base {
+  .font-display {
+    font-stretch: 100%;
+    letter-spacing: -0.025em;
+  }
+}
+
+/* Hide the rail scrollbar but keep it scrollable */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

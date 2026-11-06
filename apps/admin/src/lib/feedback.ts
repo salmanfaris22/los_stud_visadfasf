@@ -1,12 +1,12 @@
 "use client";
 import type { QueryClient } from "@tanstack/react-query";
-import { errorMessage } from "@lms/api-client";
+import { errorMessage, type InvalidateTarget } from "@lms/api-client";
 import { toast } from "@lms/ui";
 import { invalidate } from "./api";
 
 /** Standard mutation callbacks: toast, refresh affected lists, then run `after`. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function feedback<T = any>(qc: QueryClient, success: string | null, paths: string[], after?: (data: T) => void) {
+export function feedback<T = any>(qc: QueryClient, success: string | null, paths: InvalidateTarget[], after?: (data: T) => void) {
   return {
     onSuccess: (data: T) => {
       if (success) toast.success(success);

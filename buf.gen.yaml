@@ -1,0 +1,25 @@
+# `make gen` (or `pnpm gen:proto`) regenerates every client and server stub from proto/.
+version: v2
+managed:
+  enabled: true
+  disable:
+    - file_option: go_package
+      module: buf.build/bufbuild/protovalidate
+  override:
+    - file_option: go_package_prefix
+      value: github.com/lms/backend/gen
+plugins:
+  # Go messages + Connect handlers/clients (plugins pinned in backend/go.mod `tool`).
+  - local: ["go", "-C", "backend", "tool", "protoc-gen-go"]
+    out: backend/gen
+    opt: paths=source_relative
+  - local: ["go", "-C", "backend", "tool", "protoc-gen-connect-go"]
+    out: backend/gen
+    opt: paths=source_relative
+  # TypeScript messages + service descriptors for @connectrpc/connect(-query).
+  - local: protoc-gen-es
+    out: packages/api-client/src/gen
+    include_imports: true
+    opt:
+      - target=ts
+      - import_extension=none

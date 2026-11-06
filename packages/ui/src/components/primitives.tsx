@@ -13,9 +13,9 @@ import { cn, initials } from "../lib/utils";
 
 export function Avatar({ src, name, className }: { src?: string | null; name?: string | null; className?: string }) {
   return (
-    <AvatarPrimitive.Root className={cn("relative flex size-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-primary/80 to-fuchsia-500/80", className)}>
+    <AvatarPrimitive.Root className={cn("relative flex size-9 shrink-0 overflow-hidden rounded-full bg-foreground", className)}>
       {src ? <AvatarPrimitive.Image src={src} alt={name ?? ""} className="aspect-square size-full object-cover" /> : null}
-      <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-xs font-semibold text-white">{initials(name)}</AvatarPrimitive.Fallback>
+      <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-xs font-bold text-signal">{initials(name)}</AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
   );
 }
@@ -24,7 +24,7 @@ export const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimiti
   ({ className, ...props }, ref) => (
     <CheckboxPrimitive.Root
       ref={ref}
-      className={cn("peer size-4 shrink-0 rounded-[5px] border border-input shadow-xs transition data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground disabled:opacity-50", className)}
+      className={cn("peer size-4 shrink-0 rounded-[5px] border border-input shadow-xs transition data-[state=checked]:border-foreground data-[state=checked]:bg-foreground data-[state=checked]:text-background data-[state=indeterminate]:border-foreground data-[state=indeterminate]:bg-foreground data-[state=indeterminate]:text-background disabled:opacity-50", className)}
       {...props}
     >
       <CheckboxPrimitive.Indicator className="flex items-center justify-center">
@@ -39,10 +39,10 @@ export const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitive.R
   ({ className, ...props }, ref) => (
     <SwitchPrimitive.Root
       ref={ref}
-      className={cn("inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition data-[state=checked]:bg-primary data-[state=unchecked]:bg-input disabled:opacity-50", className)}
+      className={cn("inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition data-[state=checked]:bg-foreground data-[state=unchecked]:bg-input disabled:opacity-50", className)}
       {...props}
     >
-      <SwitchPrimitive.Thumb className="pointer-events-none block size-4 rounded-full bg-white shadow transition-transform data-[state=checked]:translate-x-4" />
+      <SwitchPrimitive.Thumb className="pointer-events-none block size-5 rounded-full bg-card shadow transition-transform data-[state=checked]:translate-x-4 data-[state=checked]:bg-signal" />
     </SwitchPrimitive.Root>
   ),
 );
@@ -50,8 +50,8 @@ Switch.displayName = "Switch";
 
 export function Progress({ value = 0, className, indicatorClassName }: { value?: number; className?: string; indicatorClassName?: string }) {
   return (
-    <ProgressPrimitive.Root className={cn("relative h-2 w-full overflow-hidden rounded-full bg-muted", className)} value={value}>
-      <ProgressPrimitive.Indicator className={cn("h-full bg-primary transition-all duration-500", indicatorClassName)} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
+    <ProgressPrimitive.Root className={cn("relative h-2 w-full overflow-hidden rounded-full bg-track", className)} value={value}>
+      <ProgressPrimitive.Indicator className={cn("h-full rounded-full bg-foreground transition-all duration-700 dark:bg-signal", indicatorClassName)} style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
     </ProgressPrimitive.Root>
   );
 }
@@ -62,12 +62,12 @@ export function Separator({ className, orientation = "horizontal" }: { className
 
 export const Tabs = TabsPrimitive.Root;
 export function TabsList({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
-  return <TabsPrimitive.List className={cn("inline-flex h-9 items-center gap-1 rounded-lg bg-muted p-1 text-muted-foreground", className)} {...props} />;
+  return <TabsPrimitive.List className={cn("inline-flex h-10 items-center gap-1 rounded-full bg-muted p-1 text-muted-foreground", className)} {...props} />;
 }
 export function TabsTrigger({ className, ...props }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
-      className={cn("inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium transition hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm [&_svg]:size-4", className)}
+      className={cn("inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-semibold transition hover:text-foreground data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm [&_svg]:size-4", className)}
       {...props}
     />
   );
@@ -82,7 +82,7 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
       <TooltipPrimitive.Root>
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Portal>
-          <TooltipPrimitive.Content side={side} sideOffset={6} className="z-50 rounded-md bg-foreground px-2 py-1 text-xs text-background shadow">
+          <TooltipPrimitive.Content side={side} sideOffset={6} className="z-50 animate-fade-in rounded-lg bg-foreground px-2.5 py-1.5 text-xs font-medium text-background shadow-lg">
             {content}
           </TooltipPrimitive.Content>
         </TooltipPrimitive.Portal>
@@ -96,15 +96,15 @@ export const PopoverTrigger = PopoverPrimitive.Trigger;
 export function PopoverContent({ className, align = "end", ...props }: React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>) {
   return (
     <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content align={align} sideOffset={8} className={cn("z-50 w-80 rounded-xl border bg-popover p-3 text-popover-foreground shadow-xl outline-none", className)} {...props} />
+      <PopoverPrimitive.Content align={align} sideOffset={8} className={cn("z-50 w-80 animate-pop-in rounded-[18px] border bg-popover p-3 text-popover-foreground shadow-xl outline-none", className)} {...props} />
     </PopoverPrimitive.Portal>
   );
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded-md bg-muted", className)} />;
+  return <div className={cn("skeleton-shimmer animate-shimmer rounded-lg", className)} />;
 }
 
 export function Spinner({ className }: { className?: string }) {
-  return <div className={cn("size-5 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-primary", className)} />;
+  return <div className={cn("size-5 animate-spin rounded-full border-2 border-muted-foreground/25 border-t-foreground dark:border-t-signal", className)} />;
 }

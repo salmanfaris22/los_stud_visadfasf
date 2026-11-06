@@ -80,7 +80,7 @@ export default function SubmissionPage() {
               <CardHeader><CardTitle>All attempts</CardTitle></CardHeader>
               <CardContent className="space-y-2">
                 {history.map((h) => (
-                  <Link key={h.id} href={`/submissions/${h.id}`} className={cn("flex items-center gap-3 rounded-lg border p-3 text-sm", h.id === current.id && "border-primary bg-primary/5")}>
+                  <Link key={h.id} href={`/submissions/${h.id}`} className={cn("flex items-center gap-3 rounded-lg border p-3 text-sm", h.id === current.id && "border-foreground bg-signal/15")}>
                     <span className="font-medium">#{h.attempt}</span><StatusBadge status={h.status} />
                     <span className="flex-1 truncate text-muted-foreground">{h.feedback}</span>
                     <span className="text-xs text-muted-foreground">{timeAgo(h.created_at)}</span>

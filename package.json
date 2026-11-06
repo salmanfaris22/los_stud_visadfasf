@@ -11,8 +11,10 @@
     "e2e": "pnpm --filter @lms/e2e test"
   },
   "devDependencies": {
+    "@bufbuild/buf": "1.75.0",
+    "@bufbuild/protoc-gen-es": "^2.16.0",
+    "prettier": "^3.5.0",
     "turbo": "^2.5.0",
-    "typescript": "^5.8.0",
-    "prettier": "^3.5.0"
+    "typescript": "^5.8.0"
   }
 }

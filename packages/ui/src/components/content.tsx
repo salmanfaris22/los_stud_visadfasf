@@ -10,7 +10,7 @@ export function CodeBlock({ code, language, className }: { code: string; languag
   const [copied, setCopied] = React.useState(false);
   const html = React.useMemo(() => highlight(code), [code]);
   return (
-    <div className={cn("group relative overflow-hidden rounded-xl border bg-muted/60", className)}>
+    <div className={cn("group relative overflow-hidden rounded-[16px] border bg-muted/60", className)}>
       <div className="flex items-center justify-between border-b px-3 py-1.5 text-xs text-muted-foreground">
         <span className="font-mono">{language || "code"}</span>
         <button

@@ -37,10 +37,10 @@ export default function LivePage() {
         <div className="grid gap-3">
           {list.data?.items.map((l) => (
             <Link key={l.id} href={`/live/${l.id}`}>
-              <Card className="flex flex-wrap items-center gap-4 p-4 transition hover:border-primary/50">
-                <div className="flex size-14 flex-col items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <span className="text-[10px] font-semibold uppercase">{new Date(l.starts_at).toLocaleDateString(undefined, { month: "short" })}</span>
-                  <span className="text-xl leading-none font-bold">{new Date(l.starts_at).getDate()}</span>
+              <Card className="flex flex-wrap items-center gap-4 p-4 transition hover:border-foreground/25">
+                <div className="flex w-24 flex-col justify-center rounded-2xl bg-rail px-3.5 py-2.5 text-rail-foreground">
+                  <span className="font-display text-lg leading-none font-extrabold tabular-nums">{new Date(l.starts_at).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</span>
+                  <span className="mt-1 text-[11px] font-semibold text-rail-muted">{new Date(l.starts_at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold">{l.title}</div>

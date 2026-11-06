@@ -1,0 +1,12 @@
+# Protobuf workspace: the API contract shared by the Go server, the web apps and the phone apps.
+version: v2
+modules:
+  - path: proto
+deps:
+  - buf.build/bufbuild/protovalidate
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

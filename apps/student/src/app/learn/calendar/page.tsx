@@ -17,8 +17,8 @@ export default function CalendarPage() {
   ];
   return (
     <div className="mx-auto max-w-6xl">
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Calendar</h1>
-      <p className="mb-6 text-muted-foreground"><span className="text-primary">■</span> Live classes · <span className="text-warning">■</span> Task deadlines</p>
+      <h1 className="font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">Calendar</h1>
+      <p className="mb-6 text-muted-foreground"><span className="text-foreground">■</span> Live classes · <span className="text-warning">■</span> Task deadlines</p>
       <MonthCalendar month={month} onMonth={setMonth} events={events} onSelect={(e) => router.push((e as { href?: string }).href ?? "/learn")} />
     </div>
   );

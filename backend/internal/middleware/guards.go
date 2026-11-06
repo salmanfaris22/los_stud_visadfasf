@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -85,20 +86,28 @@ func (g *Guards) Perm(module, action string) Fn {
 // RateLimit allows `limit` calls per window per client IP for a named bucket (Redis fixed window).
 func (g *Guards) RateLimit(name string, limit int, window time.Duration) Fn {
 	return func(ctx huma.Context, next func(huma.Context)) {
-		if g.redis != nil {
-			ip := auth.MetaFrom(ctx.Context()).IP
-			key := fmt.Sprintf("rl:%s:%s:%d", name, ip, time.Now().Unix()/int64(window.Seconds()))
-			if n, err := g.redis.Incr(ctx.Context(), key).Result(); err == nil {
-				if n == 1 {
-					g.redis.Expire(ctx.Context(), key, window)
-				}
-				if n > int64(limit) {
-					ctx.SetHeader("Retry-After", fmt.Sprint(int(window.Seconds())))
-					g.deny(ctx, http.StatusTooManyRequests, "too many requests, try again later")
-					return
-				}
-			}
+		if !AllowRate(ctx.Context(), g.redis, name, auth.MetaFrom(ctx.Context()).IP, limit, window) {
+			ctx.SetHeader("Retry-After", fmt.Sprint(int(window.Seconds())))
+			g.deny(ctx, http.StatusTooManyRequests, "too many requests, try again later")
+			return
 		}
 		next(ctx)
 	}
+}
+
+// AllowRate counts one call in a Redis fixed window and reports whether the caller is still
+// within `limit` calls per `window` for the bucket. Without Redis every call is allowed.
+func AllowRate(ctx context.Context, rdb *redis.Client, bucket, ip string, limit int, window time.Duration) bool {
+	if rdb == nil {
+		return true
+	}
+	key := fmt.Sprintf("rl:%s:%s:%d", bucket, ip, time.Now().Unix()/int64(window.Seconds()))
+	n, err := rdb.Incr(ctx, key).Result()
+	if err != nil {
+		return true
+	}
+	if n == 1 {
+		rdb.Expire(ctx, key, window)
+	}
+	return n <= int64(limit)
 }

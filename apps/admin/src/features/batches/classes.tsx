@@ -29,7 +29,7 @@ function Roster({ classId, open, onOpenChange }: { classId: string; open: boolea
               <div className="flex gap-1">
                 {STATUSES.map((s) => (
                   <button key={s} type="button" onClick={() => setMarks({ ...marks, [r.student_id]: s })}
-                    className={cn("rounded-md border px-2 py-1 text-xs capitalize transition", marks[r.student_id] === s ? "border-primary bg-primary text-primary-foreground" : "hover:bg-accent")}>{s}</button>
+                    className={cn("rounded-md border px-2 py-1 text-xs capitalize transition", marks[r.student_id] === s ? "border-foreground bg-foreground text-background" : "hover:bg-accent")}>{s}</button>
                 ))}
               </div>
             </div>

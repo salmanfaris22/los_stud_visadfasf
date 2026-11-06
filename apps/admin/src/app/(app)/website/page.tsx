@@ -27,7 +27,7 @@ export default function WebsitePage() {
         <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
           <nav className="flex gap-1 overflow-x-auto lg:flex-col">
             {BLOCKS.map((b) => (
-              <button key={b.key} onClick={() => setActive(b.key)} className={cn("rounded-lg px-3 py-2 text-left text-sm whitespace-nowrap transition", active === b.key ? "bg-primary/12 font-medium text-primary" : "text-muted-foreground hover:bg-accent")}>{b.label}</button>
+              <button key={b.key} onClick={() => setActive(b.key)} className={cn("rounded-lg px-3 py-2 text-left text-sm whitespace-nowrap transition", active === b.key ? "bg-muted font-semibold text-foreground" : "text-muted-foreground hover:bg-accent")}>{b.label}</button>
             ))}
           </nav>
           <Card>

@@ -1,4 +1,4 @@
-// Command api runs the LMS HTTP server (REST + WebSocket + background jobs).
+// Command api runs the LMS server (gRPC/Connect + REST + WebSocket + background jobs).
 package main
 
 import (
@@ -100,8 +100,13 @@ func run() error {
 		go jobs.Run(ctx, app.Services, deps)
 	}
 
-	srv := &http.Server{Addr: cfg.HTTPAddr, Handler: app.Router, ReadHeaderTimeout: 10 * time.Second, ReadTimeout: 60 * time.Second,
-		WriteTimeout: 120 * time.Second, IdleTimeout: 120 * time.Second}
+	// HTTP/1.1 for browsers and the Connect protocol, plus cleartext HTTP/2 (h2c) so native gRPC
+	// clients (grpcurl, the phone app in dev) work without TLS; production terminates TLS at the proxy.
+	var protocols http.Protocols
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+	srv := &http.Server{Addr: cfg.HTTPAddr, Handler: app.Router, Protocols: &protocols, ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout: 60 * time.Second, WriteTimeout: 120 * time.Second, IdleTimeout: 120 * time.Second}
 	errCh := make(chan error, 1)
 	go func() {
 		slog.Info("api listening", "addr", cfg.HTTPAddr, "docs", cfg.APIPublicURL+"/docs")

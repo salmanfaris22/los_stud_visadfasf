@@ -2,57 +2,96 @@
 @source ".";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Transit design system.
+ * Day service (light) is the default; night service (dark) is the toggle.
+ * - primary  = ink in light, yellow in dark: text, icons, rings, quiet fills (always readable)
+ * - signal   = pencil yellow in both: main actions, the current stop, active markers
+ * - line-1…8 = course line colours (picked per course by a hash of its id)
+ */
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.985 0.002 270);
-  --foreground: oklch(0.2 0.02 270);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.02 270);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.02 270);
-  --primary: oklch(0.55 0.22 277);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.95 0.008 270);
-  --secondary-foreground: oklch(0.27 0.02 270);
-  --muted: oklch(0.955 0.006 270);
-  --muted-foreground: oklch(0.5 0.02 270);
-  --accent: oklch(0.94 0.03 277);
-  --accent-foreground: oklch(0.32 0.09 277);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.6 0.15 152);
-  --warning: oklch(0.72 0.16 70);
-  --info: oklch(0.62 0.14 235);
-  --border: oklch(0.91 0.008 270);
-  --input: oklch(0.89 0.01 270);
-  --ring: oklch(0.55 0.22 277);
-  --sidebar: oklch(0.975 0.004 270);
+  --radius: 0.875rem;
+  --background: #f4f5f7;
+  --foreground: #15171e;
+  --card: #ffffff;
+  --card-foreground: #15171e;
+  --popover: #ffffff;
+  --popover-foreground: #15171e;
+  --primary: #15171e;
+  --primary-foreground: #ffffff;
+  --signal: #ffc72c;
+  --signal-strong: #f5b800;
+  --signal-foreground: #15171e;
+  --secondary: #eaecf0;
+  --secondary-foreground: #15171e;
+  --muted: #eceef2;
+  --muted-foreground: #5e6470;
+  --accent: #eef0f3;
+  --accent-foreground: #15171e;
+  --destructive: #d92d20;
+  --destructive-foreground: #ffffff;
+  --success: #077a3c;
+  --warning: #b45309;
+  --info: #1d5fd1;
+  --border: #e3e5ea;
+  --input: #d6d9e0;
+  --ring: #15171e;
+  --sidebar: #ffffff;
+  /* admin "control room" rail: ink in both themes */
+  --rail: #11141d;
+  --rail-foreground: #eef0f6;
+  --rail-muted: #8b92a5;
+  --rail-accent: #1d2231;
+  --rail-border: #222838;
+  /* video stage stays dark in both themes */
+  --stage: #0b0d13;
+  --shadow-rgb: 20 24 38;
+  --line-1: #e0362b;
+  --line-2: #1f6feb;
+  --line-3: #0e9550;
+  --line-4: #e86a10;
+  --line-5: #8b55e0;
+  --line-6: #0b938e;
+  --line-7: #db3f92;
+  --line-8: #1f96d1;
+  --track: #dfe2e8;
 }
 
 .dark {
-  --background: oklch(0.145 0.008 270);
-  --foreground: oklch(0.96 0.004 270);
-  --card: oklch(0.185 0.01 270);
-  --card-foreground: oklch(0.96 0.004 270);
-  --popover: oklch(0.2 0.011 270);
-  --popover-foreground: oklch(0.96 0.004 270);
-  --primary: oklch(0.67 0.19 277);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.235 0.01 270);
-  --secondary-foreground: oklch(0.93 0.004 270);
-  --muted: oklch(0.225 0.009 270);
-  --muted-foreground: oklch(0.7 0.014 270);
-  --accent: oklch(0.27 0.035 277);
-  --accent-foreground: oklch(0.92 0.03 277);
-  --destructive: oklch(0.64 0.2 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.7 0.15 152);
-  --warning: oklch(0.8 0.15 75);
-  --info: oklch(0.72 0.12 235);
-  --border: oklch(0.28 0.011 270);
-  --input: oklch(0.3 0.012 270);
-  --ring: oklch(0.67 0.19 277);
-  --sidebar: oklch(0.165 0.009 270);
+  --background: #0e1424;
+  --foreground: #edf0f7;
+  --card: #151c2f;
+  --card-foreground: #edf0f7;
+  --popover: #192136;
+  --popover-foreground: #edf0f7;
+  --primary: #ffcb3d;
+  --primary-foreground: #15171e;
+  --signal: #ffcb3d;
+  --signal-strong: #ffd667;
+  --signal-foreground: #15171e;
+  --secondary: #1e263b;
+  --secondary-foreground: #edf0f7;
+  --muted: #1a2235;
+  --muted-foreground: #98a1b8;
+  --accent: #212a42;
+  --accent-foreground: #edf0f7;
+  --destructive: #ff6b5e;
+  --destructive-foreground: #15171e;
+  --success: #34c77b;
+  --warning: #ff9f43;
+  --info: #6aa5ff;
+  --border: #242d46;
+  --input: #2c3653;
+  --ring: #ffcb3d;
+  --sidebar: #111829;
+  --rail: #0a0f1c;
+  --rail-foreground: #edf0f7;
+  --rail-muted: #8790a8;
+  --rail-accent: #172036;
+  --rail-border: #1b2338;
+  --stage: #070a12;
+  --shadow-rgb: 0 0 0;
+  --track: #29324b;
 }
 
 @theme inline {
@@ -64,6 +103,9 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-signal: var(--signal);
+  --color-signal-strong: var(--signal-strong);
+  --color-signal-foreground: var(--signal-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -79,15 +121,37 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
+  --color-rail: var(--rail);
+  --color-rail-foreground: var(--rail-foreground);
+  --color-rail-muted: var(--rail-muted);
+  --color-rail-accent: var(--rail-accent);
+  --color-rail-border: var(--rail-border);
+  --color-stage: var(--stage);
+  --color-track: var(--track);
+  --color-ink: #15171e;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 14px);
   --font-sans: var(--font-sans-family), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-display-family), var(--font-sans-family), ui-sans-serif, sans-serif;
+  --font-display: var(--font-sans-family), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-rgb) / 0.05);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-rgb) / 0.05), 0 2px 8px -4px rgb(var(--shadow-rgb) / 0.08);
+  --shadow-md: 0 1px 2px rgb(var(--shadow-rgb) / 0.05), 0 8px 24px -12px rgb(var(--shadow-rgb) / 0.16);
+  --shadow-lg: 0 2px 4px rgb(var(--shadow-rgb) / 0.04), 0 16px 40px -16px rgb(var(--shadow-rgb) / 0.22);
+  --shadow-xl: 0 4px 8px rgb(var(--shadow-rgb) / 0.05), 0 24px 56px -20px rgb(var(--shadow-rgb) / 0.3);
+  --shadow-2xl: 0 8px 16px rgb(var(--shadow-rgb) / 0.06), 0 40px 80px -24px rgb(var(--shadow-rgb) / 0.38);
   --animate-marquee: marquee 45s linear infinite;
-  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-shimmer: shimmer 1.8s linear infinite;
+  --animate-pop-in: pop-in 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  --animate-fade-in: fade-in 0.18s ease-out;
+  --animate-slide-in-left: slide-in-left 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-slide-in-right: slide-in-right 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-here: here 2.2s ease-out infinite;
+  --animate-draw: draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) both;
 
   @keyframes marquee {
     from { transform: translateX(0); }
@@ -97,6 +161,34 @@
     from { background-position: 200% 0; }
     to { background-position: -200% 0; }
   }
+  /* Tailwind v4 centers dialogs with the `translate` property, so this only touches `transform`. */
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  /* "you are here" ring around the current stop */
+  @keyframes here {
+    0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--signal) 70%, transparent); }
+    70% { box-shadow: 0 0 0 10px color-mix(in oklab, var(--signal) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--signal) 0%, transparent); }
+  }
+  /* SVG paths with pathLength="1" draw themselves */
+  @keyframes draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
 }
 
 @layer base {
@@ -105,41 +197,110 @@
   }
   html {
     color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
   }
   html.dark {
     color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01" on;
+    text-rendering: optimizeLegibility;
+  }
+  /* Headings use Mona Sans Expanded: wide, confident, signage-like. */
+  .font-display {
+    font-stretch: 125%;
+    letter-spacing: -0.022em;
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
   }
+  ::selection {
+    background: color-mix(in oklab, var(--signal) 55%, transparent);
+    color: var(--foreground);
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--muted-foreground) 35%, transparent) transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Pulse for SVG "you are here" markers */
+@keyframes here-svg {
+  0% { transform: scale(0.55); opacity: 0.55; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.here-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: here-svg 2.4s ease-out infinite;
+}
+
+/* Thin shimmering skeletons */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--muted) 0%, color-mix(in oklab, var(--muted) 55%, var(--card)) 50%, var(--muted) 100%);
+  background-size: 200% 100%;
+}
+
+/* Dotted "map paper" texture for hero / auth panels */
+.map-grid {
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--foreground) 9%, transparent) 1px, transparent 0);
+  background-size: 22px 22px;
 }
 
 /* code highlighting (sugar-high) */
 .sh {
-  --sh-class: oklch(0.7 0.15 230);
+  --sh-class: #1f6feb;
   --sh-identifier: var(--foreground);
-  --sh-sign: oklch(0.65 0.02 270);
-  --sh-property: oklch(0.72 0.14 200);
-  --sh-entity: oklch(0.72 0.15 150);
-  --sh-jsxliterals: oklch(0.75 0.12 300);
-  --sh-string: oklch(0.72 0.15 140);
-  --sh-keyword: oklch(0.68 0.2 330);
-  --sh-comment: oklch(0.6 0.02 270);
+  --sh-sign: #7a8194;
+  --sh-property: #0b7f7b;
+  --sh-entity: #0e8a4a;
+  --sh-jsxliterals: #8b55e0;
+  --sh-string: #0e8a4a;
+  --sh-keyword: #c2185b;
+  --sh-comment: #8a90a0;
+}
+.dark .sh {
+  --sh-class: #7cb2ff;
+  --sh-sign: #8790a8;
+  --sh-property: #5fd4cf;
+  --sh-entity: #6be09f;
+  --sh-jsxliterals: #c4a2ff;
+  --sh-string: #8fe3b0;
+  --sh-keyword: #ff7ab8;
+  --sh-comment: #6f7890;
 }
 
-.prose-lms h1 { @apply text-2xl font-bold mt-6 mb-3; }
-.prose-lms h2 { @apply text-xl font-semibold mt-6 mb-2; }
-.prose-lms h3 { @apply text-lg font-semibold mt-4 mb-2; }
+.prose-lms { line-height: 1.7; }
+.prose-lms > :first-child { margin-top: 0; }
+.prose-lms h1 { @apply mt-8 mb-3 font-display text-2xl font-bold; }
+.prose-lms h2 { @apply mt-8 mb-3 font-display text-xl font-bold; }
+.prose-lms h3 { @apply mt-6 mb-2 text-lg font-semibold; }
 .prose-lms p { @apply my-3 leading-7; }
-.prose-lms ul { @apply my-3 list-disc pl-6 space-y-1; }
-.prose-lms ol { @apply my-3 list-decimal pl-6 space-y-1; }
-.prose-lms a { @apply text-primary underline underline-offset-4; }
-.prose-lms code { @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.9em]; }
-.prose-lms pre { @apply my-4 overflow-x-auto rounded-lg bg-muted p-4; }
+.prose-lms ul { @apply my-3 list-disc space-y-1.5 pl-6 marker:text-muted-foreground; }
+.prose-lms ol { @apply my-3 list-decimal space-y-1.5 pl-6 marker:text-muted-foreground; }
+.prose-lms a { @apply font-medium text-foreground underline decoration-signal decoration-2 underline-offset-4 hover:decoration-foreground; }
+.prose-lms code { @apply rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.88em]; }
+.prose-lms pre { @apply my-4 overflow-x-auto rounded-xl bg-muted p-4; }
 .prose-lms pre code { @apply bg-transparent p-0; }
-.prose-lms blockquote { @apply border-l-4 border-primary/40 pl-4 italic text-muted-foreground; }
-.prose-lms table { @apply my-4 w-full text-sm; }
-.prose-lms th, .prose-lms td { @apply border px-3 py-2 text-left; }
+.prose-lms blockquote { @apply my-4 border-l-4 border-signal pl-4 text-muted-foreground; }
+.prose-lms hr { @apply my-8; }
+.prose-lms table { @apply my-4 w-full overflow-hidden rounded-xl border text-sm; }
+.prose-lms th { @apply bg-muted/60 px-3 py-2 text-left font-semibold; }
+.prose-lms td { @apply border-t px-3 py-2 text-left; }
+.prose-lms img { @apply my-4 rounded-xl border; }

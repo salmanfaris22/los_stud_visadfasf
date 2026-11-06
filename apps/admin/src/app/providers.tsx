@@ -10,7 +10,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     () => new QueryClient({ defaultOptions: { queries: { staleTime: 20_000, refetchOnWindowFocus: false, retry: 1 } } }),
   );
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultTheme="light">
       <QueryClientProvider client={qc}>
         <ApiProvider api={api}>
         <ConfirmProvider>

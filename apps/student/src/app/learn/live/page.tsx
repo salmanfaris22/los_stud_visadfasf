@@ -10,7 +10,7 @@ export default function LivePage() {
   const past = $api.useQuery("get", "/api/v1/me/live", { params: { query: { scope: "past" } } });
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="font-display text-2xl font-bold sm:text-3xl">Live classes</h1>
+      <h1 className="font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">Live classes</h1>
       <p className="mb-6 text-muted-foreground">Join on Google Meet. The Join button opens 30 minutes before start.</p>
       <Tabs defaultValue="upcoming">
         <TabsList><TabsTrigger value="upcoming">Upcoming</TabsTrigger><TabsTrigger value="past">Past & recordings</TabsTrigger></TabsList>

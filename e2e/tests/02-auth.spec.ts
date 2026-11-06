@@ -37,7 +37,7 @@ test.describe("Authentication & portals", () => {
 
   test("admin sign in and sign out", async ({ page }) => {
     await loginAdmin(page);
-    await expect(page.getByText(/Hi Super/)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /better together/ })).toBeVisible();
     await page.getByRole("button", { name: "Account menu" }).click();
     await page.getByRole("menuitem", { name: "Sign out" }).click();
     await page.waitForURL(/\/login/);
