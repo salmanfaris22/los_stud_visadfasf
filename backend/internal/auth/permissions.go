@@ -34,6 +34,7 @@ var Modules = []ModuleDef{
 	{"analytics", "Analytics dashboard", "System"},
 	{"audit", "Audit log", "System"},
 	{"settings", "Settings", "System"},
+	{"server", "Server monitor (machine, API speed, database)", "System"},
 }
 
 func ValidModule(m string) bool {

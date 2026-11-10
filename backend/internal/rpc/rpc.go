@@ -18,6 +18,7 @@ import (
 	"github.com/lms/backend/gen/lms/v1/lmsv1connect"
 	"github.com/lms/backend/internal/auth"
 	"github.com/lms/backend/internal/config"
+	"github.com/lms/backend/internal/platform/monitor"
 	"github.com/lms/backend/internal/platform/ratelimit"
 	"github.com/lms/backend/internal/platform/realtime"
 	"github.com/lms/backend/internal/service"
@@ -30,6 +31,7 @@ type server struct {
 	tokens  *auth.Tokens
 	cookies auth.CookieFactory
 	hub     *realtime.Hub
+	monitor *monitor.Recorder
 }
 
 // mount registers one generated service handler.
@@ -62,7 +64,7 @@ func ServiceNames() []string {
 // Handler serves every procedure (at /<package>.<Service>/<Method>), gRPC reflection and
 // gRPC health. It fails when an RPC has no valid access rule.
 func Handler(s *service.Services, d *service.Deps) (http.Handler, error) {
-	srv := &server{s: s, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies, hub: d.Hub}
+	srv := &server{s: s, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies, hub: d.Hub, monitor: d.Monitor}
 	names := ServiceNames()
 	rules, err := AccessRules(names)
 	if err != nil {
@@ -73,8 +75,9 @@ func Handler(s *service.Services, d *service.Deps) (http.Handler, error) {
 		return nil, err
 	}
 	opts := []connect.HandlerOption{
-		// Outermost first: errors see everything, access runs before validation.
-		connect.WithInterceptors(errorInterceptor{}, &accessInterceptor{rules: rules, limiter: ratelimit.New()}, validateInterceptor{v: validator}),
+		// Outermost first: the monitor times the final result, errors see everything, access runs
+		// before validation.
+		connect.WithInterceptors(monitorInterceptor{rec: d.Monitor}, errorInterceptor{}, &accessInterceptor{rules: rules, limiter: ratelimit.New()}, validateInterceptor{v: validator}),
 		connect.WithRecover(recoverPanic),
 	}
 	mux := http.NewServeMux()

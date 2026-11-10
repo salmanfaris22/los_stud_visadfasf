@@ -8,6 +8,8 @@ const config: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: path.join(__dirname, "../../"),
   poweredByHeader: false,
+  // Dev-only "N" badge: bottom-left sits on the sidebar's account button.
+  devIndicators: { position: "bottom-right" },
   // The browser talks to /api on this origin; Next forwards it to the Go API (cookies stay first-party).
   async rewrites() {
     return [

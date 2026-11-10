@@ -14,6 +14,19 @@ message StringList {
   repeated string values = 1;
 }
 
+// APIInfo is this API process.
+message ApiInfo {
+  // git commit of the build
+  string version = 1;
+  string go_version = 2;
+  google.protobuf.Timestamp started_at = 3;
+  double rss_bytes = 4;
+  double heap_bytes = 5;
+  int32 goroutines = 6;
+  // realtime streams = open browser tabs
+  int32 open_streams = 7;
+}
+
 message Admission {
   string id = 1 [(buf.validate.field).string.uuid = true];
   string admission_no = 2;
@@ -641,6 +654,50 @@ message CourseStat {
   int32 completed = 5;
 }
 
+// DBPool is the API's own connection pool.
+message DbPool {
+  int32 max = 1;
+  int32 total = 2;
+  int32 idle = 3;
+  int32 in_use = 4;
+  double acquires = 5;
+  // total time spent waiting for a free connection
+  double waited_ms = 6;
+  double empty_waits = 7;
+}
+
+// DBQuery is a statement running right now (other than this one).
+message DbQuery {
+  int32 pid = 1;
+  string user = 2;
+  string app = 3;
+  string state = 4;
+  string wait = 5;
+  double seconds = 6;
+  string query = 7;
+}
+
+// DBTable is one table of the app database.
+message DbTable {
+  string name = 1;
+  double rows = 2;
+  double dead_rows = 3;
+  double size_bytes = 4;
+  double seq_scans = 5;
+  double index_scans = 6;
+  google.protobuf.Timestamp last_vacuum = 7;
+}
+
+// DBUser is a Postgres login role and its open connections (all databases).
+message DbUser {
+  string name = 1;
+  bool superuser = 2;
+  int32 connections = 3;
+  int32 active = 4;
+  int32 idle = 5;
+  int32 idle_in_tx = 6;
+}
+
 message Dashboard {
   DashboardStats stats = 1;
   repeated MyCourse courses = 2;
@@ -657,6 +714,34 @@ message DashboardStats {
   int32 approved = 4;
   int32 upcoming_live = 5;
   int32 certificates = 6;
+}
+
+// DatabaseBrief is the Postgres summary for the top cards.
+message DatabaseBrief {
+  bool up = 1;
+  double size_bytes = 2;
+  int32 connections = 3;
+  double ping_ms = 4;
+}
+
+// DatabaseStats is the Postgres section of the Server page.
+message DatabaseStats {
+  bool up = 1;
+  string name = 2;
+  string version = 3;
+  google.protobuf.Timestamp started_at = 4;
+  double size_bytes = 5;
+  double cache_hit_pct = 6;
+  double commits = 7;
+  double rollbacks = 8;
+  double deadlocks = 9;
+  double temp_bytes = 10;
+  int32 max_connections = 11;
+  int32 connections = 12;
+  DbPool pool = 13;
+  repeated DbUser users = 14;
+  repeated DbTable tables = 15;
+  repeated DbQuery running = 16;
 }
 
 message DayPoint {
@@ -685,6 +770,19 @@ message DuesReport {
   repeated AgingBucket aging = 2;
   int64 total_balance_paise = 3;
   int64 total_overdue_paise = 4;
+}
+
+// EndpointStat is one API endpoint (RPC or plain-HTTP route) over the period.
+message EndpointStat {
+  string procedure = 1;
+  string service = 2;
+  string method = 3;
+  int32 calls = 4;
+  int32 err_4xx = 5;
+  int32 err_5xx = 6;
+  double avg_ms = 7;
+  double p95_ms = 8;
+  double max_ms = 9;
 }
 
 message EnrollInput {
@@ -1194,6 +1292,28 @@ message NotificationFeed {
   int32 unread = 2;
 }
 
+// OnlineCount is how many users made a request in the last 5 minutes or have a tab open.
+message OnlineCount {
+  int32 total = 1;
+  int32 staff = 2;
+  int32 students = 3;
+}
+
+// OnlineUser is a user active in the last 5 minutes.
+message OnlineUser {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string email = 3;
+  // staff | student
+  string kind = 4;
+  string avatar_url = 5;
+  google.protobuf.Timestamp last_seen = 6;
+  int32 requests = 7;
+  // open realtime streams
+  int32 tabs = 8;
+  string ip = 9;
+}
+
 message Overview {
   Counts counts = 1;
   int32 approval_rate = 2;
@@ -1544,6 +1664,18 @@ message ReportRange {
   string to = 2;
 }
 
+// RequestLog is one request in the live, slow or failed list.
+message RequestLog {
+  google.protobuf.Timestamp at = 1;
+  string procedure = 2;
+  int32 status = 3;
+  string code = 4;
+  double ms = 5;
+  optional string user_id = 6 [(buf.validate.field).string.pattern = "^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"];
+  string user_name = 7;
+  string ip = 8;
+}
+
 message ReviewInput {
   string status = 1 [(buf.validate.field).string = {in: ["approved", "rejected", "resubmit"]}];
   optional int32 marks = 2 [(buf.validate.field).int32 = {gte: 0, lte: 1000}];
@@ -1605,6 +1737,44 @@ message SalesSettings {
   PaymentSettings payments = 2;
   CrmSettings crm = 3;
   ReminderSettings reminders = 4;
+}
+
+// ServerOverview is the top of the Server page: the machine now, API traffic for the period and the charts.
+message ServerOverview {
+  string period = 1;
+  // width of one chart point
+  int32 step_seconds = 2;
+  SystemInfo system = 3;
+  ApiInfo api = 4;
+  // whole period
+  TrafficStat traffic = 5;
+  // last 5 minutes
+  TrafficStat recent = 6;
+  // requests in the last whole minute
+  int32 per_minute = 7;
+  OnlineCount online = 8;
+  DatabaseBrief database = 9;
+  repeated ServerPoint points = 10;
+}
+
+// ServerPoint is one chart point. has_sample is false where the API was not running (no machine numbers).
+message ServerPoint {
+  google.protobuf.Timestamp at = 1;
+  int32 requests = 2;
+  int32 err_4xx = 3;
+  int32 err_5xx = 4;
+  double avg_ms = 5;
+  double p95_ms = 6;
+  bool has_sample = 7;
+  double cpu_pct = 8;
+  double mem_pct = 9;
+  double swap_pct = 10;
+  double load1 = 11;
+  double net_rx_rate = 12;
+  double net_tx_rate = 13;
+  int32 online = 14;
+  int32 db_conns = 15;
+  int32 open_streams = 16;
 }
 
 message Settings {
@@ -1838,6 +2008,28 @@ message SyncStep {
   string message = 3;
 }
 
+// SystemInfo is the latest sample of the machine the API runs on.
+message SystemInfo {
+  string host = 1;
+  string os = 2;
+  string arch = 3;
+  int32 cores = 4;
+  google.protobuf.Timestamp boot_time = 5;
+  google.protobuf.Timestamp sampled_at = 6;
+  double cpu_pct = 7;
+  double load1 = 8;
+  double load5 = 9;
+  double load15 = 10;
+  double mem_total_bytes = 11;
+  double mem_used_bytes = 12;
+  double swap_total_bytes = 13;
+  double swap_used_bytes = 14;
+  double disk_total_bytes = 15;
+  double disk_used_bytes = 16;
+  double net_rx_rate = 17;
+  double net_tx_rate = 18;
+}
+
 // TargetProgress shows a counsellor where they stand this month.
 message TargetProgress {
   string month = 1;
@@ -1932,6 +2124,16 @@ message ThreadComment {
   string body = 6;
   Attachment attachment = 7;
   google.protobuf.Timestamp created_at = 8;
+}
+
+// TrafficStat sums requests: count, errors and response times (ms).
+message TrafficStat {
+  int32 requests = 1;
+  int32 err_4xx = 2;
+  int32 err_5xx = 3;
+  double avg_ms = 4;
+  double p95_ms = 5;
+  double max_ms = 6;
 }
 
 message Upload {

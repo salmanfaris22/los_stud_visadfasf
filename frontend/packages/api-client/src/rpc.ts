@@ -20,6 +20,7 @@ export * from "./gen/lms/v1/notifications_pb";
 export * from "./gen/lms/v1/pipeline_pb";
 export * from "./gen/lms/v1/portal_pb";
 export * from "./gen/lms/v1/quizzes_pb";
+export * from "./gen/lms/v1/server_pb";
 export * from "./gen/lms/v1/site_pb";
 export * from "./gen/lms/v1/staff_pb";
 export * from "./gen/lms/v1/students_pb";

@@ -83,6 +83,9 @@ func run() error {
 		Tokens: auth.NewTokens(cfg.JWTSecret, cfg.AccessTTL), Cookies: auth.CookieFactory{Domain: cfg.CookieDomain, Secure: cfg.CookieSecure},
 	}
 	app := server.New(deps)
+	// Every API process samples its machine and flushes its own request timings (not a single-
+	// instance job, so it runs even when RUN_JOBS is off).
+	go app.Services.Server.Run(ctx)
 	if cfg.RunJobs {
 		go jobs.Run(ctx, app.Services, deps)
 	}

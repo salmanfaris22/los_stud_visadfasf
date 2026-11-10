@@ -11,8 +11,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 
+	"github.com/lms/backend/internal/auth"
 	"github.com/lms/backend/internal/httpx"
 	"github.com/lms/backend/internal/middleware"
+	"github.com/lms/backend/internal/platform/monitor"
 	"github.com/lms/backend/internal/rpc"
 	"github.com/lms/backend/internal/service"
 )
@@ -38,7 +40,7 @@ func New(d *service.Deps) *App {
 	}
 	root.Use(chimw.Recoverer, middleware.SecurityHeaders, middleware.Logger,
 		middleware.CORS(d.Cfg.AdminAppURL, d.Cfg.StudentAppURL),
-		middleware.Authenticate(d.Tokens, svcs.Access))
+		middleware.Authenticate(d.Tokens, svcs.Access), monitorHTTP(d.Monitor))
 
 	// gRPC / gRPC-Web / Connect. Native gRPC clients call /lms.v1.<Service>/<Method>; the web
 	// apps proxy /rpc/* here (the refresh cookie is scoped to that path). Connect negotiates its
@@ -68,6 +70,38 @@ func streams(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+// monitorHTTP times the plain-HTTP routes (files, Google redirects) for the admin Server page.
+// RPCs are timed by the rpc interceptor; /healthz is skipped (deploy checks and load balancers poll it).
+func monitorHTTP(rec *monitor.Recorder) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			p := r.URL.Path
+			if p == "/healthz" || strings.HasPrefix(p, "/rpc/") || strings.HasPrefix(p, "/lms.v1.") || strings.HasPrefix(p, "/grpc.") {
+				next.ServeHTTP(w, r)
+				return
+			}
+			ww := chimw.NewWrapResponseWriter(w, r.ProtoMajor)
+			start := time.Now()
+			next.ServeHTTP(ww, r)
+			route := "unmatched" // bots probing random paths share one row
+			if rc := chi.RouteContext(r.Context()); rc != nil && rc.RoutePattern() != "" {
+				route = rc.RoutePattern()
+			}
+			status := ww.Status()
+			if status == 0 {
+				status = http.StatusOK
+			}
+			req := monitor.Request{At: start, Procedure: r.Method + " " + route, Status: status,
+				Ms: float64(time.Since(start).Microseconds()) / 1000, IP: auth.MetaFrom(r.Context()).IP}
+			if pr := auth.FromContext(r.Context()); pr != nil {
+				id := pr.ID
+				req.UserID, req.Staff = &id, pr.IsStaff()
+			}
+			rec.Record(req)
+		})
+	}
 }
 
 // health reports dependency status (used by load balancers and the deploy script).

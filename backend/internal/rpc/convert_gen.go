@@ -40,6 +40,33 @@ func personFromPB(m *lmsv1.Person) dto.Person {
 	return v
 }
 
+func apiInfoToPB(v dto.APIInfo) *lmsv1.ApiInfo {
+	m := &lmsv1.ApiInfo{}
+	m.Version = v.Version
+	m.GoVersion = v.GoVersion
+	m.StartedAt = tsToPB(v.StartedAt)
+	m.RssBytes = v.RSSBytes
+	m.HeapBytes = v.HeapBytes
+	m.Goroutines = v.Goroutines
+	m.OpenStreams = v.OpenStreams
+	return m
+}
+
+func apiInfoFromPB(m *lmsv1.ApiInfo) dto.APIInfo {
+	var v dto.APIInfo
+	if m == nil {
+		return v
+	}
+	v.Version = m.GetVersion()
+	v.GoVersion = m.GetGoVersion()
+	v.StartedAt = tsFromPB(m.GetStartedAt())
+	v.RSSBytes = m.GetRssBytes()
+	v.HeapBytes = m.GetHeapBytes()
+	v.Goroutines = m.GetGoroutines()
+	v.OpenStreams = m.GetOpenStreams()
+	return v
+}
+
 func admissionToPB(v dto.Admission) *lmsv1.Admission {
 	m := &lmsv1.Admission{}
 	m.Id = uuidToPB(v.ID)
@@ -1929,6 +1956,117 @@ func courseStatFromPB(m *lmsv1.CourseStat) dto.CourseStat {
 	return v
 }
 
+func dbPoolToPB(v dto.DBPool) *lmsv1.DbPool {
+	m := &lmsv1.DbPool{}
+	m.Max = v.Max
+	m.Total = v.Total
+	m.Idle = v.Idle
+	m.InUse = v.InUse
+	m.Acquires = v.Acquires
+	m.WaitedMs = v.WaitedMs
+	m.EmptyWaits = v.EmptyWaits
+	return m
+}
+
+func dbPoolFromPB(m *lmsv1.DbPool) dto.DBPool {
+	var v dto.DBPool
+	if m == nil {
+		return v
+	}
+	v.Max = m.GetMax()
+	v.Total = m.GetTotal()
+	v.Idle = m.GetIdle()
+	v.InUse = m.GetInUse()
+	v.Acquires = m.GetAcquires()
+	v.WaitedMs = m.GetWaitedMs()
+	v.EmptyWaits = m.GetEmptyWaits()
+	return v
+}
+
+func dbQueryToPB(v dto.DBQuery) *lmsv1.DbQuery {
+	m := &lmsv1.DbQuery{}
+	m.Pid = v.PID
+	m.User = v.User
+	m.App = v.App
+	m.State = v.State
+	m.Wait = v.Wait
+	m.Seconds = v.Seconds
+	m.Query = v.Query
+	return m
+}
+
+func dbQueryFromPB(m *lmsv1.DbQuery) dto.DBQuery {
+	var v dto.DBQuery
+	if m == nil {
+		return v
+	}
+	v.PID = m.GetPid()
+	v.User = m.GetUser()
+	v.App = m.GetApp()
+	v.State = m.GetState()
+	v.Wait = m.GetWait()
+	v.Seconds = m.GetSeconds()
+	v.Query = m.GetQuery()
+	return v
+}
+
+func dbTableToPB(v dto.DBTable) *lmsv1.DbTable {
+	m := &lmsv1.DbTable{}
+	m.Name = v.Name
+	m.Rows = v.Rows
+	m.DeadRows = v.DeadRows
+	m.SizeBytes = v.SizeBytes
+	m.SeqScans = v.SeqScans
+	m.IndexScans = v.IndexScans
+	if v.LastVacuum != nil {
+		m.LastVacuum = tsToPB(*v.LastVacuum)
+	}
+	return m
+}
+
+func dbTableFromPB(m *lmsv1.DbTable) dto.DBTable {
+	var v dto.DBTable
+	if m == nil {
+		return v
+	}
+	v.Name = m.GetName()
+	v.Rows = m.GetRows()
+	v.DeadRows = m.GetDeadRows()
+	v.SizeBytes = m.GetSizeBytes()
+	v.SeqScans = m.GetSeqScans()
+	v.IndexScans = m.GetIndexScans()
+	if m.LastVacuum != nil {
+		x := m.LastVacuum.AsTime()
+		v.LastVacuum = &x
+	}
+	return v
+}
+
+func dbUserToPB(v dto.DBUser) *lmsv1.DbUser {
+	m := &lmsv1.DbUser{}
+	m.Name = v.Name
+	m.Superuser = v.Superuser
+	m.Connections = v.Connections
+	m.Active = v.Active
+	m.Idle = v.Idle
+	m.IdleInTx = v.IdleInTx
+	return m
+}
+
+func dbUserFromPB(m *lmsv1.DbUser) dto.DBUser {
+	var v dto.DBUser
+	if m == nil {
+		return v
+	}
+	v.Name = m.GetName()
+	v.Superuser = m.GetSuperuser()
+	v.Connections = m.GetConnections()
+	v.Active = m.GetActive()
+	v.Idle = m.GetIdle()
+	v.IdleInTx = m.GetIdleInTx()
+	return v
+}
+
 func dashboardToPB(v dto.Dashboard) *lmsv1.Dashboard {
 	m := &lmsv1.Dashboard{}
 	m.Stats = dashboardStatsToPB(v.Stats)
@@ -2002,6 +2140,98 @@ func dashboardStatsFromPB(m *lmsv1.DashboardStats) dto.DashboardStats {
 	v.Approved = int(m.GetApproved())
 	v.UpcomingLive = int(m.GetUpcomingLive())
 	v.Certificates = int(m.GetCertificates())
+	return v
+}
+
+func databaseBriefToPB(v dto.DatabaseBrief) *lmsv1.DatabaseBrief {
+	m := &lmsv1.DatabaseBrief{}
+	m.Up = v.Up
+	m.SizeBytes = v.SizeBytes
+	m.Connections = v.Connections
+	m.PingMs = v.PingMs
+	return m
+}
+
+func databaseBriefFromPB(m *lmsv1.DatabaseBrief) dto.DatabaseBrief {
+	var v dto.DatabaseBrief
+	if m == nil {
+		return v
+	}
+	v.Up = m.GetUp()
+	v.SizeBytes = m.GetSizeBytes()
+	v.Connections = m.GetConnections()
+	v.PingMs = m.GetPingMs()
+	return v
+}
+
+func databaseStatsToPB(v dto.DatabaseStats) *lmsv1.DatabaseStats {
+	m := &lmsv1.DatabaseStats{}
+	m.Up = v.Up
+	m.Name = v.Name
+	m.Version = v.Version
+	if v.StartedAt != nil {
+		m.StartedAt = tsToPB(*v.StartedAt)
+	}
+	m.SizeBytes = v.SizeBytes
+	m.CacheHitPct = v.CacheHitPct
+	m.Commits = v.Commits
+	m.Rollbacks = v.Rollbacks
+	m.Deadlocks = v.Deadlocks
+	m.TempBytes = v.TempBytes
+	m.MaxConnections = v.MaxConnections
+	m.Connections = v.Connections
+	m.Pool = dbPoolToPB(v.Pool)
+	for _, x := range v.Users {
+		m.Users = append(m.Users, dbUserToPB(x))
+	}
+	for _, x := range v.Tables {
+		m.Tables = append(m.Tables, dbTableToPB(x))
+	}
+	for _, x := range v.Running {
+		m.Running = append(m.Running, dbQueryToPB(x))
+	}
+	return m
+}
+
+func databaseStatsFromPB(m *lmsv1.DatabaseStats) dto.DatabaseStats {
+	var v dto.DatabaseStats
+	if m == nil {
+		return v
+	}
+	v.Up = m.GetUp()
+	v.Name = m.GetName()
+	v.Version = m.GetVersion()
+	if m.StartedAt != nil {
+		x := m.StartedAt.AsTime()
+		v.StartedAt = &x
+	}
+	v.SizeBytes = m.GetSizeBytes()
+	v.CacheHitPct = m.GetCacheHitPct()
+	v.Commits = m.GetCommits()
+	v.Rollbacks = m.GetRollbacks()
+	v.Deadlocks = m.GetDeadlocks()
+	v.TempBytes = m.GetTempBytes()
+	v.MaxConnections = m.GetMaxConnections()
+	v.Connections = m.GetConnections()
+	v.Pool = dbPoolFromPB(m.GetPool())
+	for _, x := range m.GetUsers() {
+		v.Users = append(v.Users, dbUserFromPB(x))
+	}
+	if v.Users == nil {
+		v.Users = []dto.DBUser{}
+	}
+	for _, x := range m.GetTables() {
+		v.Tables = append(v.Tables, dbTableFromPB(x))
+	}
+	if v.Tables == nil {
+		v.Tables = []dto.DBTable{}
+	}
+	for _, x := range m.GetRunning() {
+		v.Running = append(v.Running, dbQueryFromPB(x))
+	}
+	if v.Running == nil {
+		v.Running = []dto.DBQuery{}
+	}
 	return v
 }
 
@@ -2093,6 +2323,37 @@ func duesReportFromPB(m *lmsv1.DuesReport) dto.DuesReport {
 	}
 	v.TotalBalancePaise = m.GetTotalBalancePaise()
 	v.TotalOverduePaise = m.GetTotalOverduePaise()
+	return v
+}
+
+func endpointStatToPB(v dto.EndpointStat) *lmsv1.EndpointStat {
+	m := &lmsv1.EndpointStat{}
+	m.Procedure = v.Procedure
+	m.Service = v.Service
+	m.Method = v.Method
+	m.Calls = v.Calls
+	m.Err_4Xx = v.Err4xx
+	m.Err_5Xx = v.Err5xx
+	m.AvgMs = v.AvgMs
+	m.P95Ms = v.P95Ms
+	m.MaxMs = v.MaxMs
+	return m
+}
+
+func endpointStatFromPB(m *lmsv1.EndpointStat) dto.EndpointStat {
+	var v dto.EndpointStat
+	if m == nil {
+		return v
+	}
+	v.Procedure = m.GetProcedure()
+	v.Service = m.GetService()
+	v.Method = m.GetMethod()
+	v.Calls = m.GetCalls()
+	v.Err4xx = m.GetErr_4Xx()
+	v.Err5xx = m.GetErr_5Xx()
+	v.AvgMs = m.GetAvgMs()
+	v.P95Ms = m.GetP95Ms()
+	v.MaxMs = m.GetMaxMs()
 	return v
 }
 
@@ -3771,6 +4032,56 @@ func notificationFeedFromPB(m *lmsv1.NotificationFeed) dto.NotificationFeed {
 	return v
 }
 
+func onlineCountToPB(v dto.OnlineCount) *lmsv1.OnlineCount {
+	m := &lmsv1.OnlineCount{}
+	m.Total = v.Total
+	m.Staff = v.Staff
+	m.Students = v.Students
+	return m
+}
+
+func onlineCountFromPB(m *lmsv1.OnlineCount) dto.OnlineCount {
+	var v dto.OnlineCount
+	if m == nil {
+		return v
+	}
+	v.Total = m.GetTotal()
+	v.Staff = m.GetStaff()
+	v.Students = m.GetStudents()
+	return v
+}
+
+func onlineUserToPB(v dto.OnlineUser) *lmsv1.OnlineUser {
+	m := &lmsv1.OnlineUser{}
+	m.Id = uuidToPB(v.ID)
+	m.Name = v.Name
+	m.Email = v.Email
+	m.Kind = v.Kind
+	m.AvatarUrl = v.AvatarURL
+	m.LastSeen = tsToPB(v.LastSeen)
+	m.Requests = v.Requests
+	m.Tabs = v.Tabs
+	m.Ip = v.IP
+	return m
+}
+
+func onlineUserFromPB(m *lmsv1.OnlineUser) dto.OnlineUser {
+	var v dto.OnlineUser
+	if m == nil {
+		return v
+	}
+	v.ID = uuidFromPB(m.GetId())
+	v.Name = m.GetName()
+	v.Email = m.GetEmail()
+	v.Kind = m.GetKind()
+	v.AvatarURL = m.GetAvatarUrl()
+	v.LastSeen = tsFromPB(m.GetLastSeen())
+	v.Requests = m.GetRequests()
+	v.Tabs = m.GetTabs()
+	v.IP = m.GetIp()
+	return v
+}
+
 func overviewToPB(v dto.Overview) *lmsv1.Overview {
 	m := &lmsv1.Overview{}
 	m.Counts = countsToPB(v.Counts)
@@ -4877,6 +5188,38 @@ func reportRangeFromPB(m *lmsv1.ReportRange) dto.ReportRange {
 	return v
 }
 
+func requestLogToPB(v dto.RequestLog) *lmsv1.RequestLog {
+	m := &lmsv1.RequestLog{}
+	m.At = tsToPB(v.At)
+	m.Procedure = v.Procedure
+	m.Status = v.Status
+	m.Code = v.Code
+	m.Ms = v.Ms
+	if v.UserID != nil {
+		x := v.UserID.String()
+		m.UserId = &x
+	}
+	m.UserName = v.UserName
+	m.Ip = v.IP
+	return m
+}
+
+func requestLogFromPB(m *lmsv1.RequestLog) dto.RequestLog {
+	var v dto.RequestLog
+	if m == nil {
+		return v
+	}
+	v.At = tsFromPB(m.GetAt())
+	v.Procedure = m.GetProcedure()
+	v.Status = m.GetStatus()
+	v.Code = m.GetCode()
+	v.Ms = m.GetMs()
+	v.UserID = optUUIDFromPB(m.UserId)
+	v.UserName = m.GetUserName()
+	v.IP = m.GetIp()
+	return v
+}
+
 func reviewInputToPB(v dto.ReviewInput) *lmsv1.ReviewInput {
 	m := &lmsv1.ReviewInput{}
 	m.Status = v.Status
@@ -5044,6 +5387,91 @@ func salesSettingsFromPB(m *lmsv1.SalesSettings) dto.SalesSettings {
 	v.Payments = paymentSettingsFromPB(m.GetPayments())
 	v.CRM = crmSettingsFromPB(m.GetCrm())
 	v.Reminders = reminderSettingsFromPB(m.GetReminders())
+	return v
+}
+
+func serverOverviewToPB(v dto.ServerOverview) *lmsv1.ServerOverview {
+	m := &lmsv1.ServerOverview{}
+	m.Period = v.Period
+	m.StepSeconds = v.StepSeconds
+	m.System = systemInfoToPB(v.System)
+	m.Api = apiInfoToPB(v.API)
+	m.Traffic = trafficStatToPB(v.Traffic)
+	m.Recent = trafficStatToPB(v.Recent)
+	m.PerMinute = v.PerMinute
+	m.Online = onlineCountToPB(v.Online)
+	m.Database = databaseBriefToPB(v.Database)
+	for _, x := range v.Points {
+		m.Points = append(m.Points, serverPointToPB(x))
+	}
+	return m
+}
+
+func serverOverviewFromPB(m *lmsv1.ServerOverview) dto.ServerOverview {
+	var v dto.ServerOverview
+	if m == nil {
+		return v
+	}
+	v.Period = m.GetPeriod()
+	v.StepSeconds = m.GetStepSeconds()
+	v.System = systemInfoFromPB(m.GetSystem())
+	v.API = apiInfoFromPB(m.GetApi())
+	v.Traffic = trafficStatFromPB(m.GetTraffic())
+	v.Recent = trafficStatFromPB(m.GetRecent())
+	v.PerMinute = m.GetPerMinute()
+	v.Online = onlineCountFromPB(m.GetOnline())
+	v.Database = databaseBriefFromPB(m.GetDatabase())
+	for _, x := range m.GetPoints() {
+		v.Points = append(v.Points, serverPointFromPB(x))
+	}
+	if v.Points == nil {
+		v.Points = []dto.ServerPoint{}
+	}
+	return v
+}
+
+func serverPointToPB(v dto.ServerPoint) *lmsv1.ServerPoint {
+	m := &lmsv1.ServerPoint{}
+	m.At = tsToPB(v.At)
+	m.Requests = v.Requests
+	m.Err_4Xx = v.Err4xx
+	m.Err_5Xx = v.Err5xx
+	m.AvgMs = v.AvgMs
+	m.P95Ms = v.P95Ms
+	m.HasSample = v.HasSample
+	m.CpuPct = v.CPUPct
+	m.MemPct = v.MemPct
+	m.SwapPct = v.SwapPct
+	m.Load1 = v.Load1
+	m.NetRxRate = v.NetRxRate
+	m.NetTxRate = v.NetTxRate
+	m.Online = v.Online
+	m.DbConns = v.DBConns
+	m.OpenStreams = v.OpenStreams
+	return m
+}
+
+func serverPointFromPB(m *lmsv1.ServerPoint) dto.ServerPoint {
+	var v dto.ServerPoint
+	if m == nil {
+		return v
+	}
+	v.At = tsFromPB(m.GetAt())
+	v.Requests = m.GetRequests()
+	v.Err4xx = m.GetErr_4Xx()
+	v.Err5xx = m.GetErr_5Xx()
+	v.AvgMs = m.GetAvgMs()
+	v.P95Ms = m.GetP95Ms()
+	v.HasSample = m.GetHasSample()
+	v.CPUPct = m.GetCpuPct()
+	v.MemPct = m.GetMemPct()
+	v.SwapPct = m.GetSwapPct()
+	v.Load1 = m.GetLoad1()
+	v.NetRxRate = m.GetNetRxRate()
+	v.NetTxRate = m.GetNetTxRate()
+	v.Online = m.GetOnline()
+	v.DBConns = m.GetDbConns()
+	v.OpenStreams = m.GetOpenStreams()
 	return v
 }
 
@@ -5760,6 +6188,55 @@ func syncStepFromPB(m *lmsv1.SyncStep) dto.SyncStep {
 	return v
 }
 
+func systemInfoToPB(v dto.SystemInfo) *lmsv1.SystemInfo {
+	m := &lmsv1.SystemInfo{}
+	m.Host = v.Host
+	m.Os = v.OS
+	m.Arch = v.Arch
+	m.Cores = v.Cores
+	m.BootTime = tsToPB(v.BootTime)
+	m.SampledAt = tsToPB(v.SampledAt)
+	m.CpuPct = v.CPUPct
+	m.Load1 = v.Load1
+	m.Load5 = v.Load5
+	m.Load15 = v.Load15
+	m.MemTotalBytes = v.MemTotalBytes
+	m.MemUsedBytes = v.MemUsedBytes
+	m.SwapTotalBytes = v.SwapTotal
+	m.SwapUsedBytes = v.SwapUsed
+	m.DiskTotalBytes = v.DiskTotal
+	m.DiskUsedBytes = v.DiskUsed
+	m.NetRxRate = v.NetRxRate
+	m.NetTxRate = v.NetTxRate
+	return m
+}
+
+func systemInfoFromPB(m *lmsv1.SystemInfo) dto.SystemInfo {
+	var v dto.SystemInfo
+	if m == nil {
+		return v
+	}
+	v.Host = m.GetHost()
+	v.OS = m.GetOs()
+	v.Arch = m.GetArch()
+	v.Cores = m.GetCores()
+	v.BootTime = tsFromPB(m.GetBootTime())
+	v.SampledAt = tsFromPB(m.GetSampledAt())
+	v.CPUPct = m.GetCpuPct()
+	v.Load1 = m.GetLoad1()
+	v.Load5 = m.GetLoad5()
+	v.Load15 = m.GetLoad15()
+	v.MemTotalBytes = m.GetMemTotalBytes()
+	v.MemUsedBytes = m.GetMemUsedBytes()
+	v.SwapTotal = m.GetSwapTotalBytes()
+	v.SwapUsed = m.GetSwapUsedBytes()
+	v.DiskTotal = m.GetDiskTotalBytes()
+	v.DiskUsed = m.GetDiskUsedBytes()
+	v.NetRxRate = m.GetNetRxRate()
+	v.NetTxRate = m.GetNetTxRate()
+	return v
+}
+
 func targetProgressToPB(v dto.TargetProgress) *lmsv1.TargetProgress {
 	m := &lmsv1.TargetProgress{}
 	m.Month = v.Month
@@ -6060,6 +6537,31 @@ func threadCommentFromPB(m *lmsv1.ThreadComment) dto.ThreadComment {
 		v.Attachment = &x
 	}
 	v.CreatedAt = tsFromPB(m.GetCreatedAt())
+	return v
+}
+
+func trafficStatToPB(v dto.TrafficStat) *lmsv1.TrafficStat {
+	m := &lmsv1.TrafficStat{}
+	m.Requests = v.Requests
+	m.Err_4Xx = v.Err4xx
+	m.Err_5Xx = v.Err5xx
+	m.AvgMs = v.AvgMs
+	m.P95Ms = v.P95Ms
+	m.MaxMs = v.MaxMs
+	return m
+}
+
+func trafficStatFromPB(m *lmsv1.TrafficStat) dto.TrafficStat {
+	var v dto.TrafficStat
+	if m == nil {
+		return v
+	}
+	v.Requests = m.GetRequests()
+	v.Err4xx = m.GetErr_4Xx()
+	v.Err5xx = m.GetErr_5Xx()
+	v.AvgMs = m.GetAvgMs()
+	v.P95Ms = m.GetP95Ms()
+	v.MaxMs = m.GetMaxMs()
 	return v
 }
 

@@ -1,6 +1,6 @@
 # API reference
 
-The LMS API is gRPC only: **19 services, 183 RPCs**, served by one Go server on `:8080` that speaks gRPC, gRPC-Web and the Connect protocol (JSON or binary).
+The LMS API is gRPC only: **20 services, 188 RPCs**, served by one Go server on `:8080` that speaks gRPC, gRPC-Web and the Connect protocol (JSON or binary).
 The contract is `proto/lms/v1/*.proto` (generated from `backend/internal/dto` and `backend/tools/rpcgen/spec.txt` with `make gen`).
 
 | How to call | Detail |
@@ -251,6 +251,18 @@ Quizzes under videos: authoring, attempts, and the student quiz player.
 | `ListMyVideoQuizzes` | read | student | My quizzes for a video |
 | `StartQuiz` | write | student | Start or resume an attempt |
 | `SubmitQuiz` | write | student | Submit answers and get the result |
+
+## ServerService
+
+The admin Server page: the machine, API speed per endpoint, the database and who is online.
+
+| RPC | Kind | Access | What it does |
+|---|---|---|---|
+| `GetServerOverview` | read | `server:view` | Machine now, API traffic and speed, and chart points for the period |
+| `ListEndpointStats` | read | `server:view` | Calls, errors and response times per endpoint |
+| `ListRecentRequests` | read | `server:view` | The latest requests, or the slow (1 s+) / failed (5xx) ones of the last 30 days |
+| `GetDatabaseStats` | read | `server:view` | Postgres: size, cache hits, connections per login role, biggest tables, running queries |
+| `ListOnlineUsers` | read | `server:view` | Users active in the last 5 minutes or with a tab open |
 
 ## SiteService
 

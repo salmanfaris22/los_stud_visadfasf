@@ -14,13 +14,14 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	dbfiles "github.com/lms/backend/db"
 	lmsv1 "github.com/lms/backend/gen/lms/v1"
@@ -264,7 +265,8 @@ func testDeps(t *testing.T) (*service.Deps, func()) {
 func TestAPI(t *testing.T) {
 	d, done := testDeps(t)
 	defer done()
-	srv := httptest.NewServer(server.New(d).Router)
+	app := server.New(d)
+	srv := httptest.NewServer(app.Router)
 	defer srv.Close()
 
 	admin := newClient(t, srv.URL, "admin")
@@ -768,6 +770,63 @@ func TestAPI(t *testing.T) {
 		if audit := admin.rpc("AdminService/ListAuditLog", M{"entity": "task"}, 200, nil); num(audit, "total") < 2 {
 			t.Errorf("audit log has %v task entries", audit["total"])
 		}
+	})
+
+	t.Run("server monitor: timings, database, online users", func(t *testing.T) {
+		student.rpc("ServerService/GetServerOverview", M{"period": "1h"}, 403, nil)
+		admin.rpc("ServerService/GetServerOverview", M{"period": "2h"}, 400, nil)
+		// Everything so far is in memory. Sample the machine, then flush all of it (the current
+		// minute too, the way a shutdown does).
+		d.Monitor.Sample(context.Background())
+		app.Services.Server.Flush(context.Background(), time.Now().Add(time.Minute))
+
+		ov := obj(admin.rpc("ServerService/GetServerOverview", M{"period": "1h"}, 200, nil), "overview")
+		if n := num(obj(ov, "traffic"), "requests"); n < 20 {
+			t.Fatalf("traffic requests = %v", n)
+		}
+		points := arr(ov, "points")
+		if len(points) != 60 {
+			t.Fatalf("%d points for 1h, want 60", len(points))
+		}
+		if last, _ := points[len(points)-1].(M); last["hasSample"] != true {
+			t.Fatalf("last point has no machine sample: %v", last)
+		}
+		if sys := obj(ov, "system"); str(sys, "host") == "" || num(sys, "memTotalBytes") <= 0 {
+			t.Fatalf("system = %v", sys)
+		}
+		if db := obj(ov, "database"); db["up"] != true || num(db, "sizeBytes") <= 0 {
+			t.Fatalf("database brief = %v", db)
+		}
+
+		var login M
+		for _, e := range arr(admin.rpc("ServerService/ListEndpointStats", M{"period": "1h", "sort": "slow"}, 200, nil), "items") {
+			if str(e, "procedure") == "/lms.v1.AuthService/Login" {
+				login, _ = e.(M)
+			}
+		}
+		if num(login, "calls") < 2 || num(login, "err4xx") < 1 || str(login, "service") != "AuthService" {
+			t.Fatalf("login endpoint = %v", login)
+		}
+
+		db := obj(admin.rpc("ServerService/GetDatabaseStats", nil, 200, nil), "database")
+		if db["up"] != true || len(arr(db, "tables")) == 0 || len(arr(db, "users")) == 0 || str(db, "version") == "" {
+			t.Fatalf("database = %v", db)
+		}
+
+		var online []string
+		for _, u := range arr(admin.rpc("ServerService/ListOnlineUsers", nil, 200, nil), "items") {
+			online = append(online, str(u, "email"))
+		}
+		if !slices.Contains(online, "admin@test.local") || !slices.Contains(online, "ann@test.local") {
+			t.Fatalf("online = %v", online)
+		}
+
+		live := arr(admin.rpc("ServerService/ListRecentRequests", M{"kind": "live", "limit": 5}, 200, nil), "items")
+		if len(live) != 5 || str(live[0], "procedure") != "/lms.v1.ServerService/ListOnlineUsers" {
+			t.Fatalf("live = %v", live)
+		}
+		admin.rpc("ServerService/ListRecentRequests", M{"kind": "failed"}, 200, nil)
+		admin.rpc("ServerService/ListRecentRequests", M{"kind": "slow"}, 200, nil)
 	})
 
 	t.Run("realtime stream delivers hub events", func(t *testing.T) {

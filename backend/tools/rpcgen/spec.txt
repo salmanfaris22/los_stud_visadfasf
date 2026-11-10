@@ -169,6 +169,13 @@ GetSettings perm:settings.view get | - | item:settings:SettingsView | noErr(c.s.
 UpdateSettings perm:settings.edit | input:Settings | item:settings:SettingsView | Settings.Update(ctx, actor(ctx), settingsFromPB(m.GetInput())) | Update settings
 DisconnectGoogle perm:settings.edit | - | - | Settings.GoogleDisconnect(ctx, actor(ctx)) | Disconnect the institute Google account
 
+service ServerService server "The admin Server page: the machine, API speed per endpoint, the database and who is online."
+GetServerOverview perm:server.view get | period:str[in=1h/24h/7d/30d] | item:overview:ServerOverview | Server.Overview(ctx, m.GetPeriod()) | Machine now, API traffic and speed, and chart points for the period
+ListEndpointStats perm:server.view get | period:str[in=1h/24h/7d/30d] sort:str[in=busy/slow/errors] | items:EndpointStat | Server.Endpoints(ctx, m.GetPeriod(), m.GetSort()) | Calls, errors and response times per endpoint
+ListRecentRequests perm:server.view get | kind:str[in=live/slow/failed] limit:i32[gte=1,lte=200] | items:RequestLog | Server.Requests(ctx, m.GetKind(), int(def32(m.GetLimit(), 50))) | The latest requests, or the slow (1 s+) / failed (5xx) ones of the last 30 days
+GetDatabaseStats perm:server.view get | - | item:database:DatabaseStats | Server.Database(ctx) | Postgres: size, cache hits, connections per login role, biggest tables, running queries
+ListOnlineUsers perm:server.view get | - | items:OnlineUser | Server.Online(ctx) | Users active in the last 5 minutes or with a tab open
+
 service LeadService leads "The sales CRM: leads, their pipeline stage, notes, calls, follow-ups and assignment."
 ListLeads perm:leads.view get | page q:str[max=100] stage_id:uuid? stage_kind:str[in=open/won/lost] owner_id:uuid? unassigned:bool mine:bool source:str[max=60] course_id:uuid? team_id:uuid? follow_up:str[in=today/overdue] from:ts to:ts sort:str[in=created/activity/follow_up] | item:list:LeadList | Leads.List(ctx, actor(ctx), leadFilter(m)) | Leads in my sales scope, with counts per stage
 GetLead perm:leads.view get | id | item:lead:LeadDetail | Leads.Get(ctx, actor(ctx), idOf(m)) | Lead with activity and follow-ups

@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { ArrowRight, LogOut, Menu, Moon, Search, Sun, User } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, LogOut, Menu, Moon, Search, Sun, User } from "lucide-react";
 
 import {
   Avatar, BrandMark, Button, Dialog, DialogContent, DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
@@ -99,7 +99,7 @@ function CommandMenu({ open, onOpenChange }: { open: boolean; onOpenChange: (v: 
   );
 }
 
-type Tip = { label: string; y: number } | null;
+type Tip = { label: string; x: number; y: number } | null;
 
 /** Hover/focus label for a rail icon. Drawn outside the scrolling rail so it is never clipped. */
 function useRailTip() {
@@ -107,56 +107,117 @@ function useRailTip() {
   const bind = (label: string) => {
     const show = (e: React.SyntheticEvent<HTMLElement>) => {
       const r = e.currentTarget.getBoundingClientRect();
-      setTip({ label, y: r.top + r.height / 2 });
+      setTip({ label, x: r.right + 14, y: r.top + r.height / 2 });
     };
     return { onMouseEnter: show, onFocus: show, onMouseLeave: () => setTip(null), onBlur: () => setTip(null) };
   };
   return { tip, bind, hide: () => setTip(null) };
 }
 
-/** Floating ink rail: icon-only nav, lavender disc on the current page, label on hover. */
-function Rail({ onSearch, onLogout }: { onSearch: () => void; onLogout: () => void }) {
+/* Rail widths (px). Main content is padded by left gap + rail + 24. */
+const RAIL_KEY = "lms-admin-rail";
+const RAIL_PAD = { closed: "lg:pl-[108px]", open: "lg:pl-[280px]" };
+
+/** Floating ink rail: icon-only nav (label on hover), or opened into a full sidebar with labels. */
+function Rail({ open, onToggle, onSearch, onLogout }: { open: boolean; onToggle: () => void; onSearch: () => void; onLogout: () => void }) {
   const path = usePathname();
-  const router = useRouter();
   const groups = useItems();
   const { me } = useSession();
   const { tip, bind, hide } = useRailTip();
   const { resolvedTheme, setTheme } = useTheme();
   if (!me) return null;
-  const iconBtn = "relative flex size-11 shrink-0 items-center justify-center rounded-full text-rail-muted transition-colors hover:bg-rail-accent hover:text-rail-foreground [&_svg]:size-[19px] [&_svg]:stroke-[1.75]";
+  const base = "relative flex h-11 shrink-0 items-center rounded-full text-rail-muted transition-colors hover:bg-rail-accent hover:text-rail-foreground [&_svg]:size-[19px] [&_svg]:stroke-[1.75]";
+  const iconBtn = cn(base, "w-11 justify-center");
+  const navTip = (label: string) => (open ? {} : bind(label));
+  const toggle = () => { hide(); onToggle(); };
+  const themeBtn = (
+    <button onClick={() => { setTheme(resolvedTheme === "dark" ? "light" : "dark"); hide(); }} aria-label={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      className={iconBtn} {...bind(resolvedTheme === "dark" ? "Light theme" : "Dark theme")}>
+      {resolvedTheme === "dark" ? <Sun /> : <Moon />}
+    </button>
+  );
+  const searchBtn = <button onClick={onSearch} aria-label="Jump to a page (⌘K)" className={iconBtn} {...bind("Search  ⌘K")}><Search /></button>;
+  const bell = <span {...bind("Notifications")} className="[&_button]:size-11 [&_button]:rounded-full [&_button]:text-rail-muted [&_button:hover]:text-rail-foreground"><NotificationBell enabled={!!me} /></span>;
+  const logoutBtn = <button onClick={onLogout} aria-label="Sign out" className={iconBtn} {...bind("Sign out")}><LogOut /></button>;
   return (
     <>
-      <aside className="dark fixed top-4 bottom-4 left-4 z-40 hidden w-[68px] flex-col items-center rounded-[34px] bg-rail py-5 shadow-[0_18px_40px_-18px_rgb(20_19_24/0.55)] lg:flex">
-        <Link href="/dashboard" aria-label="Dashboard" className="mb-5 flex size-11 shrink-0 items-center justify-center" {...bind("LMS Admin")}>
-          <BrandMark className="bg-rail-foreground [&>span]:shadow-[0_0_0_2.5px_var(--rail)]" />
+      <aside className={cn("dark fixed top-4 bottom-4 left-4 z-40 hidden flex-col overflow-hidden rounded-[34px] bg-rail py-5 shadow-[0_18px_40px_-18px_rgb(20_19_24/0.55)] transition-[width] duration-300 ease-out lg:flex",
+        open ? "w-[240px]" : "w-[68px]")}>
+        <Link href="/dashboard" aria-label="Dashboard" className="mx-3 mb-5 flex h-11 shrink-0 items-center gap-1 whitespace-nowrap" {...navTip("LMS Admin")}>
+          <span className="flex size-11 shrink-0 items-center justify-center"><BrandMark className="bg-rail-foreground [&>span]:shadow-[0_0_0_2.5px_var(--rail)]" /></span>
+          {open && (
+            <span className="flex animate-fade-in items-center gap-2 font-display text-lg font-extrabold text-rail-foreground">
+              LMS <span className="rounded-full bg-signal px-2 py-0.5 font-sans text-[10px] font-bold text-signal-foreground">Admin</span>
+            </span>
+          )}
         </Link>
-        <nav className="no-scrollbar flex min-h-0 w-full flex-1 flex-col items-center gap-1.5 overflow-y-auto py-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-28px),transparent)] pb-6" onScroll={hide} aria-label="Main">
+        <nav className={cn("no-scrollbar flex min-h-0 w-full flex-1 flex-col gap-1.5 overflow-y-auto px-3 py-1 [mask-image:linear-gradient(to_bottom,black_calc(100%-28px),transparent)] pb-6",
+          open ? "items-stretch" : "items-center")} onScroll={hide} aria-label="Main">
           {groups.map((group, gi) => (
             <React.Fragment key={group.label}>
-              {gi > 0 && <span className="my-1 h-px w-6 shrink-0 bg-rail-border" aria-hidden />}
+              {open
+                ? <span className={cn("shrink-0 animate-fade-in px-3.5 pb-0.5 text-[11px] font-semibold tracking-wide whitespace-nowrap text-rail-muted uppercase", gi > 0 && "pt-3")}>{group.label}</span>
+                : gi > 0 && <span className="my-1 h-px w-6 shrink-0 bg-rail-border" aria-hidden />}
               {group.items.map((item) => {
                 const active = path === item.href || path.startsWith(item.href + "/");
                 return (
-                  <Link key={item.href} href={item.href} aria-label={item.label} aria-current={active ? "page" : undefined} {...bind(item.label)}
-                    className={cn(iconBtn, active && "text-signal-foreground hover:bg-transparent hover:text-signal-foreground")}>
+                  <Link key={item.href} href={item.href} aria-label={item.label} aria-current={active ? "page" : undefined} {...navTip(item.label)}
+                    className={cn(base, open ? "w-full pr-4" : "w-11", active && "text-signal-foreground hover:bg-transparent hover:text-signal-foreground")}>
                     {active && <motion.span layoutId="rail-active" transition={{ type: "spring", stiffness: 520, damping: 40 }} className="absolute inset-0 rounded-full bg-signal" />}
-                    <item.icon className="relative z-10" />
+                    <span className="relative z-10 flex size-11 shrink-0 items-center justify-center"><item.icon /></span>
+                    {open && <span className="relative z-10 animate-fade-in truncate text-sm font-semibold whitespace-nowrap">{item.label}</span>}
                   </Link>
                 );
               })}
             </React.Fragment>
           ))}
         </nav>
-        <div className="mt-1 flex shrink-0 flex-col items-center gap-1.5">
-          <button onClick={onSearch} aria-label="Jump to a page (⌘K)" className={iconBtn} {...bind("Search  ⌘K")}><Search /></button>
-          <button onClick={() => { setTheme(resolvedTheme === "dark" ? "light" : "dark"); hide(); }} aria-label={resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-            className={iconBtn} {...bind(resolvedTheme === "dark" ? "Light theme" : "Dark theme")}>
-            {resolvedTheme === "dark" ? <Sun /> : <Moon />}
-          </button>
-          <span {...bind("Notifications")} className="[&_button]:size-11 [&_button]:rounded-full [&_button]:text-rail-muted [&_button:hover]:text-rail-foreground"><NotificationBell enabled={!!me} /></span>
+        {open ? (
+          <div className="mx-3 mt-1 flex shrink-0 flex-col gap-2 border-t border-rail-border pt-3">
+            <div className="flex items-center justify-between">{searchBtn}{themeBtn}{bell}{logoutBtn}</div>
+            <AccountMenu open={open} onLogout={onLogout} bind={bind} />
+          </div>
+        ) : (
+          <div className="mt-1 flex shrink-0 flex-col items-center gap-1.5">
+            {searchBtn}{themeBtn}{bell}
+            <AccountMenu open={open} onLogout={onLogout} bind={bind} />
+            {logoutBtn}
+          </div>
+        )}
+      </aside>
+      {/* Edge tab that opens / closes the rail; sits on the rail's right edge, level with the logo. */}
+      <button onClick={toggle} aria-label={open ? "Close sidebar" : "Open sidebar"} aria-expanded={open} {...bind(open ? "Close sidebar" : "Open sidebar")}
+        className={cn("fixed top-[50px] z-50 hidden size-6 items-center justify-center rounded-full border border-white/15 bg-rail text-white/80 shadow-md transition-[left,background-color,color] duration-300 ease-out hover:bg-signal hover:text-signal-foreground focus-visible:ring-2 focus-visible:ring-signal focus-visible:outline-none lg:flex",
+          open ? "left-[244px]" : "left-[72px]")}>
+        {open ? <ChevronLeft className="size-3.5" /> : <ChevronRight className="size-3.5" />}
+      </button>
+      {tip && (
+        <div role="tooltip" className="pointer-events-none fixed z-50 hidden -translate-y-1/2 animate-fade-in items-center lg:flex" style={{ top: tip.y, left: tip.x }}>
+          <span className="rounded-lg bg-rail px-2.5 py-1.5 text-xs font-medium whitespace-pre text-rail-foreground shadow-lg dark:ring-1 dark:ring-rail-border">{tip.label}</span>
+        </div>
+      )}
+    </>
+  );
+}
+
+/** Avatar menu: just the avatar on the closed rail, avatar + name + email on the open one. */
+function AccountMenu({ open, onLogout, bind }: { open: boolean; onLogout: () => void; bind: ReturnType<typeof useRailTip>["bind"] }) {
+  const router = useRouter();
+  const { me } = useSession();
+  const { resolvedTheme, setTheme } = useTheme();
+  if (!me) return null;
+  return (
           <DropdownMenu>
-            <DropdownMenuTrigger className="rounded-full outline-none ring-offset-2 ring-offset-rail focus-visible:ring-2 focus-visible:ring-signal" aria-label="Account menu" {...bind(me.name)}>
-              <Avatar src={me.avatarUrl} name={me.name} className="size-10 ring-2 ring-rail-border" />
+            <DropdownMenuTrigger aria-label="Account menu" {...(open ? {} : bind(me.name))}
+              className={cn("rounded-full outline-none ring-offset-2 ring-offset-rail focus-visible:ring-2 focus-visible:ring-signal",
+                open && "flex w-full items-center gap-2.5 p-1 pr-3 text-left transition-colors hover:bg-rail-accent")}>
+              <Avatar src={me.avatarUrl} name={me.name} className="size-10 shrink-0 ring-2 ring-rail-border" />
+              {open && (
+                <span className="min-w-0 animate-fade-in">
+                  <span className="block truncate text-sm font-semibold text-rail-foreground">{me.name}</span>
+                  <span className="block truncate text-xs text-rail-muted">{me.email}</span>
+                </span>
+              )}
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="end" sideOffset={14} className="w-60">
               <DropdownMenuLabel>
@@ -169,15 +230,6 @@ function Rail({ onSearch, onLogout }: { onSearch: () => void; onLogout: () => vo
               <DropdownMenuItem destructive onSelect={onLogout}><LogOut /> Sign out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <button onClick={onLogout} aria-label="Sign out" className={iconBtn} {...bind("Sign out")}><LogOut /></button>
-        </div>
-      </aside>
-      {tip && (
-        <div role="tooltip" className="pointer-events-none fixed left-[98px] z-50 hidden -translate-y-1/2 animate-fade-in items-center lg:flex" style={{ top: tip.y }}>
-          <span className="rounded-lg bg-rail px-2.5 py-1.5 text-xs font-medium whitespace-pre text-rail-foreground shadow-lg dark:ring-1 dark:ring-rail-border">{tip.label}</span>
-        </div>
-      )}
-    </>
   );
 }
 
@@ -187,6 +239,16 @@ function Shell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [cmd, setCmd] = React.useState(false);
+  const [railOpen, setRailOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    try { setRailOpen(localStorage.getItem(RAIL_KEY) === "open"); } catch { /* storage blocked: stay closed */ }
+  }, []);
+  const toggleRail = () => {
+    const next = !railOpen;
+    setRailOpen(next);
+    try { localStorage.setItem(RAIL_KEY, next ? "open" : "closed"); } catch { /* not saved, still works */ }
+  };
 
   React.useEffect(() => {
     if (!loading && !me) router.replace(`/login?next=${encodeURIComponent(window.location.pathname)}`);
@@ -206,8 +268,8 @@ function Shell({ children }: { children: React.ReactNode }) {
 
   if (loading || !me) {
     return (
-      <div className="min-h-screen lg:pl-[100px]">
-        <div className="fixed top-4 bottom-4 left-4 hidden w-[68px] rounded-[34px] bg-rail lg:block" />
+      <div className={cn("min-h-screen", RAIL_PAD[railOpen ? "open" : "closed"])}>
+        <div className={cn("fixed top-4 bottom-4 left-4 hidden rounded-[34px] bg-rail lg:block", railOpen ? "w-[240px]" : "w-[68px]")} />
         <div className="space-y-4 p-4 sm:p-6 lg:py-4 lg:pr-6"><Skeleton className="h-36 w-full rounded-[24px]" /><Skeleton className="h-64 w-full rounded-[24px]" /></div>
       </div>
     );
@@ -215,7 +277,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen">
-      <Rail onSearch={() => setCmd(true)} onLogout={logout} />
+      <Rail open={railOpen} onToggle={toggleRail} onSearch={() => setCmd(true)} onLogout={logout} />
       <Dialog open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="dark border-rail-border bg-rail">
           <Brand />
@@ -233,7 +295,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <NotificationBell enabled={!!me} />
         <Link href="/profile" aria-label="Profile"><Avatar src={me.avatarUrl} name={me.name} /></Link>
       </header>
-      <main className="mx-auto w-full max-w-[1480px] px-4 py-6 sm:px-6 lg:py-5 lg:pr-6 lg:pl-[108px]">{children}</main>
+      <main className={cn("mx-auto w-full max-w-[1480px] px-4 py-6 transition-[padding] duration-300 ease-out sm:px-6 lg:py-5 lg:pr-6", RAIL_PAD[railOpen ? "open" : "closed"])}>{children}</main>
     </div>
   );
 }

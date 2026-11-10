@@ -14,6 +14,7 @@ import (
 	"github.com/lms/backend/internal/dto"
 	"github.com/lms/backend/internal/platform/google"
 	"github.com/lms/backend/internal/platform/mailer"
+	"github.com/lms/backend/internal/platform/monitor"
 	"github.com/lms/backend/internal/platform/realtime"
 	"github.com/lms/backend/internal/platform/storage"
 	"github.com/lms/backend/internal/repository"
@@ -30,6 +31,7 @@ type Deps struct {
 	Google  *google.Client
 	Tokens  *auth.Tokens
 	Cookies auth.CookieFactory
+	Monitor *monitor.Recorder // request timings + machine samples for the Server page (made by New when nil)
 }
 
 // Services is the container handed to the HTTP layer.
@@ -57,12 +59,16 @@ type Services struct {
 	Site          *SiteService
 	Analytics     *AnalyticsService
 	Leads         *LeadService
+	Server        *ServerService
 }
 
 // New wires every service. Shared helpers (access, audit, notify, settings) are built first.
 func New(d *Deps) *Services {
 	if d.Pool != nil && d.Q == nil {
 		d.Q = repository.New(d.Pool)
+	}
+	if d.Monitor == nil {
+		d.Monitor = monitor.New()
 	}
 	s := &Services{}
 	s.Settings = &SettingsService{deps: d, cache: newTTLCache[*Settings](settingsTTL), sales: newTTLCache[*dto.SalesSettings](settingsTTL), wa: newTTLCache[*WAConn](settingsTTL)}
@@ -91,6 +97,7 @@ func New(d *Deps) *Services {
 	s.Leads = &LeadService{base: b} // commissions wired when commissions.go lands
 	s.Site = &SiteService{base: b, leads: s.Leads}
 	s.Analytics = &AnalyticsService{base: b}
+	s.Server = &ServerService{base: b}
 	return s
 }
 

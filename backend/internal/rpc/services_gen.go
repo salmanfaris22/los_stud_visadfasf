@@ -63,6 +63,9 @@ func (srv *server) genMounts() []mount {
 		{lmsv1connect.AdminServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
 			return lmsv1connect.NewAdminServiceHandler(adminServer{srv}, o...)
 		}},
+		{lmsv1connect.ServerServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
+			return lmsv1connect.NewServerServiceHandler(serverServer{srv}, o...)
+		}},
 		{lmsv1connect.LeadServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
 			return lmsv1connect.NewLeadServiceHandler(leadServer{srv}, o...)
 		}},
@@ -1536,6 +1539,69 @@ func (c adminServer) DisconnectGoogle(ctx context.Context, req *connect.Request[
 		return nil, err
 	}
 	return connect.NewResponse(&lmsv1.DisconnectGoogleResponse{}), nil
+}
+
+// serverServer implements lms.v1.ServerService.
+type serverServer struct{ *server }
+
+// GetServerOverview: Machine now, API traffic and speed, and chart points for the period
+func (c serverServer) GetServerOverview(ctx context.Context, req *connect.Request[lmsv1.GetServerOverviewRequest]) (*connect.Response[lmsv1.GetServerOverviewResponse], error) {
+	m := req.Msg
+	out, err := c.s.Server.Overview(ctx, m.GetPeriod())
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.GetServerOverviewResponse{Overview: serverOverviewToPB(out)}), nil
+}
+
+// ListEndpointStats: Calls, errors and response times per endpoint
+func (c serverServer) ListEndpointStats(ctx context.Context, req *connect.Request[lmsv1.ListEndpointStatsRequest]) (*connect.Response[lmsv1.ListEndpointStatsResponse], error) {
+	m := req.Msg
+	out, err := c.s.Server.Endpoints(ctx, m.GetPeriod(), m.GetSort())
+	if err != nil {
+		return nil, err
+	}
+	res := &lmsv1.ListEndpointStatsResponse{Items: make([]*lmsv1.EndpointStat, 0, len(out))}
+	for _, x := range out {
+		res.Items = append(res.Items, endpointStatToPB(x))
+	}
+	return connect.NewResponse(res), nil
+}
+
+// ListRecentRequests: The latest requests, or the slow (1 s+) / failed (5xx) ones of the last 30 days
+func (c serverServer) ListRecentRequests(ctx context.Context, req *connect.Request[lmsv1.ListRecentRequestsRequest]) (*connect.Response[lmsv1.ListRecentRequestsResponse], error) {
+	m := req.Msg
+	out, err := c.s.Server.Requests(ctx, m.GetKind(), int(def32(m.GetLimit(), 50)))
+	if err != nil {
+		return nil, err
+	}
+	res := &lmsv1.ListRecentRequestsResponse{Items: make([]*lmsv1.RequestLog, 0, len(out))}
+	for _, x := range out {
+		res.Items = append(res.Items, requestLogToPB(x))
+	}
+	return connect.NewResponse(res), nil
+}
+
+// GetDatabaseStats: Postgres: size, cache hits, connections per login role, biggest tables, running queries
+func (c serverServer) GetDatabaseStats(ctx context.Context, req *connect.Request[lmsv1.GetDatabaseStatsRequest]) (*connect.Response[lmsv1.GetDatabaseStatsResponse], error) {
+	out, err := c.s.Server.Database(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.GetDatabaseStatsResponse{Database: databaseStatsToPB(out)}), nil
+}
+
+// ListOnlineUsers: Users active in the last 5 minutes or with a tab open
+func (c serverServer) ListOnlineUsers(ctx context.Context, req *connect.Request[lmsv1.ListOnlineUsersRequest]) (*connect.Response[lmsv1.ListOnlineUsersResponse], error) {
+	out, err := c.s.Server.Online(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res := &lmsv1.ListOnlineUsersResponse{Items: make([]*lmsv1.OnlineUser, 0, len(out))}
+	for _, x := range out {
+		res.Items = append(res.Items, onlineUserToPB(x))
+	}
+	return connect.NewResponse(res), nil
 }
 
 // leadServer implements lms.v1.LeadService.

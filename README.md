@@ -6,8 +6,8 @@ Admins create students and assign courses. Courses are **videos** (YouTube / Vim
 
 | | |
 |---|---|
-| Backend | Go 1.27 · `net/http` + chi · huma (OpenAPI 3.1) · sqlc + pgx v5 · golang-migrate |
-| Data | PostgreSQL 16 · Redis (rate limits, realtime fan-out, WS tickets) · S3-compatible storage (Cloudflare R2 / MinIO) |
+| Backend | Go 1.27 · gRPC via ConnectRPC (gRPC, gRPC-Web and Connect on one port) · protovalidate · sqlc + pgx v5 · golang-migrate |
+| Data | PostgreSQL 16 · S3-compatible storage (Cloudflare R2 / MinIO). No Redis: rate limits and realtime run in the API process |
 | Frontends | Next.js 15 (App Router) · React 19 · Tailwind v4 · shadcn-style UI · TanStack Query · Framer Motion |
 | Monorepo | pnpm workspaces + Turborepo |
 | Quality | Go unit + API integration tests · Playwright E2E · GitHub Actions CI |
@@ -15,11 +15,11 @@ Admins create students and assign courses. Courses are **videos** (YouTube / Vim
 ## Quick start (macOS, Homebrew)
 
 ```bash
-brew install go pnpm sqlc golang-migrate postgresql@16 redis minio mailpit
-make services db install        # start Postgres/Redis/MinIO/Mailpit, create DBs, install packages
+brew install go pnpm sqlc golang-migrate postgresql@16 minio mailpit
+make services db install        # start Postgres/MinIO/Mailpit, create DBs, install packages
 cp .env.example backend/.env    # defaults work locally
 make seed                       # roles, super admin, website content + demo data
-make api                        # API  → http://localhost:8080  (docs: /docs)
+make api                        # API  → http://localhost:8080  (grpcurl -plaintext localhost:8080 list)
 make dev                        # apps → student http://localhost:3000 · admin http://localhost:3001
 ```
 
@@ -40,18 +40,20 @@ Local tools: Mailpit inbox http://localhost:8025 · MinIO console http://localho
 ```
 LMS/
 ├── backend/                 Go API
-│   ├── cmd/                 api · migrate · seed · openapi
+│   ├── cmd/                 api · migrate · seed
 │   ├── db/                  migrations/*.sql · queries/*.sql (sqlc input) · embed.go
-│   ├── api/openapi.json     generated spec
+│   ├── gen/                 generated protobuf + Connect code (do not edit)
+│   ├── tools/               protogen (dto → proto messages) · rpcgen (spec.txt → services + adapters)
 │   └── internal/
-│       ├── handler/         HTTP layer — routes, params, error → status (no business rules)
+│       ├── rpc/             gRPC layer — Connect adapters, access/validation/error interceptors (no business rules)
+│       ├── httpx/           the few plain-HTTP routes (Google redirects, file links)
 │       ├── service/         business logic (one file per domain), no HTTP imports
 │       ├── repository/      sqlc-generated data access (do not edit)
-│       ├── dto/             request / response models shared by handler + service
-│       ├── middleware/      authentication, permission guards, rate limit, CORS, logging
+│       ├── dto/             request / response models (the proto messages are generated from these)
+│       ├── middleware/      authentication, CORS, security headers, logging
 │       ├── auth/            principal, permission catalogue, JWT, cookies
 │       ├── apperr/          typed errors returned by services
-│       ├── platform/        adapters: storage, mailer, realtime, google, secure
+│       ├── platform/        adapters: storage, mailer, realtime, ratelimit, google, secure
 │       ├── jobs/            scheduler (live reminders, token cleanup)
 │       ├── config/          environment configuration
 │       └── server/          wiring + API integration tests
@@ -61,7 +63,7 @@ LMS/
 │   │   └── student/         Next.js public website + student portal (:3000)
 │   ├── packages/
 │   │   ├── ui/              design system (buttons, dialogs, video player, markdown, calendar…)
-│   │   ├── api-client/      typed API client (Connect/gRPC + OpenAPI) + upload/realtime helpers
+│   │   ├── api-client/      gRPC client (generated services + connect-query hooks) + upload/realtime/file helpers
 │   │   ├── shared/          components needing API + UI (notification bell, image upload)
 │   │   └── config/          shared tsconfig
 │   ├── e2e/                 Playwright browser tests
@@ -75,7 +77,7 @@ LMS/
 | Doc | What's inside |
 |---|---|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layers, request flow, data model, auth, permissions, uploads, live sync, realtime |
-| [docs/API.md](docs/API.md) | All 147 endpoints with the permission each needs |
+| [docs/API.md](docs/API.md) | Every gRPC service and RPC with the access rule each needs |
 | [docs/FEATURES.md](docs/FEATURES.md) | Every feature per role, with the page and API behind it |
 | [docs/SETUP.md](docs/SETUP.md) | Local setup, environment variables, Google, Cloudflare R2, production deploy |
 | [docs/TEST_REPORT.md](docs/TEST_REPORT.md) | Full test results in tables |
@@ -86,7 +88,7 @@ LMS/
 |---|---|
 | `make test` | Go unit + API integration tests (uses `lms_test` DB) |
 | `make e2e` | Playwright tests (API + both apps running) |
-| `make gen` | Regenerate OpenAPI + TypeScript client after API changes |
+| `make gen` | After changing `internal/dto` or `backend/tools/rpcgen/spec.txt`: regenerate protos, Go + TS code and docs/API.md |
 | `make proto` | Regenerate Go + TypeScript code from `proto/` |
 | `make sqlc` | Regenerate repository code after editing `db/queries/*.sql` |
 | `cd frontend && pnpm typecheck` / `pnpm build` | Type-check / build all frontend packages |

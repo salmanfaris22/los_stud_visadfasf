@@ -1,6 +1,6 @@
 import {
   Award, BarChart3, BookOpen, CalendarDays, ClipboardCheck, FileText, Globe, Inbox, LayoutDashboard, Megaphone,
-  MessagesSquare, ScrollText, Settings, Shield, UserCog, Users, UsersRound,
+  MessagesSquare, ScrollText, Server, Settings, Shield, UserCog, Users, UsersRound,
 } from "lucide-react";
 
 export type NavItem = { href: string; label: string; icon: typeof LayoutDashboard; module?: string };
@@ -46,6 +46,7 @@ export const NAV: NavGroup[] = [
     label: "System",
     items: [
       { href: "/analytics", label: "Analytics", icon: BarChart3, module: "analytics" },
+      { href: "/server", label: "Server", icon: Server, module: "server" },
       { href: "/audit", label: "Audit log", icon: ScrollText, module: "audit" },
       { href: "/settings", label: "Settings", icon: Settings, module: "settings" },
     ],
