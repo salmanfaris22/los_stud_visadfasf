@@ -1,8 +1,6 @@
 import path from "node:path";
 import type { NextConfig } from "next";
 
-const api = process.env.API_URL ?? "http://localhost:8080";
-
 const config: NextConfig = {
   transpilePackages: ["@lms/ui", "@lms/api-client", "@lms/shared"],
   output: "standalone",
@@ -10,14 +8,9 @@ const config: NextConfig = {
   poweredByHeader: false,
   // Dev-only "N" badge: bottom-left sits on the sidebar's account button.
   devIndicators: { position: "bottom-right" },
-  // The browser talks to /api on this origin; Next forwards it to the Go API (cookies stay first-party).
-  async rewrites() {
-    return [
-      { source: "/api/:path*", destination: `${api}/api/:path*` },
-      // gRPC (Connect) calls; the Go server strips /rpc. The refresh cookie is scoped to /rpc/lms.v1.AuthService.
-      { source: "/rpc/:path*", destination: `${api}/rpc/:path*` },
-    ];
-  },
+  // The browser talks to /rpc (gRPC/Connect) and /api (files, Google redirects) on this origin, so cookies
+  // stay first-party. Route handlers in src/app/{rpc,api}/[...path] forward them to API_URL; not rewrites,
+  // because Vercel's edge proxy will not forward to a bare IP / port 8080. The Go server strips /rpc.
   async headers() {
     return [
       {
