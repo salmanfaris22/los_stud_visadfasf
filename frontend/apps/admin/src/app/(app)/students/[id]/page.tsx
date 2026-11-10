@@ -8,23 +8,24 @@ import {
   Avatar, Button, Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
   EmptyState, Field, PageHeader, Progress, Select, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table, formatDate, timeAgo, useConfirm,
 } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { feedback } from "@/lib/feedback";
 import { Can, useSession } from "@/lib/session";
 import { useBatchOptions, useCourseOptions } from "@/features/common/options";
 import { StudentFormDialog } from "@/features/students/student-form";
+import { CertificateService, StudentService, SubmissionService, useRpcMutation, useRpcQuery } from "@lms/api-client";
 
 function EnrollmentBatch({ enrollmentId, courseId, batchId, status }: { enrollmentId: string; courseId: string; batchId?: string | null; status: string }) {
   const qc = useQueryClient();
   const batches = useBatchOptions(courseId);
-  const update = $api.useMutation("put", "/api/v1/enrollments/{id}", feedback(qc, "Enrollment updated", ["/api/v1/students"]));
+  const update = useRpcMutation(StudentService.method.updateEnrollment, feedback(qc, "Enrollment updated", [StudentService]));
   return (
     <div className="flex gap-2">
-      <Select className="h-8 w-40 text-xs" value={batchId ?? ""} onChange={(e) => update.mutate({ params: { path: { id: enrollmentId } }, body: { batch_id: e.target.value || undefined, status: status as "active" } })}>
+      <Select className="h-8 w-40 text-xs" value={batchId ?? ""} onChange={(e) => update.mutate({ id: enrollmentId, input: { batchId: e.target.value || undefined, status: status as "active" } })}>
         <option value="">No batch</option>
         {batches.data?.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
       </Select>
-      <Select className="h-8 w-32 text-xs" value={status} onChange={(e) => update.mutate({ params: { path: { id: enrollmentId } }, body: { batch_id: batchId ?? undefined, status: e.target.value as "active" } })}>
+      <Select className="h-8 w-32 text-xs" value={status} onChange={(e) => update.mutate({ id: enrollmentId, input: { batchId: batchId ?? undefined, status: e.target.value as "active" } })}>
         <option value="active">Active</option><option value="completed">Completed</option><option value="suspended">Suspended</option>
       </Select>
     </div>
@@ -37,7 +38,7 @@ function AssignCourseDialog({ studentId, open, onOpenChange }: { studentId: stri
   const [batchId, setBatchId] = React.useState("");
   const courses = useCourseOptions();
   const batches = useBatchOptions(courseId || undefined);
-  const enroll = $api.useMutation("post", "/api/v1/students/{id}/enrollments", feedback(qc, "Course assigned", ["/api/v1/students"], () => onOpenChange(false)));
+  const enroll = useRpcMutation(StudentService.method.enrollStudent, feedback(qc, "Course assigned", [StudentService], () => onOpenChange(false)));
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -46,7 +47,7 @@ function AssignCourseDialog({ studentId, open, onOpenChange }: { studentId: stri
         <Field label="Batch"><Select value={batchId} disabled={!courseId} onChange={(e) => setBatchId(e.target.value)}><option value="">No batch</option>{batches.data?.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</Select></Field>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button disabled={!courseId} loading={enroll.isPending} onClick={() => enroll.mutate({ params: { path: { id: studentId } }, body: { course_id: courseId, batch_id: batchId || undefined } })}>Assign</Button>
+          <Button disabled={!courseId} loading={enroll.isPending} onClick={() => enroll.mutate({ studentId, input: { courseId: courseId, batchId: batchId || undefined } })}>Assign</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -61,27 +62,28 @@ export default function StudentPage() {
   const { can } = useSession();
   const [editing, setEditing] = React.useState(false);
   const [assigning, setAssigning] = React.useState(false);
-  const q = $api.useQuery("get", "/api/v1/students/{id}", { params: { path: { id } } });
-  const subs = $api.useQuery("get", "/api/v1/submissions", { params: { query: { student_id: id, per_page: 10 } } }, { enabled: can("submissions") });
-  const remove = $api.useMutation("delete", "/api/v1/students/{id}", feedback(qc, "Student deleted", ["/api/v1/students"], () => router.replace("/students")));
-  const unenroll = $api.useMutation("delete", "/api/v1/enrollments/{id}", feedback(qc, "Course removed", ["/api/v1/students"]));
-  const issue = $api.useMutation("post", "/api/v1/certificates", feedback(qc, "Certificate issued", ["/api/v1/certificates", "/api/v1/students"]));
+  const q = useRpcQuery(StudentService.method.getStudent, { id }, { select: (r) => r.student });
+  const subs = useRpcQuery(SubmissionService.method.listSubmissions, { studentId: id, perPage: 10 }, { enabled: can("submissions") });
+  const remove = useRpcMutation(StudentService.method.deleteStudent, feedback(qc, "Student deleted", [StudentService], () => router.replace("/students")));
+  const unenroll = useRpcMutation(StudentService.method.deleteEnrollment, feedback(qc, "Course removed", [StudentService]));
+  const issue = useRpcMutation(CertificateService.method.issueCertificate, feedback(qc, "Certificate issued", [CertificateService, StudentService]));
 
   if (q.isLoading) return <Skeleton className="h-96" />;
-  if (!q.data) return <EmptyState title="Student not found" />;
-  const { student: s, enrollments } = q.data;
+  if (!q.data?.student) return <EmptyState title="Student not found" />;
+  const s = q.data.student;
+  const { enrollments } = q.data;
 
   return (
     <>
       <PageHeader
         back={<Link href="/students" className="inline-flex items-center gap-1 hover:text-foreground"><ArrowLeft className="size-4" /> Students</Link>}
-        title={<span className="flex items-center gap-3"><Avatar src={s.avatar_url} name={s.name} className="size-11" />{s.name}</span>}
-        description={<span className="flex flex-wrap items-center gap-x-4 gap-y-1"><span className="font-mono">{s.student_code}</span><span className="inline-flex items-center gap-1"><Mail className="size-3.5" />{s.email}</span>{s.phone && <span className="inline-flex items-center gap-1"><Phone className="size-3.5" />{s.phone}</span>}<StatusBadge status={s.status} /></span>}
+        title={<span className="flex items-center gap-3"><Avatar src={s.avatarUrl} name={s.name} className="size-11" />{s.name}</span>}
+        description={<span className="flex flex-wrap items-center gap-x-4 gap-y-1"><span className="font-mono">{s.studentCode}</span><span className="inline-flex items-center gap-1"><Mail className="size-3.5" />{s.email}</span>{s.phone && <span className="inline-flex items-center gap-1"><Phone className="size-3.5" />{s.phone}</span>}<StatusBadge status={s.status} /></span>}
         actions={
           <>
             <Can module="students" action="edit"><Button variant="outline" onClick={() => setEditing(true)}><Pencil /> Edit</Button></Can>
             <Can module="students" action="delete">
-              <Button variant="outline" className="text-destructive" onClick={async () => { if (await confirm({ title: `Delete ${s.name}?`, description: "Their submissions, attendance and certificates are deleted too. This cannot be undone.", destructive: true, confirmText: "Delete" })) remove.mutate({ params: { path: { id } } }); }}><Trash2 /> Delete</Button>
+              <Button variant="outline" className="text-destructive" onClick={async () => { if (await confirm({ title: `Delete ${s.name}?`, description: "Their submissions, attendance and certificates are deleted too. This cannot be undone.", destructive: true, confirmText: "Delete" })) remove.mutate({ id }); }}><Trash2 /> Delete</Button>
             </Can>
           </>
         }
@@ -98,22 +100,22 @@ export default function StudentPage() {
               <div key={e.id} className="rounded-xl border p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <div className="font-medium">{e.course_title}</div>
-                    <div className="text-xs text-muted-foreground">Enrolled {formatDate(e.enrolled_at)}{e.batch_name && ` · ${e.batch_name}`}</div>
+                    <div className="font-medium">{e.courseTitle}</div>
+                    <div className="text-xs text-muted-foreground">Enrolled {formatDate(e.enrolledAt)}{e.batchName && ` · ${e.batchName}`}</div>
                   </div>
                   <Can module="students" action="edit">
                     <div className="flex items-center gap-2">
-                      <EnrollmentBatch enrollmentId={e.id} courseId={e.course_id} batchId={e.batch_id} status={e.status} />
-                      <Button variant="ghost" size="icon-sm" aria-label="Remove course" onClick={async () => { if (await confirm({ title: `Remove ${e.course_title}?`, description: "The student loses access. Their past submissions are kept.", destructive: true, confirmText: "Remove" })) unenroll.mutate({ params: { path: { id: e.id } } }); }}><Trash2 /></Button>
+                      <EnrollmentBatch enrollmentId={e.id} courseId={e.courseId} batchId={e.batchId} status={e.status} />
+                      <Button variant="ghost" size="icon-sm" aria-label="Remove course" onClick={async () => { if (await confirm({ title: `Remove ${e.courseTitle}?`, description: "The student loses access. Their past submissions are kept.", destructive: true, confirmText: "Remove" })) unenroll.mutate({ id: e.id }); }}><Trash2 /></Button>
                     </div>
                   </Can>
                 </div>
                 <div className="mt-3 flex items-center gap-3">
-                  <Progress value={e.progress_pct} />
-                  <span className="w-28 text-right text-xs text-muted-foreground">{e.approved_tasks}/{e.total_tasks} tasks · {e.progress_pct}%</span>
+                  <Progress value={e.progressPct} />
+                  <span className="w-28 text-right text-xs text-muted-foreground">{e.approvedTasks}/{e.totalTasks} tasks · {e.progressPct}%</span>
                 </div>
-                {e.progress_pct === 100 && can("certificates", "create") && (
-                  <Button size="sm" variant="outline" className="mt-3" loading={issue.isPending} onClick={() => issue.mutate({ body: { student_id: s.id, course_id: e.course_id } })}><Award /> Issue certificate</Button>
+                {e.progressPct === 100 && can("certificates", "create") && (
+                  <Button size="sm" variant="outline" className="mt-3" loading={issue.isPending} onClick={() => issue.mutate({ input: { studentId: s.id, courseId: e.courseId } })}><Award /> Issue certificate</Button>
                 )}
               </div>
             ))}
@@ -122,8 +124,8 @@ export default function StudentPage() {
         <Card>
           <CardHeader><CardTitle>Account</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Joined</span><span>{formatDate(s.created_at)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Last sign in</span><span>{s.last_login_at ? timeAgo(s.last_login_at) : "Never"}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Joined</span><span>{formatDate(s.createdAt)}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Last sign in</span><span>{s.lastLoginAt ? timeAgo(s.lastLoginAt) : "Never"}</span></div>
             <div className="flex justify-between"><span className="text-muted-foreground">Courses</span><span>{enrollments.length}</span></div>
             {q.data.bio && <p className="border-t pt-3 text-muted-foreground">{q.data.bio}</p>}
           </CardContent>
@@ -138,8 +140,8 @@ export default function StudentPage() {
                   <TBody>
                     {subs.data?.items.map((x) => (
                       <TR key={x.id} className="cursor-pointer" onClick={() => router.push(`/submissions/${x.id}`)}>
-                        <TD className="font-medium">{x.task_title}</TD><TD>{x.course_title}</TD><TD>#{x.attempt}</TD><TD><StatusBadge status={x.status} /></TD>
-                        <TD>{x.marks ?? "—"}/{x.max_marks}</TD><TD className="text-muted-foreground">{timeAgo(x.created_at)}</TD>
+                        <TD className="font-medium">{x.taskTitle}</TD><TD>{x.courseTitle}</TD><TD>#{x.attempt}</TD><TD><StatusBadge status={x.status} /></TD>
+                        <TD>{x.marks ?? "—"}/{x.maxMarks}</TD><TD className="text-muted-foreground">{timeAgo(x.createdAt)}</TD>
                       </TR>
                     ))}
                   </TBody>

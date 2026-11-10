@@ -11,9 +11,9 @@ function brandStyle(color?: string): React.CSSProperties | undefined {
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
-  const logo = site.branding.logo_url || undefined;
+  const logo = site.branding.logoUrl || undefined;
   return (
-    <div className="site-skin min-h-screen" style={brandStyle(site.branding.primary_color)}>
+    <div className="site-skin min-h-screen" style={brandStyle(site.branding.primaryColor)}>
       <Navbar name={site.branding.name} logo={logo} signup={site.signup} />
       <main className="min-h-screen">{children}</main>
       <Footer name={site.branding.name} logo={logo} data={(site.blocks.footer ?? {}) as Record<string, string>} />

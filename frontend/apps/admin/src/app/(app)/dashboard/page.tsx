@@ -6,9 +6,9 @@ import {
   ArrowRight, Bell, BookOpen, CalendarDays, ChevronLeft, ChevronRight, CirclePlus, Eye, LayoutGrid, Link2,
   PlayCircle, Sparkles, UsersRound, X,
 } from "lucide-react";
-import { Avatar, EmptyState, Skeleton, cn, formatTime, timeAgo } from "@lms/ui";
-import { invalidatePaths } from "@lms/api-client";
-import { $api } from "@/lib/api";
+import { Avatar, EmptyState, Skeleton, cn, formatTime, timeAgo, asDate, type DateLike } from "@lms/ui";
+import { invalidateRpc, AdminService, CommentService, CourseService, LiveService, NotificationService, StudentService, SubmissionService, useRpcMutation, useRpcQuery, toTimestamp } from "@lms/api-client";
+
 import { useSession } from "@/lib/session";
 import { Coil, Flower } from "@/features/dashboard/lilac-art";
 
@@ -50,7 +50,7 @@ function Hero({ canStudents }: { canStudents: boolean }) {
 }
 
 function Members() {
-  const q = $api.useQuery("get", "/api/v1/students", { params: { query: { per_page: 6 } } });
+  const q = useRpcQuery(StudentService.method.listStudents, { perPage: 6 });
   const items = q.data?.items ?? [];
   return (
     <section className={cn(box, "flex flex-col p-5")}>
@@ -69,7 +69,7 @@ function Members() {
             return (
               <li key={s.id}>
                 <Link href={`/students/${s.id}`} className="group flex flex-col items-center text-center">
-                  <Avatar src={s.avatar_url} name={s.name} className={cn("size-[68px] transition group-hover:scale-105 [&>span]:text-base", softAvatar(i))} />
+                  <Avatar src={s.avatarUrl} name={s.name} className={cn("size-[68px] transition group-hover:scale-105 [&>span]:text-base", softAvatar(i))} />
                   <span className="mt-1.5 text-[13px] leading-tight">{first}<br />{rest.join(" ") || " "}</span>
                 </Link>
               </li>
@@ -172,11 +172,11 @@ function Statistics({ daily, published, batches }: { daily: { submitted: number;
   );
 }
 
-type Live = { id: string; title: string; starts_at: string; ends_at: string; status: string; host_name: string };
+type Live = { id: string; title: string; startsAt?: DateLike; endsAt?: DateLike; status: string; hostName: string };
 
 function NextClass({ day, classes }: { day: Date; classes: Live[] }) {
   const [hidden, setHidden] = React.useState<string[]>([]);
-  const list = classes.filter((l) => l.status === "scheduled" && sameDay(new Date(l.starts_at), day) && !hidden.includes(l.id));
+  const list = classes.filter((l) => l.status === "scheduled" && sameDay(asDate(l.startsAt), day) && !hidden.includes(l.id));
   const first = list[0];
   return (
     <section className="dark relative flex min-h-[106px] items-center rounded-[24px] bg-rail px-5 py-5 text-foreground ring-1 ring-transparent [:root.dark_&]:ring-border">
@@ -187,7 +187,7 @@ function NextClass({ day, classes }: { day: Date; classes: Live[] }) {
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#ece6fc] text-[#5b44b8]"><LayoutGrid className="size-4" /></span>
             <Link href={`/live/${first.id}`} className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium">{first.title}</span>
-              <span className="block text-xs text-[#6e6c78]">{formatTime(first.starts_at)}{first.host_name ? ` · ${first.host_name}` : ""}</span>
+              <span className="block text-xs text-[#6e6c78]">{formatTime(first.startsAt)}{first.hostName ? ` · ${first.hostName}` : ""}</span>
             </Link>
             <button onClick={() => setHidden((h) => [...h, first.id])} aria-label="Hide this class" className="flex size-8 shrink-0 items-center justify-center rounded-full border border-[#16151b]/70 hover:bg-[#f1eefa]">
               <X className="size-4" />
@@ -256,7 +256,7 @@ function WeekStrip({ day, setDay, liveDays }: { day: Date; setDay: (d: Date) => 
 }
 
 function LatestCourses() {
-  const q = $api.useQuery("get", "/api/v1/courses", { params: { query: { per_page: 8 } } });
+  const q = useRpcQuery(CourseService.method.listCourses, { perPage: 8 });
   const items = q.data?.items ?? [];
   return (
     <section>
@@ -270,14 +270,14 @@ function LatestCourses() {
         {items.map((c) => (
           <Link key={c.id} href={`/courses/${c.id}`} className={cn(box, "group w-[168px] shrink-0 snap-start p-2 transition hover:-translate-y-0.5")}>
             <div className="relative aspect-[4/3] overflow-hidden rounded-[14px] bg-gradient-to-br from-[var(--lilac-soft)] to-[var(--blush-soft)]">
-              {c.thumbnail_url ? <img src={c.thumbnail_url} alt="" className="size-full object-cover transition group-hover:scale-105" /> : <BookOpen className="absolute inset-0 m-auto size-8 text-[var(--lilac-deep)]" />}
-              <span className="absolute right-1.5 bottom-1.5 rounded-full bg-[#141318] px-2 py-0.5 text-[11px] font-medium text-white">{c.video_count} videos</span>
+              {c.thumbnailUrl ? <img src={c.thumbnailUrl} alt="" className="size-full object-cover transition group-hover:scale-105" /> : <BookOpen className="absolute inset-0 m-auto size-8 text-[var(--lilac-deep)]" />}
+              <span className="absolute right-1.5 bottom-1.5 rounded-full bg-[#141318] px-2 py-0.5 text-[11px] font-medium text-white">{c.videoCount} videos</span>
             </div>
             <div className="mt-2 line-clamp-3 min-h-[3.4rem] px-1 text-[13px] leading-snug font-medium">{c.title}</div>
             <div className="mt-2 flex items-center gap-2.5 px-1 pb-1 text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1"><CalendarDays className="size-3" />{new Date(c.updated_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
-              <span className="flex items-center gap-1"><UsersRound className="size-3" />{c.student_count}</span>
-              <span className="flex items-center gap-1"><PlayCircle className="size-3" />{c.video_count}</span>
+              <span className="flex items-center gap-1"><CalendarDays className="size-3" />{asDate(c.updatedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+              <span className="flex items-center gap-1"><UsersRound className="size-3" />{c.studentCount}</span>
+              <span className="flex items-center gap-1"><PlayCircle className="size-3" />{c.videoCount}</span>
             </div>
           </Link>
         ))}
@@ -286,16 +286,16 @@ function LatestCourses() {
   );
 }
 
-type Row = { id: string; who: string; avatar?: string; text: string; kind: string; at: string; href: string };
+type Row = { id: string; who: string; avatar?: string; text: string; kind: string; at?: DateLike; href: string };
 
 function Notifications() {
   const { can } = useSession();
   const qc = useQueryClient();
   const [tab, setTab] = React.useState<"overview" | "reviews" | "comments">("overview");
-  const feed = $api.useQuery("get", "/api/v1/notifications", { params: { query: { limit: 8 } } });
-  const reviews = $api.useQuery("get", "/api/v1/submissions", { params: { query: { status: "pending", per_page: 8 } } }, { enabled: tab === "reviews" && can("submissions") });
-  const comments = $api.useQuery("get", "/api/v1/comments", { params: { query: { unanswered: true, per_page: 8 } } }, { enabled: tab === "comments" && can("comments") });
-  const read = $api.useMutation("post", "/api/v1/notifications/read", { onSuccess: () => invalidatePaths(qc, "/api/v1/notifications") });
+  const feed = useRpcQuery(NotificationService.method.listNotifications, { limit: 8 }, { select: (r) => r.feed });
+  const reviews = useRpcQuery(SubmissionService.method.listSubmissions, { status: "pending", perPage: 8 }, { enabled: tab === "reviews" && can("submissions") });
+  const comments = useRpcQuery(CommentService.method.listModerationComments, { unanswered: true, perPage: 8 }, { enabled: tab === "comments" && can("comments") });
+  const read = useRpcMutation(NotificationService.method.markNotificationsRead, { onSuccess: () => invalidateRpc(qc, NotificationService) });
 
   const tabs = [
     { id: "overview" as const, label: "Overview", show: true },
@@ -307,13 +307,13 @@ function Notifications() {
   let loading = false;
   if (tab === "overview") {
     loading = feed.isLoading;
-    rows = (feed.data?.items ?? []).map((n) => ({ id: n.id, who: n.title, text: n.body ? `${n.title}: ${n.body}` : n.title, kind: n.kind || "Update", at: n.created_at, href: n.link || "" }));
+    rows = (feed.data?.items ?? []).map((n) => ({ id: n.id, who: n.title, text: n.body ? `${n.title}: ${n.body}` : n.title, kind: n.kind || "Update", at: n.createdAt, href: n.link || "" }));
   } else if (tab === "reviews") {
     loading = reviews.isLoading;
-    rows = (reviews.data?.items ?? []).map((s) => ({ id: s.id, who: s.student_name, text: `${s.student_name} sent “${s.task_title}” for review`, kind: s.course_title, at: s.created_at, href: `/submissions/${s.id}` }));
+    rows = (reviews.data?.items ?? []).map((s) => ({ id: s.id, who: s.studentName, text: `${s.studentName} sent “${s.taskTitle}” for review`, kind: s.courseTitle, at: s.createdAt, href: `/submissions/${s.id}` }));
   } else {
     loading = comments.isLoading;
-    rows = (comments.data?.items ?? []).map((c) => ({ id: c.id, who: c.author_name, text: `${c.author_name} asked on “${c.video_title}”: ${c.body}`, kind: "Question", at: c.created_at, href: "/comments" }));
+    rows = (comments.data?.items ?? []).map((c) => ({ id: c.id, who: c.authorName, text: `${c.authorName} asked on “${c.videoTitle}”: ${c.body}`, kind: "Question", at: c.createdAt, href: "/comments" }));
   }
   const unread = feed.data?.unread ?? 0;
 
@@ -321,7 +321,7 @@ function Notifications() {
     <section>
       <div className="flex items-center justify-between">
         <h2 className="text-[22px] font-medium tracking-[-0.02em]">Notifications</h2>
-        <button onClick={() => read.mutate({ body: {} })} disabled={unread === 0} aria-label="Mark all as read" title={unread ? `Mark ${unread} as read` : "All read"}
+        <button onClick={() => read.mutate({})} disabled={unread === 0} aria-label="Mark all as read" title={unread ? `Mark ${unread} as read` : "All read"}
           className="relative flex size-8 items-center justify-center rounded-full bg-foreground text-background transition disabled:opacity-60">
           <Bell className="size-4" />
           {unread > 0 && <span className="absolute -top-1 -right-1 min-w-4 rounded-full bg-[var(--lilac-deep)] px-1 text-[10px] font-semibold text-white">{unread}</span>}
@@ -364,10 +364,10 @@ export default function DashboardPage() {
   const { can } = useSession();
   const [day, setDay] = React.useState(() => new Date());
   const week = startOfWeek(day);
-  const overview = $api.useQuery("get", "/api/v1/analytics/overview", { params: { query: { days: 30 } } }, { enabled: can("analytics") });
-  const live = $api.useQuery("get", "/api/v1/live", { params: { query: { from: week.toISOString(), to: new Date(week.getTime() + 7 * DAY).toISOString(), per_page: 100 } } }, { enabled: can("live") });
+  const overview = useRpcQuery(AdminService.method.getAnalyticsOverview, { days: 30 }, { enabled: can("analytics"), select: (r) => r.overview });
+  const live = useRpcQuery(LiveService.method.listLive, { from: toTimestamp(week), to: toTimestamp(new Date(week.getTime() + 7 * DAY)), perPage: 100 }, { enabled: can("live") });
   const classes = live.data?.items ?? [];
-  const liveDays = React.useMemo(() => new Set(classes.filter((l) => l.status === "scheduled").map((l) => new Date(l.starts_at).toDateString())), [classes]);
+  const liveDays = React.useMemo(() => new Set(classes.filter((l) => l.status === "scheduled").map((l) => asDate(l.startsAt).toDateString())), [classes]);
   const c = overview.data?.counts;
   const daily = overview.data?.daily ?? [];
 
@@ -378,12 +378,12 @@ export default function DashboardPage() {
 
         <div className="grid gap-5 md:grid-cols-[1.35fr_1fr_0.62fr]">
           {can("students") ? <Members /> : <div className={cn(box, "hidden md:block")} />}
-          {can("analytics") && (c ? <TaskData daily={daily} pending={c.pending_reviews} /> : <Skeleton className="h-60 rounded-[24px]" />)}
+          {can("analytics") && (c ? <TaskData daily={daily} pending={c.pendingReviews} /> : <Skeleton className="h-60 rounded-[24px]" />)}
           {can("analytics") && (c ? <Impact daily={daily} /> : <Skeleton className="h-60 rounded-[24px]" />)}
         </div>
 
         <div className="grid gap-5 md:grid-cols-[1.25fr_1fr]">
-          {can("analytics") && (c ? <Statistics daily={daily} published={c.published_courses} batches={c.active_batches} /> : <Skeleton className="h-80 rounded-[24px]" />)}
+          {can("analytics") && (c ? <Statistics daily={daily} published={c.publishedCourses} batches={c.activeBatches} /> : <Skeleton className="h-80 rounded-[24px]" />)}
           <div className="grid content-start gap-5">
             {can("live") && <NextClass day={day} classes={classes} />}
             <Promo />

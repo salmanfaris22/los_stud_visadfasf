@@ -1,18 +1,17 @@
-// Package server wires infrastructure, services, middleware and handlers into one http.Handler.
+// Package server wires infrastructure, services, middleware and the API into one http.Handler.
 package server
 
 import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
-	"github.com/danielgtaylor/huma/v2"
-	"github.com/danielgtaylor/huma/v2/adapters/humachi"
 	"github.com/go-chi/chi/v5"
 	chimw "github.com/go-chi/chi/v5/middleware"
 
-	"github.com/lms/backend/internal/handler"
+	"github.com/lms/backend/internal/httpx"
 	"github.com/lms/backend/internal/middleware"
 	"github.com/lms/backend/internal/rpc"
 	"github.com/lms/backend/internal/service"
@@ -20,14 +19,12 @@ import (
 
 type App struct {
 	Router   http.Handler
-	API      huma.API
 	Services *service.Services
 }
 
-// New builds the HTTP application. Deps may have nil infrastructure (used for OpenAPI generation).
-// It panics when the gRPC API is misconfigured (an RPC without an access rule).
+// New builds the HTTP application. It panics when the gRPC API is misconfigured (an RPC
+// without an access rule).
 func New(d *service.Deps) *App {
-	huma.DefaultArrayNullable = false
 	svcs := service.New(d)
 	rpcHandler, err := rpc.Handler(svcs, d)
 	if err != nil {
@@ -45,42 +42,43 @@ func New(d *service.Deps) *App {
 
 	// gRPC / gRPC-Web / Connect. Native gRPC clients call /lms.v1.<Service>/<Method>; the web
 	// apps proxy /rpc/* here (the refresh cookie is scoped to that path). Connect negotiates its
-	// own compression, so these routes skip the gzip middleware below.
-	root.Handle("/lms.v1.*", rpcHandler)
-	root.Handle("/grpc.*", rpcHandler)
-	root.Handle("/rpc/*", http.StripPrefix("/rpc", rpcHandler))
+	// own compression.
+	api := streams(rpcHandler)
+	root.Handle("/lms.v1.*", api)
+	root.Handle("/grpc.*", api)
+	root.Handle("/rpc/*", http.StripPrefix("/rpc", api))
 
-	// REST (huma), redirects, files and WebSocket: gzip JSON / CSV / ICS responses.
-	r := root.With(chimw.Compress(5, "application/json", "text/csv", "text/calendar"))
-	r.Get("/healthz", health(d))
-
-	cfg := huma.DefaultConfig("LMS API", "1.0.0")
-	cfg.CreateHooks = nil // no $schema links in responses
-	cfg.Info.Description = "Learning management API: courses → videos → tasks, students, batches, live sessions, quizzes, certificates and the public website. " +
-		"Auth uses httpOnly cookies; send `X-LMS-App: admin|student` on every request."
-	cfg.Components.SecuritySchemes = map[string]*huma.SecurityScheme{
-		"cookie": {Type: "apiKey", In: "cookie", Name: "lms_admin_at"},
-		"bearer": {Type: "http", Scheme: "bearer", BearerFormat: "JWT"},
-	}
-	api := humachi.New(r, cfg)
-
-	guards := middleware.NewGuards(api, d.Redis)
-	handler.Register(api, r, svcs, guards, d)
-	return &App{Router: root, API: api, Services: svcs}
+	// Plain HTTP: health, Google redirects and file links.
+	root.Get("/healthz", health(d))
+	httpx.Register(root, svcs, d)
+	return &App{Router: root, Services: svcs}
 }
 
-// health reports dependency status (used by Docker / load balancers).
+// streams prepares long-lived streams (realtime events): no server read/write timeouts, and
+// headers that stop proxies from compressing or buffering them (Next.js gzips proxied responses
+// unless they say no-transform; nginx buffers unless X-Accel-Buffering is no).
+func streams(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/lms.v1.NotificationService/Subscribe") {
+			rc := http.NewResponseController(w)
+			_ = rc.SetWriteDeadline(time.Time{})
+			_ = rc.SetReadDeadline(time.Time{})
+			w.Header().Set("Cache-Control", "no-cache, no-transform")
+			w.Header().Set("X-Accel-Buffering", "no")
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// health reports dependency status (used by load balancers and the deploy script).
 func health(d *service.Deps) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 		defer cancel()
-		res := map[string]string{"status": "ok", "db": "ok", "redis": "ok", "storage": "ok"}
+		res := map[string]string{"status": "ok", "db": "ok", "storage": "ok"}
 		code := http.StatusOK
 		if d.Pool == nil || d.Pool.Ping(ctx) != nil {
 			res["db"], res["status"], code = "down", "degraded", http.StatusServiceUnavailable
-		}
-		if d.Redis == nil || d.Redis.Ping(ctx).Err() != nil {
-			res["redis"], res["status"] = "down", "degraded"
 		}
 		if d.Store == nil || d.Store.Ping(ctx) != nil {
 			res["storage"], res["status"] = "down", "degraded"

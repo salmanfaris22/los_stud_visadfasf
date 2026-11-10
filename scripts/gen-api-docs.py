@@ -1,62 +1,55 @@
 #!/usr/bin/env python3
-"""Builds docs/API.md from the handler route definitions (method, path, access rule, summary)."""
-import glob, re, os, collections
+"""Builds docs/API.md from the gRPC contract in proto/lms/v1 (services, RPCs, access rules)."""
+import glob, os, re
 
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-import json
-spec = json.load(open(os.path.join(root, "backend/api/openapi.json")))
-src = "".join(open(f).read() for f in sorted(glob.glob(os.path.join(root, "backend/internal/handler/*.go"))))
-guard_re = re.compile(r'op\("([\w-]+)",[^\n]*')
+services = []
+for path in sorted(glob.glob(os.path.join(root, "proto/lms/v1/*.proto"))):
+    text = open(path).read()
+    for m in re.finditer(r"((?://[^\n]*\n)*)service (\w+) \{(.*?)\n\}", text, re.S):
+        doc = " ".join(l.strip()[2:].strip() for l in m.group(1).strip().split("\n") if l.strip())
+        rpcs = []
+        for r in re.finditer(r"((?:\s*//[^\n]*\n)*)\s*rpc (\w+)\((\w+)\) returns \((stream )?(\w+)\) \{(.*?)\n  \}", m.group(3), re.S):
+            summary = " ".join(l.strip()[2:].strip() for l in r.group(1).strip().split("\n") if l.strip())
+            body = r.group(6)
+            acc = re.search(r"\(lms\.v1\.access\) = \{(.*?)\};", body, re.S)
+            a = " ".join(acc.group(1).split()) if acc else ""
+            if "perm:" in a:
+                pm = re.search(r'module: "(\w+)"\s*,?\s*action: "(\w+)"', a)
+                who = f"`{pm.group(1)}:{pm.group(2)}`"
+            elif "public: true" in a: who = "public"
+            elif "signed_in: true" in a: who = "signed in"
+            elif "student: true" in a: who = "student"
+            elif "staff: true" in a: who = "staff"
+            else: who = "?"
+            rl = re.search(r'bucket: "(\w+)"\s*,?\s*limit: (\d+)\s*,?\s*window_seconds: (\d+)', a)
+            if rl: who += f" · {rl.group(2)}/{int(rl.group(3)) // 60 or 1} min" if int(rl.group(3)) >= 60 else ""
+            kind = "stream" if r.group(4) else ("read" if "NO_SIDE_EFFECTS" in body else "write")
+            rpcs.append((r.group(2), kind, who, summary))
+        services.append((m.group(2), doc, rpcs))
 
-def access_for(opid):
-    m = re.search(r'op\("' + re.escape(opid) + r'",[^\n]*', src)
-    if not m:
-        return "public"
-    line = m.group(0)
-    out = []
-    for name, args in re.findall(r'g\.(\w+)\(([^)]*)\)', line):
-        if name == "Perm":
-            out.append("`" + ":".join(a.strip().strip('"') for a in args.split(",")) + "`")
-        elif name == "RateLimit":
-            a = [x.strip().strip('"') for x in args.split(",")]
-            out.append(f"rate {a[1]}/{a[2].replace('time.', '').replace('*', '×')}")
-        else:
-            out.append({"Auth": "signed in", "Staff": "staff", "Student": "student"}.get(name, name))
-    return " · ".join(out) or "public"
-
-groups = collections.OrderedDict()
-order = ["Auth", "Staff & roles", "Students", "Courses", "Curriculum", "Batches", "Attendance", "Task reviews", "Uploads", "Quizzes", "Certificates",
-         "Live sessions", "Announcements", "Video Q&A", "Notifications", "Student portal", "Public website", "Website admin", "Admin"]
-rows = []
-for route, item in spec["paths"].items():
-    for method, op in item.items():
-        if method not in ("get", "post", "put", "delete", "patch"):
-            continue
-        rows.append((op["tags"][0], method.upper(), route, access_for(op["operationId"]), op.get("summary", "")))
-for g in order:
-    groups[g] = [(m, p, a, s) for (t, m, p, a, s) in rows if t == g]
-for (t, m, p, a, s) in rows:
-    if t not in groups:
-        groups.setdefault(t, []).append((m, p, a, s))
-groups = collections.OrderedDict((k, v) for k, v in groups.items() if v)
-total = sum(len(v) for v in groups.values())
-out = ["# API reference", "", f"Generated from `backend/internal/handler/*.go` by `scripts/gen-api-docs.py` — **{total} JSON endpoints** in {len(groups)} groups.",
-       "Interactive docs: run the API and open **http://localhost:8080/docs** (OpenAPI 3.1 at `/openapi.json`).", "",
-       "Every request sends `X-LMS-App: admin|student`. Auth uses httpOnly cookies (`lms_<app>_at` 15 min, `lms_<app>_rt` 7 days).",
-       "Access column: `module:action` = staff permission from roles (super admins pass everything) · *student* = student account · *signed in* = any user.", "",
-       "| Group | Endpoints |", "|---|---|"]
-out += [f"| [{g}](#{re.sub(r'[^a-z0-9 -]', '', g.lower()).replace(' ', '-')}) | {len(v)} |" for g, v in groups.items()]
-for g, rows in groups.items():
-    out += ["", f"## {g}", "", "| Method | Path | Access | What it does |", "|---|---|---|---|"]
-    out += [f"| `{m}` | `{p}` | {a} | {s} |" for m, p, a, s in rows]
-out += ["", "## Non-JSON routes", "", "| Method | Path | What it does |", "|---|---|---|",
-        "| `GET` | `/healthz` | DB / Redis / storage health |",
-        "| `GET` | `/ws?ticket=…` | Realtime WebSocket (ticket from `POST /api/v1/ws/ticket`) |",
-        "| `GET` | `/api/v1/files/{id}` | Access-checked redirect to a signed download URL |",
-        "| `GET` | `/api/v1/auth/google/start?app=` | Google sign-in redirect |",
-        "| `GET` | `/api/v1/auth/google/callback` | Google sign-in callback |",
-        "| `GET` | `/api/v1/settings/google/connect` | Connect institute Google account (Calendar/Meet/Drive) |",
-        "| `GET` | `/api/v1/settings/google/callback` | Google connect callback |",
-        "| `GET` | `/docs` · `/openapi.json` | Interactive API docs and spec |"]
-open(os.path.join(root, "docs/API.md"), "w").write("\n".join(out) + "\n")
-print(f"docs/API.md: {total} endpoints, {len(groups)} groups")
+total = sum(len(r) for _, _, r in services)
+out = [
+    "# API reference",
+    "",
+    f"The LMS API is gRPC only: **{len(services)} services, {total} RPCs**, served by one Go server on `:8080` that speaks gRPC, gRPC-Web and the Connect protocol (JSON or binary).",
+    "The contract is `proto/lms/v1/*.proto` (generated from `backend/internal/dto` and `backend/tools/rpcgen/spec.txt` with `make gen`).",
+    "",
+    "| How to call | Detail |",
+    "|---|---|",
+    "| Path | `POST /lms.v1.<Service>/<Method>` (web apps: `/rpc/lms.v1.<Service>/<Method>` through Next.js). Read RPCs also accept Connect `GET`. |",
+    "| Body | Connect JSON (field names in camelCase or snake_case) or protobuf binary. |",
+    "| Auth | Web: httpOnly cookies from `AuthService.Login` plus header `X-LMS-App: admin\\|student`. |",
+    "| Errors | Connect codes: `invalid_argument` 400, `unauthenticated` 401, `permission_denied` 403, `not_found` 404, `already_exists` 409, `resource_exhausted` 429. |",
+    "| Explore | `grpcurl -plaintext localhost:8080 list` (server reflection) |",
+    "| Plain HTTP | `/healthz`, `/api/v1/auth/google/{start,callback}`, `/api/v1/settings/google/{connect,callback}`, `/api/v1/files/{id}` |",
+    "",
+    "Access: **public** = anyone · **signed in** = any user · **student** / **staff** = that kind of user · `module:action` = staff with that permission (super admins always pass).",
+    "",
+]
+for name, doc, rpcs in services:
+    out += [f"## {name}", "", doc, "", "| RPC | Kind | Access | What it does |", "|---|---|---|---|"]
+    out += [f"| `{n}` | {k} | {w} | {s} |" for n, k, w, s in rpcs]
+    out.append("")
+open(os.path.join(root, "docs/API.md"), "w").write("\n".join(out))
+print(f"docs/API.md: {len(services)} services, {total} RPCs")

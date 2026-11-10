@@ -3,13 +3,14 @@ import * as React from "react";
 import Link from "next/link";
 import { FileText, Plus } from "lucide-react";
 import { Button, Card, EmptyState, PageHeader, Pagination, SearchInput, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table, formatDate } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { Can } from "@/lib/session";
+import { SiteService, useRpcQuery } from "@lms/api-client";
 
 export default function BlogPage() {
   const [q, setQ] = React.useState("");
   const [page, setPage] = React.useState(1);
-  const list = $api.useQuery("get", "/api/v1/blog", { params: { query: { q: q || undefined, page } } });
+  const list = useRpcQuery(SiteService.method.listPosts, { q: q || undefined, page });
   return (
     <>
       <PageHeader title="Blog" description="Articles for SEO and your community." actions={<Can module="blog" action="create"><Button asChild><Link href="/blog/new"><Plus /> New post</Link></Button></Can>} />
@@ -20,12 +21,12 @@ export default function BlogPage() {
             <THead><TR><TH>Title</TH><TH>Status</TH><TH>Author</TH><TH>Published</TH></TR></THead>
             <TBody>
               {list.data?.items.map((p) => (
-                <TR key={p.id}><TD><Link href={`/blog/${p.id}`} className="font-medium hover:underline">{p.title}</Link><div className="text-xs text-muted-foreground">/{p.slug}</div></TD><TD><StatusBadge status={p.status} /></TD><TD>{p.author_name}</TD><TD className="text-muted-foreground">{formatDate(p.published_at) || "—"}</TD></TR>
+                <TR key={p.id}><TD><Link href={`/blog/${p.id}`} className="font-medium hover:underline">{p.title}</Link><div className="text-xs text-muted-foreground">/{p.slug}</div></TD><TD><StatusBadge status={p.status} /></TD><TD>{p.authorName}</TD><TD className="text-muted-foreground">{formatDate(p.publishedAt) || "—"}</TD></TR>
               ))}
             </TBody>
           </Table>
         )}
-        {list.data && <Pagination page={page} perPage={list.data.per_page} total={list.data.total} onPage={setPage} />}
+        {list.data && <Pagination page={page} perPage={list.data.perPage} total={list.data.total} onPage={setPage} />}
       </Card>
     </>
   );

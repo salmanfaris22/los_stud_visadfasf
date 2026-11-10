@@ -3,8 +3,9 @@ import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ClipboardCheck } from "lucide-react";
 import { Badge, Card, EmptyState, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table, Tabs, TabsList, TabsTrigger, timeAgo } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { useBatchOptions, useCourseOptions } from "@/features/common/options";
+import { SubmissionService, useRpcQuery } from "@lms/api-client";
 
 const TABS = [
   { value: "pending", label: "Waiting" },
@@ -24,9 +25,7 @@ function Queue() {
   const [page, setPage] = React.useState(1);
   const courses = useCourseOptions();
   const batches = useBatchOptions(courseId || undefined);
-  const list = $api.useQuery("get", "/api/v1/submissions", {
-    params: { query: { status: (status || undefined) as "pending" | undefined, q: q || undefined, course_id: courseId || undefined, batch_id: batchId || undefined, task_id: params.get("task_id") ?? undefined, page, per_page: 20 } },
-  });
+  const list = useRpcQuery(SubmissionService.method.listSubmissions, { status: (status || undefined) as "pending" | undefined, q: q || undefined, courseId: courseId || undefined, batchId: batchId || undefined, taskId: params.get("task_id") ?? undefined, page, perPage: 20 });
   return (
     <>
       <PageHeader title="Task reviews" description="Approve, reject or ask students to resubmit. Oldest waiting work first." />
@@ -47,19 +46,19 @@ function Queue() {
             <TBody>
               {list.data?.items.map((s) => (
                 <TR key={s.id} className="cursor-pointer" onClick={() => router.push(`/submissions/${s.id}`)}>
-                  <TD><div className="font-medium">{s.student_name}</div><div className="text-xs text-muted-foreground">{s.student_code}</div></TD>
-                  <TD><div className="font-medium">{s.task_title}</div><div className="text-xs text-muted-foreground">{s.video_title}</div></TD>
-                  <TD className="text-muted-foreground">{s.course_title}</TD>
+                  <TD><div className="font-medium">{s.studentName}</div><div className="text-xs text-muted-foreground">{s.studentCode}</div></TD>
+                  <TD><div className="font-medium">{s.taskTitle}</div><div className="text-xs text-muted-foreground">{s.videoTitle}</div></TD>
+                  <TD className="text-muted-foreground">{s.courseTitle}</TD>
                   <TD>#{s.attempt}</TD>
-                  <TD><span className="flex items-center gap-1"><StatusBadge status={s.status} />{s.is_late && <Badge variant="destructive">Late</Badge>}</span></TD>
-                  <TD>{s.marks ?? "—"}/{s.max_marks}</TD>
-                  <TD className="whitespace-nowrap text-muted-foreground">{timeAgo(s.created_at)}</TD>
+                  <TD><span className="flex items-center gap-1"><StatusBadge status={s.status} />{s.isLate && <Badge variant="destructive">Late</Badge>}</span></TD>
+                  <TD>{s.marks ?? "—"}/{s.maxMarks}</TD>
+                  <TD className="whitespace-nowrap text-muted-foreground">{timeAgo(s.createdAt)}</TD>
                 </TR>
               ))}
             </TBody>
           </Table>
         )}
-        {list.data && <Pagination page={page} perPage={list.data.per_page} total={list.data.total} onPage={setPage} />}
+        {list.data && <Pagination page={page} perPage={list.data.perPage} total={list.data.total} onPage={setPage} />}
       </Card>
     </>
   );

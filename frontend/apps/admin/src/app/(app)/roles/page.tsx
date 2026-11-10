@@ -2,16 +2,19 @@
 import * as React from "react";
 import { Lock, Plus, Shield, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Schemas } from "@lms/api-client";
+import { type PermissionCatalog, type RoleInput, StaffService, useRpcMutation, useRpcQuery, type Draft } from "@lms/api-client";
 import { Badge, Button, Card, CardContent, Checkbox, EmptyState, Field, Input, PageHeader, Skeleton, Switch, cn, useConfirm } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { feedback } from "@/lib/feedback";
 import { useSession } from "@/lib/session";
 
 type Perms = Record<string, string[]>;
+type PermLists = Record<string, { values: string[] }>;
+const toPerms = (p: PermLists): Perms => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, v.values]));
+const fromPerms = (p: Perms): PermLists => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, { values: v }]));
 
 /** Modules × actions checkbox grid with row/column toggles. */
-function Matrix({ catalog, value, onChange, disabled }: { catalog: Schemas["PermissionCatalog"]; value: Perms; onChange: (p: Perms) => void; disabled?: boolean }) {
+function Matrix({ catalog, value, onChange, disabled }: { catalog: PermissionCatalog; value: Perms; onChange: (p: Perms) => void; disabled?: boolean }) {
   const has = (m: string, a: string) => value[m]?.includes(a) ?? false;
   const set = (m: string, a: string, on: boolean) => {
     const cur = new Set(value[m] ?? []);
@@ -64,19 +67,19 @@ export default function RolesPage() {
   const qc = useQueryClient();
   const confirm = useConfirm();
   const { can } = useSession();
-  const catalog = $api.useQuery("get", "/api/v1/permissions/modules");
-  const roles = $api.useQuery("get", "/api/v1/roles");
+  const catalog = useRpcQuery(StaffService.method.getPermissionCatalog, {}, { select: (r) => r.catalog });
+  const roles = useRpcQuery(StaffService.method.listRoles, {}, { select: (r) => r.items });
   const [selected, setSelected] = React.useState<string | "new" | null>(null);
-  const [f, setF] = React.useState<Schemas["RoleInput"]>({ name: "", description: "", scoped: false, permissions: {} });
+  const [f, setF] = React.useState<Draft<RoleInput>>({ name: "", description: "", scoped: false, salesScope: "", permissions: {} });
   const role = roles.data?.find((r) => r.id === selected);
   React.useEffect(() => {
-    if (selected === "new") setF({ name: "", description: "", scoped: false, permissions: {} });
-    else if (role) setF({ name: role.name, description: role.description, scoped: role.scoped, permissions: role.permissions });
+    if (selected === "new") setF({ name: "", description: "", scoped: false, salesScope: "", permissions: {} });
+    else if (role) setF({ name: role.name, description: role.description, scoped: role.scoped, salesScope: role.salesScope, permissions: fromPerms(toPerms(role.permissions)) });
   }, [selected, role]);
   React.useEffect(() => { if (!selected && roles.data?.length) setSelected(roles.data[0]!.id); }, [roles.data, selected]);
-  const create = $api.useMutation("post", "/api/v1/roles", feedback(qc, "Role created", ["/api/v1/roles"], (r) => setSelected(r.id)));
-  const update = $api.useMutation("put", "/api/v1/roles/{id}", feedback(qc, "Role saved — applies within 30 seconds", ["/api/v1/roles"]));
-  const del = $api.useMutation("delete", "/api/v1/roles/{id}", feedback(qc, "Role deleted", ["/api/v1/roles"], () => setSelected(null)));
+  const create = useRpcMutation(StaffService.method.createRole, feedback(qc, "Role created", [StaffService], (r) => setSelected(r.role?.id ?? null)));
+  const update = useRpcMutation(StaffService.method.updateRole, feedback(qc, "Role saved — applies within 30 seconds", [StaffService]));
+  const del = useRpcMutation(StaffService.method.deleteRole, feedback(qc, "Role deleted", [StaffService], () => setSelected(null)));
   const editable = selected === "new" ? can("roles", "create") : can("roles", "edit");
 
   return (
@@ -87,8 +90,8 @@ export default function RolesPage() {
           {roles.isLoading && <Skeleton className="h-40" />}
           {roles.data?.map((r) => (
             <button key={r.id} onClick={() => setSelected(r.id)} className={cn("w-full rounded-xl border p-3 text-left transition", selected === r.id ? "border-foreground bg-signal/15" : "hover:bg-muted/40")}>
-              <div className="flex items-center gap-2 font-medium">{r.is_system ? <Lock className="size-3.5 text-muted-foreground" /> : <Shield className="size-3.5 text-primary" />}{r.name}{r.scoped && <Badge variant="info" className="ml-auto">scoped</Badge>}</div>
-              <div className="mt-1 text-xs text-muted-foreground">{r.user_count} users · {Object.values(r.permissions).flat().length} permissions</div>
+              <div className="flex items-center gap-2 font-medium">{r.isSystem ? <Lock className="size-3.5 text-muted-foreground" /> : <Shield className="size-3.5 text-primary" />}{r.name}{r.scoped && <Badge variant="info" className="ml-auto">scoped</Badge>}</div>
+              <div className="mt-1 text-xs text-muted-foreground">{r.userCount} users · {Object.values(r.permissions).flat().length} permissions</div>
             </button>
           ))}
         </div>
@@ -103,11 +106,11 @@ export default function RolesPage() {
                 <span><span className="font-medium">Only assigned courses & batches</span><span className="block text-xs text-muted-foreground">For mentors: they only see students, submissions and live sessions of courses/batches they are assigned to.</span></span>
                 <Switch checked={f.scoped} onCheckedChange={(v) => setF({ ...f, scoped: v })} disabled={!editable} />
               </label>
-              {catalog.data && <Matrix catalog={catalog.data} value={f.permissions} onChange={(p) => setF({ ...f, permissions: p })} disabled={!editable} />}
+              {catalog.data && <Matrix catalog={catalog.data} value={toPerms(f.permissions)} onChange={(p) => setF({ ...f, permissions: fromPerms(p) })} disabled={!editable} />}
               <div className="flex gap-2">
-                {editable && <Button loading={create.isPending || update.isPending} onClick={() => (selected === "new" ? create.mutate({ body: f }) : update.mutate({ params: { path: { id: selected } }, body: f }))}>Save role</Button>}
-                {role && !role.is_system && can("roles", "delete") && (
-                  <Button variant="outline" className="text-destructive" onClick={async () => { if (await confirm({ title: `Delete role ${role.name}?`, description: `${role.user_count} users lose these permissions.`, destructive: true, confirmText: "Delete" })) del.mutate({ params: { path: { id: role.id } } }); }}><Trash2 /> Delete</Button>
+                {editable && <Button loading={create.isPending || update.isPending} onClick={() => (selected === "new" ? create.mutate({ input: f }) : update.mutate({ id: selected, input: f }))}>Save role</Button>}
+                {role && !role.isSystem && can("roles", "delete") && (
+                  <Button variant="outline" className="text-destructive" onClick={async () => { if (await confirm({ title: `Delete role ${role.name}?`, description: `${role.userCount} users lose these permissions.`, destructive: true, confirmText: "Delete" })) del.mutate({ id: role.id }); }}><Trash2 /> Delete</Button>
                 )}
               </div>
             </CardContent>

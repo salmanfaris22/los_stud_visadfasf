@@ -1,11 +1,11 @@
 "use client";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import type { Schemas } from "@lms/api-client";
+import type { CourseStat, DayPoint } from "@lms/api-client";
 import { lineColor } from "@lms/ui";
 
 const tooltip = { contentStyle: { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 14, color: "var(--popover-foreground)", boxShadow: "0 12px 32px -12px rgb(0 0 0 / 0.25)" } };
 
-export function ActivityChart({ data }: { data: Schemas["DayPoint"][] }) {
+export function ActivityChart({ data }: { data: DayPoint[] }) {
   const rows = data.map((d) => ({ ...d, label: new Date(d.day).toLocaleDateString(undefined, { day: "numeric", month: "short" }) }));
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -26,8 +26,8 @@ export function ActivityChart({ data }: { data: Schemas["DayPoint"][] }) {
   );
 }
 
-export function CourseProgressChart({ data }: { data: Schemas["CourseStat"][] }) {
-  const rows = data.map((c) => ({ id: c.id, name: c.title.length > 22 ? c.title.slice(0, 21) + "…" : c.title, progress: c.avg_progress, students: c.students }));
+export function CourseProgressChart({ data }: { data: CourseStat[] }) {
+  const rows = data.map((c) => ({ id: c.id, name: c.title.length > 22 ? c.title.slice(0, 21) + "…" : c.title, progress: c.avgProgress, students: c.students }));
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={rows} layout="vertical" margin={{ left: 10, right: 16 }}>

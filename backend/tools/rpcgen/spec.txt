@@ -1,0 +1,210 @@
+# lms.v1 services. One line per RPC:
+#   Name access [get] [stream] [rl=bucket/limit/window] | request fields | response | service call | summary
+# access:   public | signed | student | staff | perm:module.action      get = no side effects
+# fields:   id | page | name:uuid | name:uuid? (optional, "" = none) | name:uuids[min=1,max=500]
+#           name:str[min=,max=,in=a/b] (! = required) | name:i32[gte=,lte=] | name:bool | name:ts | name:Type
+# response: - | ok | ok="message" | okv (dto.OK) | strs | file | item:field:Type | items:Type | list:Type | custom{...}
+# call:     Go expression; m is the request message. A leading Service.Method gets c.s. in front. custom = hand-written.
+
+service SiteService site "The public website (no sign-in) and its admin: landing page blocks and the blog."
+GetSite public get | - | item:site:SiteInfo | Site.Info(ctx) | Branding and landing page content
+ListPublicCourses public get | q:str[max=100] category:str[max=60] limit:i32[gte=1,lte=200] | items:PublicCourse | Site.Courses(ctx, m.GetQ(), m.GetCategory(), def32(m.GetLimit(), 60)) | Course catalog
+ListCategories public get | - | strs | Site.Categories(ctx) | Catalog categories
+GetPublicCourse public get | slug:str![min=1,max=120] | item:course:PublicCourseDetail | Site.Course(ctx, m.GetSlug()) | Course page: syllabus, mentors, batches
+ListPublicPosts public get | limit:i32[gte=1,lte=100] | items:PublicPost | Site.PublicPosts(ctx, def32(m.GetLimit(), 20)) | Published blog posts
+GetPublicPost public get | slug:str![min=1,max=120] | item:post:BlogPost | Site.PublicPost(ctx, m.GetSlug()) | One blog post
+SendEnquiry public rl=lead/10/3600 | input:LeadInput | ok="thanks! our team will contact you soon" | Site.CreateLead(ctx, leadInputFromPB(m.GetInput())) | Enquiry / contact form
+ListCmsBlocks perm:cms.view get | - | items:CmsBlock | Site.CMS(ctx) | Landing page blocks
+SaveCmsBlock perm:cms.edit | key:str![min=1,max=40] input:CmsInput | item:block:CmsBlock | Site.SaveCMS(ctx, actor(ctx), m.GetKey(), cmsInputFromPB(m.GetInput())) | Save a landing page block
+ListPosts perm:blog.view get | page q:str[max=100] status:str[in=draft/published] | list:BlogPost | Site.Posts(ctx, dto.BlogFilter{PageQuery: page(m), Status: m.GetStatus(), Q: m.GetQ()}) | Blog posts
+CreatePost perm:blog.create | input:BlogInput | item:post:BlogPost | Site.CreatePost(ctx, actor(ctx), blogInputFromPB(m.GetInput())) | Write a blog post
+GetPost perm:blog.view get | id | item:post:BlogPost | Site.Post(ctx, idOf(m)) | Get a blog post
+UpdatePost perm:blog.edit | id input:BlogInput | item:post:BlogPost | Site.UpdatePost(ctx, actor(ctx), idOf(m), blogInputFromPB(m.GetInput())) | Update a blog post
+DeletePost perm:blog.delete | id | - | Site.DeletePost(ctx, actor(ctx), idOf(m)) | Delete a blog post
+
+service UploadService uploads "Direct uploads to object storage: presign, PUT the bytes, then confirm."
+PresignUpload signed rl=upload/60/60 | input:PresignInput | item:presigned:Presigned | Uploads.Presign(ctx, actor(ctx), presignInputFromPB(m.GetInput())) | Get a URL to upload a file straight to storage
+CompleteUpload signed | id | item:upload:Upload | Uploads.Complete(ctx, actor(ctx), idOf(m)) | Confirm an upload finished
+
+service CourseService courses "Courses and their curriculum: videos and the tasks under them."
+ListCourseOptions staff get | - | items:CourseOption | Courses.Options(ctx, actor(ctx)) | Courses for pickers
+ListCourses perm:courses.view get | page q:str[max=100] status:str[in=draft/published/archived] | list:Course | Courses.List(ctx, actor(ctx), dto.CourseFilter{PageQuery: page(m), Q: m.GetQ(), Status: m.GetStatus()}) | List courses
+CreateCourse perm:courses.create | input:CourseInput | item:course:Course | Courses.Create(ctx, actor(ctx), courseInputFromPB(m.GetInput())) | Create a course
+GetCourse perm:courses.view get | id | item:course:Course | Courses.Get(ctx, actor(ctx), idOf(m)) | Get a course
+UpdateCourse perm:courses.edit | id input:CourseInput | item:course:Course | Courses.Update(ctx, actor(ctx), idOf(m), courseInputFromPB(m.GetInput())) | Update a course
+DeleteCourse perm:courses.delete | id | - | Courses.Delete(ctx, actor(ctx), idOf(m)) | Delete a course
+ParseVideoLink staff | input:VideoLinkInput | item:link:VideoLink | Courses.ParseLink(videoLinkInputFromPB(m.GetInput())) | Validate a video link and preview the embed
+GetCurriculum perm:courses.view get | course_id:uuid | items:Video | Courses.Curriculum(ctx, actor(ctx), uuidFromPB(m.GetCourseId())) | Videos with their tasks
+CreateVideo perm:courses.create | course_id:uuid input:VideoInput | item:video:Video | Courses.CreateVideo(ctx, actor(ctx), uuidFromPB(m.GetCourseId()), videoInputFromPB(m.GetInput())) | Add a video (YouTube / Vimeo / Bunny / Cloudflare)
+ReorderVideos perm:courses.edit | course_id:uuid ids:uuids[min=1,max=2000] | - | Courses.ReorderVideos(ctx, actor(ctx), uuidFromPB(m.GetCourseId()), uuidsFromPB(m.GetIds())) | Reorder videos
+UpdateVideo perm:courses.edit | id input:VideoInput | item:video:Video | Courses.UpdateVideo(ctx, actor(ctx), idOf(m), videoInputFromPB(m.GetInput())) | Update a video
+DeleteVideo perm:courses.delete | id | - | Courses.DeleteVideo(ctx, actor(ctx), idOf(m)) | Delete a video and its tasks
+CreateTask perm:courses.create | video_id:uuid input:TaskInput | item:task:Task | Courses.CreateTask(ctx, actor(ctx), uuidFromPB(m.GetVideoId()), taskInputFromPB(m.GetInput())) | Add a task under a video
+ReorderTasks perm:courses.edit | video_id:uuid ids:uuids[min=1,max=2000] | - | Courses.ReorderTasks(ctx, actor(ctx), uuidFromPB(m.GetVideoId()), uuidsFromPB(m.GetIds())) | Reorder tasks of a video
+UpdateTask perm:courses.edit | id input:TaskInput | item:task:Task | Courses.UpdateTask(ctx, actor(ctx), idOf(m), taskInputFromPB(m.GetInput())) | Update a task
+DeleteTask perm:courses.delete | id | - | Courses.DeleteTask(ctx, actor(ctx), idOf(m)) | Delete a task
+
+service SubmissionService submissions "Task reviews: the review queue, reviews and the task conversation with a student."
+ListSubmissions perm:submissions.view get | page status:str[in=pending/approved/rejected/resubmit] course_id:uuid? task_id:uuid? student_id:uuid? batch_id:uuid? q:str[max=100] | list:SubmissionRow | Submissions.List(ctx, actor(ctx), dto.SubmissionFilter{PageQuery: page(m), Status: m.GetStatus(), Q: m.GetQ(), CourseID: optUUID(m.GetCourseId()), TaskID: optUUID(m.GetTaskId()), StudentID: optUUID(m.GetStudentId()), BatchID: optUUID(m.GetBatchId())}) | Review queue
+GetSubmission perm:submissions.view get | id | item:submission:SubmissionDetail | Submissions.Get(ctx, actor(ctx), idOf(m)) | Submission with history and thread
+ReviewSubmission perm:submissions.edit | id input:ReviewInput | item:submission:SubmissionDetail | Submissions.Review(ctx, actor(ctx), idOf(m), reviewInputFromPB(m.GetInput())) | Approve, reject or ask to resubmit
+GetThread perm:submissions.view get | task_id:uuid student_id:uuid | items:ThreadComment | Submissions.Thread(ctx, actor(ctx), uuidFromPB(m.GetTaskId()), uuidFromPB(m.GetStudentId())) | Task conversation with a student
+ReplyThread perm:submissions.edit | task_id:uuid student_id:uuid input:CommentInput | items:ThreadComment | Submissions.Comment(ctx, actor(ctx), uuidFromPB(m.GetTaskId()), uuidFromPB(m.GetStudentId()), commentInputFromPB(m.GetInput())) | Reply in a task conversation
+
+service CertificateService certificates "Course certificates: issue, revoke, download as PDF and verify publicly."
+ListCertificates perm:certificates.view get | page course_id:uuid? q:str[max=100] | list:Certificate | Certificates.List(ctx, dto.CertificateFilter{PageQuery: page(m), CourseID: optUUID(m.GetCourseId()), Q: m.GetQ()}) | List issued certificates
+IssueCertificate perm:certificates.create | input:CertificateInput | item:certificate:Certificate | Certificates.IssueManual(ctx, actor(ctx), certificateInputFromPB(m.GetInput())) | Issue a certificate manually
+RevokeCertificate perm:certificates.delete | id | - | Certificates.Revoke(ctx, actor(ctx), idOf(m)) | Revoke a certificate
+GetCertificatePdf perm:certificates.view get | id | file | Certificates.PDF(ctx, actor(ctx), idOf(m)) | Download a certificate PDF
+ListMyCertificates student get | - | items:Certificate | Certificates.Mine(ctx, actor(ctx)) | My certificates
+GetMyCertificatePdf student get | id | file | Certificates.PDF(ctx, actor(ctx), idOf(m)) | Download my certificate
+VerifyCertificate public get rl=verify/60/60 | code:str![min=1,max=40] | item:verification:CertificateVerification | Certificates.Verify(ctx, m.GetCode()) | Verify a certificate code
+
+service QuizService quizzes "Quizzes under videos: authoring, attempts, and the student quiz player."
+ListVideoQuizzes perm:quizzes.view get | video_id:uuid | items:Quiz | Quizzes.ListForVideo(ctx, actor(ctx), uuidFromPB(m.GetVideoId())) | Quizzes under a video
+CreateQuiz perm:quizzes.create | video_id:uuid input:QuizInput | item:quiz:Quiz | Quizzes.Create(ctx, actor(ctx), uuidFromPB(m.GetVideoId()), quizInputFromPB(m.GetInput())) | Create a quiz with questions
+GetQuiz perm:quizzes.view get | id | item:quiz:Quiz | Quizzes.Get(ctx, actor(ctx), idOf(m)) | Quiz with questions and answers
+UpdateQuiz perm:quizzes.edit | id input:QuizInput | item:quiz:Quiz | Quizzes.Update(ctx, actor(ctx), idOf(m), quizInputFromPB(m.GetInput())) | Replace a quiz
+DeleteQuiz perm:quizzes.delete | id | - | Quizzes.Delete(ctx, actor(ctx), idOf(m)) | Delete a quiz
+ListQuizAttempts perm:quizzes.view get | quiz_id:uuid | items:QuizAttemptRow | Quizzes.Attempts(ctx, actor(ctx), uuidFromPB(m.GetQuizId())) | Submitted attempts
+ListMyVideoQuizzes student get | video_id:uuid | items:MyQuiz | Quizzes.MyForVideo(ctx, actor(ctx), uuidFromPB(m.GetVideoId())) | My quizzes for a video
+StartQuiz student | id | item:play:QuizPlay | Quizzes.Start(ctx, actor(ctx), idOf(m)) | Start or resume an attempt
+SubmitQuiz student | attempt_id:uuid input:QuizSubmitInput | item:result:QuizResult | Quizzes.Submit(ctx, actor(ctx), uuidFromPB(m.GetAttemptId()), quizSubmitInputFromPB(m.GetInput())) | Submit answers and get the result
+
+service StudentService students "Students and their course enrollments."
+ListStudents perm:students.view get | page q:str[max=100] status:str[in=active/disabled] course_id:uuid? batch_id:uuid? | list:Student | Students.List(ctx, actor(ctx), dto.StudentFilter{PageQuery: page(m), Q: m.GetQ(), Status: m.GetStatus(), CourseID: optUUID(m.GetCourseId()), BatchID: optUUID(m.GetBatchId())}) | List students
+ExportStudents perm:students.view get | - | file | Students.Export(ctx, actor(ctx)) | Download students as CSV
+ImportStudents perm:students.create | input:ImportInput | item:result:ImportResult | Students.Import(ctx, actor(ctx), importInputFromPB(m.GetInput())) | Bulk create students from CSV
+GetStudent perm:students.view get | id | item:student:StudentDetail | Students.Get(ctx, actor(ctx), idOf(m)) | Student profile with enrollments
+CreateStudent perm:students.create | input:StudentInput | item:student:StudentDetail | Students.Create(ctx, actor(ctx), studentInputFromPB(m.GetInput())) | Create a student and assign courses
+UpdateStudent perm:students.edit | id input:StudentInput | item:student:StudentDetail | Students.Update(ctx, actor(ctx), idOf(m), studentInputFromPB(m.GetInput())) | Update a student
+DeleteStudent perm:students.delete | id | - | Students.Delete(ctx, actor(ctx), idOf(m)) | Delete a student
+EnrollStudent perm:students.edit | student_id:uuid input:EnrollInput | item:student:StudentDetail | Students.Enroll(ctx, actor(ctx), uuidFromPB(m.GetStudentId()), enrollInputFromPB(m.GetInput())) | Assign a course to a student
+UpdateEnrollment perm:students.edit | id input:EnrollmentUpdate | - | Students.UpdateEnrollment(ctx, actor(ctx), idOf(m), enrollmentUpdateFromPB(m.GetInput())) | Change batch or status of an enrollment
+DeleteEnrollment perm:students.edit | id | - | Students.DeleteEnrollment(ctx, actor(ctx), idOf(m)) | Remove a course from a student
+
+service StaffService staff "Staff users, roles and the permission matrix."
+GetPermissionCatalog staff get | - | item:catalog:PermissionCatalog | noErr(c.s.Roles.Catalog()) | Modules and actions for the permission matrix
+ListRoles perm:roles.view get | - | items:Role | Roles.List(ctx) | List roles
+GetRole perm:roles.view get | id | item:role:Role | Roles.Get(ctx, idOf(m)) | Get a role
+CreateRole perm:roles.create | input:RoleInput | item:role:Role | Roles.Create(ctx, actor(ctx), roleInputFromPB(m.GetInput())) | Create a role
+UpdateRole perm:roles.edit | id input:RoleInput | item:role:Role | Roles.Update(ctx, actor(ctx), idOf(m), roleInputFromPB(m.GetInput())) | Update a role and its permissions
+DeleteRole perm:roles.delete | id | - | Roles.Delete(ctx, actor(ctx), idOf(m)) | Delete a role
+ListStaffOptions staff get | - | items:Person | Staff.Options(ctx) | Active staff for pickers
+ListStaff perm:users.view get | page q:str[max=100] role_id:uuid? | list:Staff | Staff.List(ctx, dto.StaffFilter{PageQuery: page(m), Q: m.GetQ(), RoleID: optUUID(m.GetRoleId())}) | List staff users
+GetStaff perm:users.view get | id | item:staff:Staff | Staff.Get(ctx, idOf(m)) | Get a staff user
+CreateStaff perm:users.create | input:StaffInput | item:staff:Staff | Staff.Create(ctx, actor(ctx), staffInputFromPB(m.GetInput())) | Create a staff user (admin / mentor)
+UpdateStaff perm:users.edit | id input:StaffInput | item:staff:Staff | Staff.Update(ctx, actor(ctx), idOf(m), staffInputFromPB(m.GetInput())) | Update a staff user
+DeleteStaff perm:users.delete | id | - | Staff.Delete(ctx, actor(ctx), idOf(m)) | Delete a staff user
+
+service BatchService batches "Batches, batch types and offline class attendance (incl. QR check-in)."
+ListBatchTypes staff get | - | items:BatchType | Batches.ListTypes(ctx) | List batch types
+CreateBatchType perm:batches.create | input:BatchTypeInput | item:batch_type:BatchType | Batches.CreateType(ctx, actor(ctx), batchTypeInputFromPB(m.GetInput())) | Create a batch type (Online, Offline, Weekend…)
+UpdateBatchType perm:batches.edit | id input:BatchTypeInput | item:batch_type:BatchType | Batches.UpdateType(ctx, actor(ctx), idOf(m), batchTypeInputFromPB(m.GetInput())) | Update a batch type
+DeleteBatchType perm:batches.delete | id | - | Batches.DeleteType(ctx, actor(ctx), idOf(m)) | Delete an unused batch type
+ListBatchOptions staff get | course_id:uuid? | items:BatchOption | Batches.Options(ctx, optUUID(m.GetCourseId())) | Batches for pickers
+ListBatches perm:batches.view get | page course_id:uuid? status:str[in=upcoming/running/completed/cancelled] q:str[max=100] | list:Batch | Batches.List(ctx, actor(ctx), dto.BatchFilter{PageQuery: page(m), CourseID: optUUID(m.GetCourseId()), Status: m.GetStatus(), Q: m.GetQ()}) | List batches
+CreateBatch perm:batches.create | input:BatchInput | item:batch:BatchDetail | Batches.Create(ctx, actor(ctx), batchInputFromPB(m.GetInput())) | Create a batch
+GetBatch perm:batches.view get | id | item:batch:BatchDetail | Batches.Get(ctx, actor(ctx), idOf(m)) | Batch with mentors and students
+UpdateBatch perm:batches.edit | id input:BatchInput | item:batch:BatchDetail | Batches.Update(ctx, actor(ctx), idOf(m), batchInputFromPB(m.GetInput())) | Update a batch
+DeleteBatch perm:batches.delete | id | - | Batches.Delete(ctx, actor(ctx), idOf(m)) | Delete a batch
+AddBatchStudents perm:students.edit | id student_ids:uuids[min=1,max=1000] | item:batch:BatchDetail | Batches.AddStudents(ctx, actor(ctx), idOf(m), uuidsFromPB(m.GetStudentIds())) | Enroll students into the batch
+ListClasses perm:attendance.view get | batch_id:uuid | items:ClassSession | Attendance.Classes(ctx, actor(ctx), uuidFromPB(m.GetBatchId())) | Offline class sessions of a batch
+CreateClass perm:attendance.create | batch_id:uuid input:ClassInput | item:class_session:ClassSession | Attendance.CreateClass(ctx, actor(ctx), uuidFromPB(m.GetBatchId()), classInputFromPB(m.GetInput())) | Schedule a class session
+UpdateClass perm:attendance.edit | id input:ClassInput | item:class_session:ClassSession | Attendance.UpdateClass(ctx, actor(ctx), idOf(m), classInputFromPB(m.GetInput())) | Update a class session
+DeleteClass perm:attendance.delete | id | - | Attendance.DeleteClass(ctx, actor(ctx), idOf(m)) | Delete a class session
+GetRoster perm:attendance.view get | class_id:uuid | items:RosterRow | Attendance.Roster(ctx, actor(ctx), uuidFromPB(m.GetClassId())) | Attendance roster
+MarkAttendance perm:attendance.edit | class_id:uuid input:AttendanceInput | ok="attendance saved" | Attendance.Mark(ctx, actor(ctx), uuidFromPB(m.GetClassId()), attendanceInputFromPB(m.GetInput())) | Mark attendance
+StartClassQr perm:attendance.edit | class_id:uuid | item:qr:ClassQr | Attendance.StartQR(ctx, actor(ctx), uuidFromPB(m.GetClassId())) | Start a 10-minute QR check-in
+CheckIn student rl=checkin/30/60 | input:CheckinInput | item:result:CheckinResult | Attendance.Checkin(ctx, actor(ctx), m.GetInput().GetToken()) | Student QR check-in
+ListMyAttendance student get | - | items:MyClassAttendance | Attendance.Mine(ctx, actor(ctx)) | My offline class attendance
+
+service LiveService live "Live classes on Google Meet: schedule, attendance, recordings, calendar files."
+ListLive perm:live.view get | page from:ts to:ts course_id:uuid? | list:LiveSession | Live.List(ctx, actor(ctx), dto.LiveFilter{PageQuery: page(m), From: optTsFromPB(m.GetFrom()), To: optTsFromPB(m.GetTo()), CourseID: optUUID(m.GetCourseId())}) | List live sessions
+CreateLive perm:live.create | input:LiveInput | item:session:LiveDetail | Live.Create(ctx, actor(ctx), liveInputFromPB(m.GetInput())) | Schedule a Google Meet session
+GetLive perm:live.view get | id | item:session:LiveDetail | Live.Get(ctx, actor(ctx), idOf(m)) | Session with audience and attendance
+UpdateLive perm:live.edit | id input:LiveInput | item:session:LiveDetail | Live.Update(ctx, actor(ctx), idOf(m), liveInputFromPB(m.GetInput())) | Update a session
+DeleteLive perm:live.delete | id | - | Live.Delete(ctx, actor(ctx), idOf(m)) | Delete a session
+MarkLiveAttendance perm:live.edit | id input:LiveAttendanceInput | item:session:LiveDetail | Live.MarkAttendance(ctx, actor(ctx), idOf(m), liveAttendanceInputFromPB(m.GetInput())) | Mark attendance manually
+SetLiveRecording perm:live.edit | id input:RecordingInput | item:session:LiveDetail | Live.SetRecording(ctx, actor(ctx), idOf(m), recordingInputFromPB(m.GetInput())) | Attach a recording link
+SyncLive perm:live.edit | id input:SyncInput | item:result:SyncResult | Live.Sync(ctx, actor(ctx), idOf(m), syncInputFromPB(m.GetInput())) | Sync with Google Calendar / Meet / Drive
+GetLiveIcs staff get | id | file | Live.ICS(ctx, actor(ctx), idOf(m)) | Download .ics calendar file
+ListMyLive student get | scope:str[in=upcoming/past] | items:LiveSession | Live.Mine(ctx, actor(ctx), defStr(m.GetScope(), "upcoming")) | My upcoming or past live sessions
+JoinLive student | id | item:result:JoinResult | Live.Join(ctx, actor(ctx), idOf(m)) | Join (records attendance) and get the Meet link
+GetMyLiveIcs student get | id | file | Live.ICS(ctx, actor(ctx), idOf(m)) | Add a session to my calendar (.ics)
+
+service CommentService comments "Video Q&A: questions and answers under lesson videos, and moderation."
+ListVideoComments signed get | video_id:uuid | items:VideoComment | Comments.List(ctx, actor(ctx), uuidFromPB(m.GetVideoId())) | Questions and answers under a video
+CreateVideoComment signed | video_id:uuid input:VideoCommentInput | items:VideoComment | Comments.Create(ctx, actor(ctx), uuidFromPB(m.GetVideoId()), videoCommentInputFromPB(m.GetInput())) | Ask a question or reply
+DeleteVideoComment signed | id | - | Comments.Delete(ctx, actor(ctx), idOf(m)) | Delete a comment
+PinVideoComment perm:comments.edit | id pinned:bool | - | Comments.Pin(ctx, actor(ctx), idOf(m), m.GetPinned()) | Pin or unpin a comment
+ListModerationComments perm:comments.view get | page unanswered:bool | list:ModerationComment | Comments.Moderation(ctx, actor(ctx), m.GetUnanswered(), page(m)) | Recent comments across courses
+
+service AnnouncementService announcements "Announcements to students (posting one notifies them)."
+ListAnnouncements perm:announcements.view get | page | list:Announcement | Announcements.List(ctx, page(m)) | List announcements
+CreateAnnouncement perm:announcements.create | input:AnnouncementInput | item:announcement:Announcement | Announcements.Create(ctx, actor(ctx), announcementInputFromPB(m.GetInput())) | Post an announcement (notifies students)
+UpdateAnnouncement perm:announcements.edit | id input:AnnouncementInput | item:announcement:Announcement | Announcements.Update(ctx, actor(ctx), idOf(m), announcementInputFromPB(m.GetInput())) | Update an announcement
+DeleteAnnouncement perm:announcements.delete | id | - | Announcements.Delete(ctx, actor(ctx), idOf(m)) | Delete an announcement
+ListMyAnnouncements student get | limit:i32[gte=1,lte=200] | items:Announcement | Announcements.Mine(ctx, actor(ctx), def32(m.GetLimit(), 30)) | Announcements for me
+
+service NotificationService notifications "In-app notifications and the realtime event stream."
+ListNotifications signed get | unread_only:bool limit:i32[gte=1,lte=100] | item:feed:NotificationFeed | Notify.Feed(ctx, actor(ctx), m.GetUnreadOnly(), def32(m.GetLimit(), 30)) | My notifications and unread count
+MarkNotificationsRead signed | ids:uuids[max=500] | - | Notify.MarkRead(ctx, actor(ctx), uuidsFromPB(m.GetIds())) | Mark notifications as read (no ids = all)
+Subscribe signed stream | - | custom{string type = 1; google.protobuf.Struct data = 2} | custom | Realtime events for the signed-in user (server stream; the first event is "hello")
+
+service PortalService portal "The student portal: dashboard, my courses, the watch page and my tasks."
+GetDashboard student get | - | item:dashboard:Dashboard | Portal.Dashboard(ctx, actor(ctx)) | Home: progress, next tasks, live classes, news
+ListMyCourses student get | - | items:MyCourse | Portal.Courses(ctx, actor(ctx)) | My enrolled courses with progress
+GetMyCourse student get | id | item:course:MyCourseDetail | Portal.Course(ctx, actor(ctx), idOf(m)) | Course overview and playlist
+GetWatchPage student get | video_id:uuid | item:page:WatchPage | Portal.Watch(ctx, actor(ctx), uuidFromPB(m.GetVideoId())) | Watch page: player, playlist, tasks, quizzes
+ListMyTasks student get | course_id:uuid? status:str[in=todo/pending/approved/rejected/resubmit] | items:MyTask | Portal.Tasks(ctx, actor(ctx), optUUID(m.GetCourseId()), nil, m.GetStatus()) | All my tasks with status
+GetMyTask student get | id | item:page:TaskPage | Portal.Task(ctx, actor(ctx), idOf(m)) | Task page with attempts and conversation
+SubmitTask student | task_id:uuid input:SubmissionInput | item:page:TaskPage | Portal.Submit(ctx, actor(ctx), uuidFromPB(m.GetTaskId()), submissionInputFromPB(m.GetInput())) | Submit a task
+CommentTask student | task_id:uuid input:CommentInput | item:page:TaskPage | Portal.Comment(ctx, actor(ctx), uuidFromPB(m.GetTaskId()), commentInputFromPB(m.GetInput())) | Message the mentor about a task
+
+service AdminService admin "Institute administration: analytics, the audit log and settings."
+GetAnalyticsOverview perm:analytics.view get | days:i32[gte=7,lte=365] | item:overview:Overview | Analytics.Overview(ctx, int(def32(m.GetDays(), 30))) | Dashboard numbers and charts
+ListAuditLog perm:audit.view get | page entity:str[max=40] action:str[max=40] actor_id:uuid? | list:AuditEntry | Audit.List(ctx, dto.AuditFilter{PageQuery: page(m), Entity: m.GetEntity(), Action: m.GetAction(), ActorID: optUUID(m.GetActorId())}) | Audit log
+GetSettings perm:settings.view get | - | item:settings:SettingsView | noErr(c.s.Settings.View(ctx)) | Institute settings
+UpdateSettings perm:settings.edit | input:Settings | item:settings:SettingsView | Settings.Update(ctx, actor(ctx), settingsFromPB(m.GetInput())) | Update settings
+DisconnectGoogle perm:settings.edit | - | - | Settings.GoogleDisconnect(ctx, actor(ctx)) | Disconnect the institute Google account
+
+service LeadService leads "The sales CRM: leads, their pipeline stage, notes, calls, follow-ups and assignment."
+ListLeads perm:leads.view get | page q:str[max=100] stage_id:uuid? stage_kind:str[in=open/won/lost] owner_id:uuid? unassigned:bool mine:bool source:str[max=60] course_id:uuid? team_id:uuid? follow_up:str[in=today/overdue] from:ts to:ts sort:str[in=created/activity/follow_up] | item:list:LeadList | Leads.List(ctx, actor(ctx), leadFilter(m)) | Leads in my sales scope, with counts per stage
+GetLead perm:leads.view get | id | item:lead:LeadDetail | Leads.Get(ctx, actor(ctx), idOf(m)) | Lead with activity and follow-ups
+ListLeadSources perm:leads.view get | - | strs | Leads.Sources(ctx) | Lead sources seen so far
+CreateLead perm:leads.create | input:LeadCreate | item:result:LeadCreated | Leads.Create(ctx, actor(ctx), leadCreateFromPB(m.GetInput())) | Add a lead by hand
+UpdateLead perm:leads.edit | id input:LeadUpdate | item:lead:Lead | Leads.Update(ctx, actor(ctx), idOf(m), leadUpdateFromPB(m.GetInput())) | Update a lead's details
+DeleteLead perm:leads.delete | id | - | Leads.Delete(ctx, actor(ctx), idOf(m)) | Delete a lead
+SetLeadStage perm:leads.edit | id input:LeadStageInput | item:lead:Lead | Leads.SetStage(ctx, actor(ctx), idOf(m), leadStageInputFromPB(m.GetInput())) | Move a lead to another stage
+AddLeadNote perm:leads.edit | id input:NoteInput | item:lead:Lead | Leads.AddNote(ctx, actor(ctx), idOf(m), noteInputFromPB(m.GetInput())) | Add a note
+LogLeadCall perm:leads.edit | id input:CallInput | item:lead:Lead | Leads.LogCall(ctx, actor(ctx), idOf(m), callInputFromPB(m.GetInput())) | Log a call
+AddFollowUp perm:leads.edit | id input:FollowUpInput | item:lead:Lead | Leads.AddFollowUp(ctx, actor(ctx), idOf(m), followUpInputFromPB(m.GetInput())) | Schedule a follow-up
+CompleteFollowUp perm:leads.edit | id | - | Leads.CompleteFollowUp(ctx, actor(ctx), idOf(m)) | Mark a follow-up done
+DeleteFollowUp perm:leads.edit | id | - | Leads.DeleteFollowUp(ctx, actor(ctx), idOf(m)) | Delete a follow-up
+ListFollowUps perm:leads.view get | owner_id:uuid? window:str[in=today/overdue/week] | items:FollowUp | Leads.FollowUps(ctx, actor(ctx), optUUID(m.GetOwnerId()), m.GetWindow()) | Open follow-ups (today, overdue or this week)
+AssignLead perm:leads.edit | id input:AssignInput | item:lead:Lead | Leads.Assign(ctx, actor(ctx), idOf(m), assignInputFromPB(m.GetInput())) | Assign a lead to a counsellor
+BulkAssignLeads perm:leads.edit | input:BulkAssignInput | okv | Leads.BulkAssign(ctx, actor(ctx), bulkAssignInputFromPB(m.GetInput())) | Assign many leads at once
+TakeNextLead perm:leads.edit | - | item:lead:Lead | Leads.TakeNext(ctx, actor(ctx)) | Take the next lead from the queue
+GetMySales perm:leads.view get | - | item:sales:MySales | Leads.MySales(ctx, actor(ctx)) | My counts, targets and availability
+SetAvailability perm:leads.view | available:bool | item:sales:MySales | Leads.SetAvailability(ctx, actor(ctx), m.GetAvailable()) | Turn new-lead assignment on or off for me
+ExportLeads perm:leads.view get | - | file | Leads.Export(ctx, actor(ctx)) | Download leads as CSV
+ImportLeads perm:leads.create | input:LeadImportInput | item:result:ImportResult | Leads.Import(ctx, actor(ctx), leadImportInputFromPB(m.GetInput())) | Bulk add leads from CSV
+
+service PipelineService pipeline "Sales setup: pipeline stages, lost reasons, teams, counsellors and assignment rules."
+ListStages perm:leads.view get | - | items:Stage | Leads.Stages(ctx) | Pipeline stages in order
+CreateStage perm:sales_settings.edit | input:StageInput | items:Stage | Leads.CreateStage(ctx, actor(ctx), stageInputFromPB(m.GetInput())) | Add a stage
+UpdateStage perm:sales_settings.edit | id input:StageInput | items:Stage | Leads.UpdateStage(ctx, actor(ctx), idOf(m), stageInputFromPB(m.GetInput())) | Rename or recolour a stage
+DeleteStage perm:sales_settings.edit | id | items:Stage | Leads.DeleteStage(ctx, actor(ctx), idOf(m)) | Delete an unused stage
+ReorderStages perm:sales_settings.edit | ids:uuids[min=1,max=200] | items:Stage | Leads.ReorderStages(ctx, actor(ctx), uuidsFromPB(m.GetIds())) | Reorder stages
+ListLostReasons perm:leads.view get | - | items:LostReason | Leads.LostReasons(ctx) | Reasons a lead can be lost
+CreateLostReason perm:sales_settings.edit | input:LostReasonInput | items:LostReason | Leads.CreateLostReason(ctx, actor(ctx), lostReasonInputFromPB(m.GetInput())) | Add a lost reason
+DeleteLostReason perm:sales_settings.edit | id | items:LostReason | Leads.DeleteLostReason(ctx, actor(ctx), idOf(m)) | Delete a lost reason
+ListAssignmentRules perm:sales_settings.view get | - | items:AssignmentRule | Leads.Rules(ctx) | Lead assignment rules
+SaveAssignmentRule perm:sales_settings.edit | id:uuid? input:AssignmentRuleInput | items:AssignmentRule | Leads.SaveRule(ctx, actor(ctx), optUUID(m.GetId()), assignmentRuleInputFromPB(m.GetInput())) | Add (no id) or update an assignment rule
+DeleteAssignmentRule perm:sales_settings.edit | id | items:AssignmentRule | Leads.DeleteRule(ctx, actor(ctx), idOf(m)) | Delete an assignment rule
+ListTeams perm:leads.view get | - | items:Team | Leads.Teams(ctx) | Sales teams
+SaveTeam perm:sales_settings.edit | id:uuid? input:TeamInput | items:Team | Leads.SaveTeam(ctx, actor(ctx), optUUID(m.GetId()), teamInputFromPB(m.GetInput())) | Add (no id) or update a team
+DeleteTeam perm:sales_settings.edit | id | items:Team | Leads.DeleteTeam(ctx, actor(ctx), idOf(m)) | Delete a team
+ListCounsellors perm:leads.view get | team_id:uuid? | items:Counsellor | Leads.Counsellors(ctx, optUUID(m.GetTeamId())) | Counsellors (optionally of one team)
+UpdateCounsellor perm:sales_settings.edit | id input:CounsellorInput | items:Counsellor | Leads.UpdateCounsellor(ctx, actor(ctx), idOf(m), counsellorInputFromPB(m.GetInput())) | Change a counsellor's team, capacity or targets

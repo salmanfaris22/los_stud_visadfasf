@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { Award, CheckCircle2, ChevronRight, Clock, PlayCircle, Plus, Users } from "lucide-react";
-import type { Schemas } from "@lms/api-client";
+import type { PublicCourse } from "@lms/api-client";
 import { cn, formatHours } from "@lms/ui";
 import { FeatureVignette } from "./vignettes";
 
@@ -112,18 +112,18 @@ function CourseCover({ id }: { id: string }) {
   );
 }
 
-export function CourseCard({ c }: { c: Schemas["PublicCourse"]; index?: number }) {
+export function CourseCard({ c }: { c: PublicCourse; index?: number }) {
   return (
     <Link href={`/courses/${c.slug}`}
       className="group flex h-full flex-col rounded-[28px] border bg-card p-3 transition-colors hover:border-[var(--site-violet-line)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--site-violet)]">
       <div className="relative aspect-[16/10] overflow-hidden rounded-[20px]">
-        {c.thumbnail_url ? (
+        {c.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.thumbnail_url} alt="" className="size-full object-cover" />
+          <img src={c.thumbnailUrl} alt="" className="size-full object-cover" />
         ) : (
           <CourseCover id={c.id} />
         )}
-        {c.price_label && <span className="absolute top-3 right-3 rounded-full bg-white px-3 py-1 text-[13px] font-bold text-[#19171f] shadow-sm">{c.price_label}</span>}
+        {c.priceLabel && <span className="absolute top-3 right-3 rounded-full bg-white px-3 py-1 text-[13px] font-bold text-[#19171f] shadow-sm">{c.priceLabel}</span>}
       </div>
       <div className="flex flex-1 flex-col px-3 pt-5 pb-3">
         <div className="flex flex-wrap gap-2 text-[12px] font-semibold">
@@ -133,16 +133,16 @@ export function CourseCard({ c }: { c: Schemas["PublicCourse"]; index?: number }
         <h3 className="mt-3 line-clamp-2 text-[19px] leading-snug font-bold tracking-[-0.01em]">{c.title}</h3>
         {c.subtitle && <p className="mt-1.5 line-clamp-2 text-[15px] leading-6 text-muted-foreground">{c.subtitle}</p>}
         <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1 pt-5 text-[13px] font-medium text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5"><PlayCircle className="size-4" />{c.video_count} {c.video_count === 1 ? "lesson" : "lessons"}</span>
-          {c.total_seconds > 0 && <span className="inline-flex items-center gap-1.5"><Clock className="size-4" />{formatHours(c.total_seconds)}</span>}
-          {c.student_count > 0 && <span className="inline-flex items-center gap-1.5"><Users className="size-4" />{c.student_count} {c.student_count === 1 ? "learner" : "learners"}</span>}
+          <span className="inline-flex items-center gap-1.5"><PlayCircle className="size-4" />{c.videoCount} {c.videoCount === 1 ? "lesson" : "lessons"}</span>
+          {c.totalSeconds > 0 && <span className="inline-flex items-center gap-1.5"><Clock className="size-4" />{formatHours(c.totalSeconds)}</span>}
+          {c.studentCount > 0 && <span className="inline-flex items-center gap-1.5"><Users className="size-4" />{c.studentCount} {c.studentCount === 1 ? "learner" : "learners"}</span>}
         </div>
       </div>
     </Link>
   );
 }
 
-export function CoursesShowcase({ courses }: { courses: Schemas["PublicCourse"][] }) {
+export function CoursesShowcase({ courses }: { courses: PublicCourse[] }) {
   if (!courses.length) return null;
   return (
     <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 sm:pb-32">

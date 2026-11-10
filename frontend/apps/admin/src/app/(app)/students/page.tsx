@@ -4,12 +4,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Download, Plus, Upload, Users } from "lucide-react";
 import { Avatar, Button, Card, EmptyState, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table, formatDate, timeAgo } from "@lms/ui";
-import { $api } from "@/lib/api";
+
+import { rpc } from "@/lib/api";
 import { download } from "@/lib/feedback";
 import { Can } from "@/lib/session";
 import { useBatchOptions, useCourseOptions } from "@/features/common/options";
 import { ImportStudentsDialog } from "@/features/students/import-dialog";
 import { StudentFormDialog } from "@/features/students/student-form";
+import { StudentService, useRpcQuery } from "@lms/api-client";
 
 export default function StudentsPage() {
   const router = useRouter();
@@ -22,9 +24,7 @@ export default function StudentsPage() {
   const [importing, setImporting] = React.useState(false);
   const courses = useCourseOptions();
   const batches = useBatchOptions(courseId || undefined);
-  const list = $api.useQuery("get", "/api/v1/students", {
-    params: { query: { q: q || undefined, course_id: courseId || undefined, batch_id: batchId || undefined, status: (status || undefined) as "active" | undefined, page, per_page: 20 } },
-  });
+  const list = useRpcQuery(StudentService.method.listStudents, { q: q || undefined, courseId: courseId || undefined, batchId: batchId || undefined, status: (status || undefined) as "active" | undefined, page, perPage: 20 });
 
   return (
     <>
@@ -33,7 +33,7 @@ export default function StudentsPage() {
         description="Create students, assign courses and track their progress."
         actions={
           <>
-            <Button variant="outline" onClick={() => download("/api/v1/students/export", "students.csv")}><Download /> Export</Button>
+            <Button variant="outline" onClick={() => download(() => rpc(StudentService).exportStudents({}), "students.csv")}><Download /> Export</Button>
             <Can module="students" action="create">
               <Button variant="outline" onClick={() => setImporting(true)}><Upload /> Import CSV</Button>
               <Button onClick={() => setCreating(true)}><Plus /> Add student</Button>
@@ -66,23 +66,23 @@ export default function StudentsPage() {
                 <TR key={s.id} className="cursor-pointer" onClick={() => router.push(`/students/${s.id}`)}>
                   <TD>
                     <Link href={`/students/${s.id}`} className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                      <Avatar src={s.avatar_url} name={s.name} className="size-8" />
+                      <Avatar src={s.avatarUrl} name={s.name} className="size-8" />
                       <span className="min-w-0"><span className="block truncate font-medium">{s.name}</span><span className="block truncate text-xs text-muted-foreground">{s.email}</span></span>
                     </Link>
                   </TD>
-                  <TD className="font-mono text-xs">{s.student_code}</TD>
-                  <TD>{s.course_count}</TD>
+                  <TD className="font-mono text-xs">{s.studentCode}</TD>
+                  <TD>{s.courseCount}</TD>
                   <TD><StatusBadge status={s.status} /></TD>
-                  <TD className="text-muted-foreground">{s.last_login_at ? timeAgo(s.last_login_at) : "Never"}</TD>
-                  <TD className="text-muted-foreground">{formatDate(s.created_at)}</TD>
+                  <TD className="text-muted-foreground">{s.lastLoginAt ? timeAgo(s.lastLoginAt) : "Never"}</TD>
+                  <TD className="text-muted-foreground">{formatDate(s.createdAt)}</TD>
                 </TR>
               ))}
             </TBody>
           </Table>
         )}
-        {list.data && <Pagination page={page} perPage={list.data.per_page} total={list.data.total} onPage={setPage} />}
+        {list.data && <Pagination page={page} perPage={list.data.perPage} total={list.data.total} onPage={setPage} />}
       </Card>
-      <StudentFormDialog open={creating} onOpenChange={setCreating} onSaved={(d) => router.push(`/students/${d.student.id}`)} />
+      <StudentFormDialog open={creating} onOpenChange={setCreating} onSaved={(d) => router.push(`/students/${d.student?.id}`)} />
       <ImportStudentsDialog open={importing} onOpenChange={setImporting} />
     </>
   );

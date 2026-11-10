@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: `${name} — ${site.branding.tagline}`, template: `%s · ${name}` },
     description: (site.blocks.hero?.subtitle as string) ?? "Video lessons, mentor-reviewed tasks, live classes and certificates.",
     openGraph: { type: "website", siteName: name },
-    icons: site.branding.logo_url ? { icon: site.branding.logo_url } : undefined,
+    icons: site.branding.logoUrl ? { icon: site.branding.logoUrl } : undefined,
   };
 }
 
@@ -30,7 +30,7 @@ function textOn(hex: string) {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const site = await getSite();
-  const brand = site.branding.primary_color;
+  const brand = site.branding.primaryColor;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

@@ -1,9 +1,9 @@
 "use client";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Megaphone, Play, Video } from "lucide-react";
-import type { Schemas } from "@lms/api-client";
-import { Button, Card, EmptyState, LineBadge, Markdown, Skeleton, cn, formatTime, lineColor, timeAgo } from "@lms/ui";
-import { $api } from "@/lib/api";
+import { type Dashboard, type LiveSession, PortalService, useRpcQuery } from "@lms/api-client";
+import { Button, Card, EmptyState, LineBadge, Markdown, Skeleton, cn, formatTime, lineColor, timeAgo, asDate } from "@lms/ui";
+
 import { useSession } from "@/lib/session";
 import { CourseLine, TaskRow } from "@/features/learn/cards";
 
@@ -17,9 +17,9 @@ function SectionHead({ title, href, link }: { title: string; href?: string; link
 }
 
 /** The most useful next thing: the first open task, else the least-finished course. */
-function NextStop({ d }: { d: Schemas["Dashboard"] }) {
-  const t = d.next_tasks[0];
-  const c = [...d.courses].filter((x) => x.progress_pct < 100).sort((a, b) => b.progress_pct - a.progress_pct)[0];
+function NextStop({ d }: { d: Dashboard }) {
+  const t = d.nextTasks[0];
+  const c = [...d.courses].filter((x) => x.progressPct < 100).sort((a, b) => b.progressPct - a.progressPct)[0];
   if (!t && !c) {
     return (
       <div className="flex h-full flex-col justify-between rounded-[28px] bg-signal p-7 text-signal-foreground">
@@ -28,8 +28,8 @@ function NextStop({ d }: { d: Schemas["Dashboard"] }) {
       </div>
     );
   }
-  const key = t?.course_id ?? c!.course_id;
-  const href = t ? `/learn/watch/${t.video_id}` : `/learn/courses/${c!.course_id}`;
+  const key = t?.courseId ?? c!.courseId;
+  const href = t ? `/learn/watch/${t.videoId}` : `/learn/courses/${c!.courseId}`;
   return (
     <Link href={href} className="dark group relative flex h-full min-h-56 flex-col overflow-hidden rounded-[28px] bg-rail p-7 text-foreground">
       <div className="map-grid pointer-events-none absolute inset-0 opacity-60" />
@@ -41,9 +41,9 @@ function NextStop({ d }: { d: Schemas["Dashboard"] }) {
       </svg>
       <div className="relative flex items-center gap-2 text-sm font-bold text-signal"><span className="size-2.5 rounded-full bg-signal" />Next stop</div>
       <div className="relative mt-auto max-w-md pt-10">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground"><LineBadge id={key} name={t?.course_title ?? c!.title} size="sm" />{t ? t.course_title : c!.title}</div>
-        <div className="mt-2 font-display text-2xl leading-tight font-extrabold sm:text-[28px]">{t ? t.title : `${c!.progress_pct}% of the way there`}</div>
-        <p className="mt-1.5 text-sm text-muted-foreground">{t ? `Lesson: ${t.video_title}` : `${c!.approved_tasks} of ${c!.total_tasks} tasks approved`}</p>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground"><LineBadge id={key} name={t?.courseTitle ?? c!.title} size="sm" />{t ? t.courseTitle : c!.title}</div>
+        <div className="mt-2 font-display text-2xl leading-tight font-extrabold sm:text-[28px]">{t ? t.title : `${c!.progressPct}% of the way there`}</div>
+        <p className="mt-1.5 text-sm text-muted-foreground">{t ? `Lesson: ${t.videoTitle}` : `${c!.approvedTasks} of ${c!.totalTasks} tasks approved`}</p>
         <span className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-signal px-5 text-sm font-semibold text-signal-foreground transition group-hover:bg-signal-strong">
           <Play className="size-4 fill-current" /> {t ? "Open the lesson" : "Continue"}
         </span>
@@ -52,7 +52,7 @@ function NextStop({ d }: { d: Schemas["Dashboard"] }) {
   );
 }
 
-function Departures({ items }: { items: Schemas["LiveSession"][] }) {
+function Departures({ items }: { items: LiveSession[] }) {
   const now = Date.now();
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-[28px] border bg-card shadow-sm dark:shadow-none">
@@ -65,14 +65,14 @@ function Departures({ items }: { items: Schemas["LiveSession"][] }) {
       ) : (
         <ul className="divide-y">
           {items.slice(0, 4).map((s) => {
-            const live = now >= new Date(s.starts_at).getTime() && now <= new Date(s.ends_at).getTime();
+            const live = now >= asDate(s.startsAt).getTime() && now <= asDate(s.endsAt).getTime();
             return (
               <li key={s.id}>
                 <Link href="/learn/live" className="flex items-center gap-4 px-6 py-3.5 transition hover:bg-muted/50">
-                  <span className="w-14 font-display text-lg font-extrabold tabular-nums">{formatTime(s.starts_at)}</span>
+                  <span className="w-14 font-display text-lg font-extrabold tabular-nums">{formatTime(s.startsAt)}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold">{s.title}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{new Date(s.starts_at).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })} · {s.host_name}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{asDate(s.startsAt).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })} · {s.hostName}</span>
                   </span>
                   <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold", live ? "bg-destructive text-white" : "bg-muted text-muted-foreground")}>
                     <span className={cn("size-1.5 rounded-full", live ? "animate-ping bg-white" : "bg-success")} />{live ? "Live" : "On time"}
@@ -89,17 +89,18 @@ function Departures({ items }: { items: Schemas["LiveSession"][] }) {
 
 export default function LearnHome() {
   const { me } = useSession();
-  const q = $api.useQuery("get", "/api/v1/me/dashboard");
-  const d = q.data;
+  const q = useRpcQuery(PortalService.method.getDashboard, {});
+  const d = q.data?.dashboard;
   const hour = new Date().getHours();
   const greet = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const closest = d?.courses.filter((c) => c.progress_pct < 100 && c.total_tasks > 0).sort((a, b) => b.progress_pct - a.progress_pct)[0];
-  const left = closest ? closest.total_tasks - closest.approved_tasks : 0;
-  const counters = d ? [
-    { label: "To do", value: d.stats.to_do, href: "/learn/tasks" },
-    { label: "In review", value: d.stats.in_review, href: "/learn/tasks" },
-    { label: "Approved", value: d.stats.approved, href: "/learn/tasks" },
-    { label: "Certificates", value: d.stats.certificates, href: "/learn/certificates" },
+  const closest = d?.courses.filter((c) => c.progressPct < 100 && c.totalTasks > 0).sort((a, b) => b.progressPct - a.progressPct)[0];
+  const left = closest ? closest.totalTasks - closest.approvedTasks : 0;
+  const stats = d?.stats;
+  const counters = stats ? [
+    { label: "To do", value: stats.toDo, href: "/learn/tasks" },
+    { label: "In review", value: stats.inReview, href: "/learn/tasks" },
+    { label: "Approved", value: stats.approved, href: "/learn/tasks" },
+    { label: "Certificates", value: stats.certificates, href: "/learn/certificates" },
   ] : [];
   return (
     <div className="mx-auto max-w-7xl space-y-10">
@@ -115,7 +116,7 @@ export default function LearnHome() {
         <>
           <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
             <NextStop d={d} />
-            <Departures items={d.upcoming_live} />
+            <Departures items={d.upcomingLive} />
           </div>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -131,13 +132,13 @@ export default function LearnHome() {
           <section>
             <SectionHead title="Your lines" href="/learn/courses" link="All courses" />
             {d.courses.length === 0 ? <EmptyState title="No courses yet" description="Your institute will assign courses to you. They appear here." /> : (
-              <Card className="divide-y p-2">{d.courses.map((c) => <CourseLine key={c.enrollment_id} c={c} />)}</Card>
+              <Card className="divide-y p-2">{d.courses.map((c) => <CourseLine key={c.enrollmentId} c={c} />)}</Card>
             )}
           </section>
 
           <section>
             <SectionHead title="Next tasks" href="/learn/tasks" link="All tasks" />
-            {d.next_tasks.length === 0 ? <EmptyState icon={<CheckCircle2 />} title="All done!" description="No tasks waiting for you right now." /> : <div className="space-y-2.5">{d.next_tasks.map((t) => <TaskRow key={t.id} t={t} />)}</div>}
+            {d.nextTasks.length === 0 ? <EmptyState icon={<CheckCircle2 />} title="All done!" description="No tasks waiting for you right now." /> : <div className="space-y-2.5">{d.nextTasks.map((t) => <TaskRow key={t.id} t={t} />)}</div>}
           </section>
 
           {d.announcements.length > 0 && (
@@ -148,7 +149,7 @@ export default function LearnHome() {
                   <Card key={a.id} className="p-6">
                     <div className="flex items-center gap-2.5 font-bold"><span className="flex size-8 items-center justify-center rounded-full bg-signal text-signal-foreground"><Megaphone className="size-4" /></span>{a.title}</div>
                     <Markdown className="mt-3 line-clamp-4 text-sm text-muted-foreground">{a.body}</Markdown>
-                    <p className="mt-3 text-xs text-muted-foreground">{a.author_name} · {timeAgo(a.created_at)}</p>
+                    <p className="mt-3 text-xs text-muted-foreground">{a.authorName} · {timeAgo(a.createdAt)}</p>
                   </Card>
                 ))}
               </div>

@@ -1,27 +1,15 @@
-import { ConnectError } from "@connectrpc/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 
-type Problem = { title?: string; detail?: string; status?: number; errors?: { message?: string; location?: string }[] };
-
-function field(location?: string) {
-  if (!location) return "";
-  const name = location.replace(/^body\./, "").replace(/\[\d+\]/g, "").split(".").pop() ?? "";
-  return name ? `${name.replace(/_/g, " ")}: ` : "";
-}
-
-/** Turns an API problem (RFC 9457), a gRPC error or a thrown error into a short message for toasts and forms. */
+/** Turns a gRPC error or a thrown error into a short message for toasts and forms. */
 export function errorMessage(err: unknown, fallback = "Something went wrong"): string {
   if (!err) return fallback;
   if (typeof err === "string") return err;
   if (err instanceof ConnectError) return err.rawMessage || fallback;
-  const p = err as Problem;
-  const first = p.errors?.[0];
-  if (first?.message) return `${field(first.location)}${first.message}`;
-  if (p.detail) return p.detail;
   if (err instanceof Error && err.message) return err.message;
-  return p.title || fallback;
+  return fallback;
 }
 
-/** HTTP status of an API problem, if any. */
-export function errorStatus(err: unknown): number | undefined {
-  return (err as Problem | undefined)?.status;
+/** The gRPC code of an error (Code.NotFound, Code.PermissionDenied…), if any. */
+export function errorCode(err: unknown): Code | undefined {
+  return err instanceof ConnectError ? err.code : undefined;
 }

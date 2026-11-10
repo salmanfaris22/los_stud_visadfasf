@@ -20,8 +20,3 @@ type NotificationFeed struct {
 	Items  []Notification `json:"items"`
 	Unread int32          `json:"unread"`
 }
-
-type WSTicket struct {
-	Ticket string `json:"ticket"`
-	URL    string `json:"url" doc:"WebSocket URL including the ticket"`
-}

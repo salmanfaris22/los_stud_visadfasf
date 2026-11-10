@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { ADMIN_URL, STUDENT, STUDENT_URL, apiAs, json, loginAdmin, loginStudent } from "./helpers";
+import { ADMIN_URL, STUDENT, STUDENT_URL, apiAs, json, loginAdmin, loginStudent, rpc } from "./helpers";
 
 const shot = (name: string) => ({ path: `screenshots/${name}.png`, fullPage: false });
 
@@ -14,8 +14,8 @@ test("capture key screens for the docs", async ({ page, browser }) => {
   await page.waitForTimeout(600);
   await page.screenshot(shot("03-student-home"));
   const admin = await apiAs("admin", { email: "admin@lms.local", password: "Admin@12345" });
-  const go = (await json(await admin.get("/api/v1/courses?q=Go%20Backend"))).items[0];
-  const cur = await json(await admin.get(`/api/v1/courses/${go.id}/curriculum`));
+  const go = (await json(await rpc(admin, "CourseService/ListCourses", { q: "Go Backend" }))).items[0];
+  const cur = (await json(await rpc(admin, "CourseService/GetCurriculum", { course_id: go.id }))).items;
   await page.goto(`${STUDENT_URL}/learn/watch/${cur[0].id}`);
   await page.waitForTimeout(2500);
   await page.screenshot(shot("04-watch-page"));
@@ -29,7 +29,7 @@ test("capture key screens for the docs", async ({ page, browser }) => {
   await ap.goto(`${ADMIN_URL}/courses/${go.id}`);
   await ap.waitForTimeout(800);
   await ap.screenshot(shot("07-curriculum-builder"));
-  const subs = await json(await admin.get("/api/v1/submissions?per_page=1"));
+  const subs = await json(await rpc(admin, "SubmissionService/ListSubmissions", { per_page: 1 }));
   if (subs.items[0]) {
     await ap.goto(`${ADMIN_URL}/submissions/${subs.items[0].id}`);
     await ap.screenshot(shot("08-review"));

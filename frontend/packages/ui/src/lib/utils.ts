@@ -23,28 +23,40 @@ export function formatHours(seconds?: number | null) {
   return h ? `${h}h ${m}m` : `${m}m`;
 }
 
-export function formatDate(v?: string | Date | null, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) {
-  if (!v) return "";
-  const d = typeof v === "string" ? new Date(v) : v;
-  return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString(undefined, opts);
+/** A date from the API: an ISO string, a Date, or a protobuf Timestamp ({seconds, nanos}). */
+export type DateLike = string | Date | { seconds: bigint; nanos: number } | null | undefined;
+
+/** Converts any DateLike to a Date (null when empty or invalid). */
+export function toDate(v: DateLike): Date | null {
+  if (!v) return null;
+  const d = typeof v === "string" ? new Date(v) : v instanceof Date ? v : new Date(Number(v.seconds) * 1000 + Math.floor(v.nanos / 1e6));
+  return Number.isNaN(d.getTime()) ? null : d;
 }
 
-export function formatDateTime(v?: string | Date | null) {
-  if (!v) return "";
-  const d = typeof v === "string" ? new Date(v) : v;
-  return d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+/** Like new Date(v) for API dates: an Invalid Date when empty. */
+export function asDate(v: DateLike): Date {
+  return toDate(v) ?? new Date(Number.NaN);
 }
 
-export function formatTime(v?: string | Date | null) {
-  if (!v) return "";
-  const d = typeof v === "string" ? new Date(v) : v;
-  return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+export function formatDate(v?: DateLike, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) {
+  const d = toDate(v);
+  return d ? d.toLocaleDateString(undefined, opts) : "";
+}
+
+export function formatDateTime(v?: DateLike) {
+  const d = toDate(v);
+  return d ? d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "";
+}
+
+export function formatTime(v?: DateLike) {
+  const d = toDate(v);
+  return d ? d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" }) : "";
 }
 
 /** "3 minutes ago", "in 2 days" */
-export function timeAgo(v?: string | Date | null) {
-  if (!v) return "";
-  const d = typeof v === "string" ? new Date(v) : v;
+export function timeAgo(v?: DateLike) {
+  const d = toDate(v);
+  if (!d) return "";
   const diff = (d.getTime() - Date.now()) / 1000;
   const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
   const units: [Intl.RelativeTimeFormatUnit, number][] = [["year", 31536000], ["month", 2592000], ["week", 604800], ["day", 86400], ["hour", 3600], ["minute", 60]];
@@ -58,17 +70,18 @@ export function initials(name?: string | null) {
   return (name ?? "?").split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]!.toUpperCase()).join("") || "?";
 }
 
-export function formatBytes(n?: number | null) {
+export function formatBytes(v?: number | bigint | null) {
+  const n = Number(v ?? 0);
   if (!n) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const i = Math.min(Math.floor(Math.log(n) / Math.log(1024)), units.length - 1);
   return `${(n / 1024 ** i).toFixed(i ? 1 : 0)} ${units[i]}`;
 }
 
-/** Value for <input type="datetime-local"> from an ISO string (local time). */
-export function toLocalInput(v?: string | Date | null) {
-  if (!v) return "";
-  const d = typeof v === "string" ? new Date(v) : v;
+/** Value for <input type="datetime-local"> from an API date (local time). */
+export function toLocalInput(v?: DateLike) {
+  const d = toDate(v);
+  if (!d) return "";
   const off = d.getTimezoneOffset();
   return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16);
 }
@@ -76,4 +89,10 @@ export function toLocalInput(v?: string | Date | null) {
 /** ISO string from a datetime-local value. */
 export function fromLocalInput(v: string) {
   return v ? new Date(v).toISOString() : "";
+}
+
+/** Paise (bigint from the API, or a number) → "₹1,499". */
+export function formatRupees(paise?: bigint | number | null) {
+  const n = Number(paise ?? 0) / 100;
+  return `₹${n.toLocaleString("en-IN", { maximumFractionDigits: n % 1 ? 2 : 0 })}`;
 }

@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CourseVersionService, errorMessage, type Schemas } from "@lms/api-client";
+import { CourseVersionService, errorMessage, type Video, type VideoLink, CourseService, useRpcMutation } from "@lms/api-client";
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Switch, Textarea, VideoPlayer, cn } from "@lms/ui";
-import { $api, api } from "@/lib/api";
+import { rpc } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
 
 const PROVIDERS = [
@@ -25,7 +25,7 @@ function fromSeconds(s?: number) {
 }
 
 /** Add or edit a video. The pasted link is validated live and previewed in the real player. */
-export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId: string; video?: Schemas["Video"]; open: boolean; onOpenChange: (o: boolean) => void }) {
+export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId: string; video?: Video; open: boolean; onOpenChange: (o: boolean) => void }) {
   const qc = useQueryClient();
   const [provider, setProvider] = React.useState<Provider>("youtube");
   const [url, setUrl] = React.useState("");
@@ -33,17 +33,17 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
   const [description, setDescription] = React.useState("");
   const [duration, setDuration] = React.useState("");
   const [preview, setPreview] = React.useState(false);
-  const [parsed, setParsed] = React.useState<Schemas["VideoLink"] | null>(null);
+  const [parsed, setParsed] = React.useState<VideoLink | null>(null);
   const [linkError, setLinkError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!open) return;
     setProvider((video?.provider as Provider) ?? "youtube");
-    setUrl(video?.source_url ?? "");
+    setUrl(video?.sourceUrl ?? "");
     setTitle(video?.title ?? "");
     setDescription(video?.description ?? "");
-    setDuration(fromSeconds(video?.duration_seconds));
-    setPreview(video?.is_preview ?? false);
+    setDuration(fromSeconds(video?.durationSeconds));
+    setPreview(video?.isPreview ?? false);
   }, [open, video]);
 
   React.useEffect(() => {
@@ -51,17 +51,19 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
     setLinkError(null);
     if (url.trim().length < 3) return;
     const t = setTimeout(async () => {
-      const r = await api.client.POST("/api/v1/videos/parse", { body: { provider, url } });
-      if (r.data) setParsed(r.data);
-      else setLinkError(errorMessage(r.error));
+      try {
+        setParsed((await rpc(CourseService).parseVideoLink({ input: { provider, url } })).link ?? null);
+      } catch (e) {
+        setLinkError(errorMessage(e));
+      }
     }, 400);
     return () => clearTimeout(t);
   }, [provider, url]);
 
-  const paths = [`/api/v1/courses/${courseId}`, CourseVersionService];
-  const create = $api.useMutation("post", "/api/v1/courses/{id}/videos", feedback(qc, "Video added", paths, () => onOpenChange(false)));
-  const update = $api.useMutation("put", "/api/v1/videos/{id}", feedback(qc, "Video saved", paths, () => onOpenChange(false)));
-  const body = { title, description, provider, url, duration_seconds: toSeconds(duration), is_preview: preview };
+  const paths = [CourseService, CourseVersionService];
+  const create = useRpcMutation(CourseService.method.createVideo, feedback(qc, "Video added", paths, () => onOpenChange(false)));
+  const update = useRpcMutation(CourseService.method.updateVideo, feedback(qc, "Video saved", paths, () => onOpenChange(false)));
+  const body = { title, description, provider, url, durationSeconds: toSeconds(duration), isPreview: preview };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,8 +73,8 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
           className="grid gap-5 lg:grid-cols-2"
           onSubmit={(e) => {
             e.preventDefault();
-            if (video) update.mutate({ params: { path: { id: video.id } }, body });
-            else create.mutate({ params: { path: { id: courseId } }, body });
+            if (video) update.mutate({ id: video.id, input: body });
+            else create.mutate({ courseId, input: body });
           }}
         >
           <div className="grid content-start gap-4">
@@ -97,7 +99,7 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
           </div>
           <div className="grid content-start gap-3">
             <span className="text-sm font-medium">Preview</span>
-            {parsed ? <VideoPlayer embedUrl={parsed.embed_url} title={title || "Preview"} watermark="student@example.com" /> : (
+            {parsed ? <VideoPlayer embedUrl={parsed.embedUrl} title={title || "Preview"} watermark="student@example.com" /> : (
               <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">Paste a valid link to preview</div>
             )}
             <p className="text-xs text-muted-foreground">Students see a moving watermark with their email. Restrict embedding to your domain in your video host settings.</p>

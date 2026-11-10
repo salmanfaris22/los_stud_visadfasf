@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Layers, Users } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { CourseVersionService, errorMessage, useRpcMutation, useRpcQuery, type CourseVersion, type VersionChanges } from "@lms/api-client";
+import { CourseVersionService, errorMessage, useRpcMutation, useRpcQuery, type CourseVersion, type VersionChanges, StudentService } from "@lms/api-client";
 import { Badge, Button, Checkbox, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Field, Input, SearchInput, Select, Skeleton, TBody, TD, TH, THead, TR, Table, cn, toast } from "@lms/ui";
 import { invalidate } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
@@ -125,7 +125,7 @@ function MoveStep({ courseId, summary, canBuild, onBuild, onClose }: { courseId:
       ids.forEach((id) => (on ? nextPicked.add(id) : nextPicked.delete(id)));
       return nextPicked;
     });
-  const move = useRpcMutation(CourseVersionService.method.moveStudents, feedback(qc, null, [CourseVersionService, "/api/v1/students"], (r) => {
+  const move = useRpcMutation(CourseVersionService.method.moveStudents, feedback(qc, null, [CourseVersionService, StudentService], (r) => {
     toast.success(`${count(r.moved, "student")} moved to v${targetNumber}`);
     onClose();
   }));

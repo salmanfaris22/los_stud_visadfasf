@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, ADMIN_URL, STUDENT_URL, apiAs, json, loginAdmin, loginStudent, stamp } from "./helpers";
+import { ADMIN, ADMIN_URL, STUDENT_URL, apiAs, json, loginAdmin, loginStudent, rpc, stamp } from "./helpers";
 
 test("Build update: new lesson stays hidden until the student is moved to the new version", async ({ browser }) => {
   const s = stamp();
   const admin = await apiAs("admin", ADMIN);
-  const course = await json(await admin.post("/api/v1/courses", { data: { title: `Versions ${s}`, status: "published", is_public: true } }));
-  const lesson = (title: string) => admin.post(`/api/v1/courses/${course.id}/videos`, { data: { title, provider: "youtube", url: "https://youtu.be/446E-r0rXHI" } });
+  const { course } = await json(await rpc(admin, "CourseService/CreateCourse", { input: { title: `Versions ${s}`, status: "published", is_public: true } }));
+  const lesson = (title: string) => rpc(admin, "CourseService/CreateVideo", { course_id: course.id, input: { title, provider: "youtube", url: "https://youtu.be/446E-r0rXHI" } });
   await json(await lesson("Lesson one"));
   const email = `versions-${s}@example.com`;
-  await json(await admin.post("/api/v1/students", { data: { name: `Version Student ${s}`, email, password: "Version@123", enrollments: [{ course_id: course.id }] } }));
+  await json(await rpc(admin, "StudentService/CreateStudent", { input: { name: `Version Student ${s}`, email, password: "Version@123", enrollments: [{ course_id: course.id }] } }));
 
   // The enrollment built v1. The next lesson is an unbuilt change.
   await json(await lesson("Lesson two"));

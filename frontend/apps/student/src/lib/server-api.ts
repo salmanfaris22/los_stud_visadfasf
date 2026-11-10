@@ -1,31 +1,46 @@
 import "server-only";
-import createClient from "openapi-fetch";
-import type { paths, Schemas } from "@lms/api-client";
+import { CertificateService, SiteInfoSchema, SiteService, create, createClient, createConnectTransport, type Branding, type PublicCourse, type PublicCourseDetail, type SiteInfo } from "@lms/api-client/rpc";
 
-/** Server-side client for public pages (no cookies). Responses are cached and refreshed every minute. */
-const server = createClient<paths>({ baseUrl: process.env.API_URL ?? "http://localhost:8080", headers: { "X-LMS-App": "student" } });
-const cache = { next: { revalidate: 60 } } as const;
+/**
+ * Server-side gRPC client for public pages (no cookies). Read-only RPCs go out as Connect GET
+ * requests, so Next caches them and refreshes every minute.
+ */
+const api = process.env.API_URL ?? "http://localhost:8080";
+const cached = createConnectTransport({
+  baseUrl: api,
+  useHttpGet: true,
+  fetch: (input, init) => fetch(input, { ...init, next: { revalidate: 60 } } as RequestInit),
+});
+const fresh = createConnectTransport({ baseUrl: api, useHttpGet: true, fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) });
+const site = createClient(SiteService, cached);
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-const fallbackSite: Schemas["SiteInfo"] = {
-  branding: { name: "LMS", tagline: "Learn by doing", logo_url: "", primary_color: "#6366f1", support_email: "" },
-  signup: true, google: false, blocks: {},
-};
+const fallbackSite: SiteInfo = create(SiteInfoSchema, {
+  branding: { name: "LMS", tagline: "Learn by doing", logoUrl: "", primaryColor: "#6366f1", supportEmail: "" },
+  signup: true,
+  google: false,
+  blocks: {},
+});
 
-export async function getSite(): Promise<Schemas["SiteInfo"]> {
+/** Site info with branding and CMS blocks always present. */
+export type Site = Omit<SiteInfo, "branding" | "blocks"> & { branding: Branding; blocks: Record<string, Record<string, unknown> | undefined> };
+
+function normalizeSite(s: SiteInfo): Site {
+  return { ...s, branding: s.branding ?? fallbackSite.branding!, blocks: (s.blocks ?? {}) as Site["blocks"] };
+}
+
+export async function getSite(): Promise<Site> {
   try {
-    const { data } = await server.GET("/api/v1/public/site", cache);
-    return data ?? fallbackSite;
+    return normalizeSite((await site.getSite({})).site ?? fallbackSite);
   } catch {
-    return fallbackSite;
+    return normalizeSite(fallbackSite);
   }
 }
 
 export async function getCourses(query: { q?: string; category?: string; limit?: number } = {}) {
   try {
-    const { data } = await server.GET("/api/v1/public/courses", { params: { query }, ...cache });
-    return data ?? [];
+    return (await site.listPublicCourses(query)).items;
   } catch {
     return [];
   }
@@ -33,17 +48,19 @@ export async function getCourses(query: { q?: string; category?: string; limit?:
 
 export async function getCategories() {
   try {
-    const { data } = await server.GET("/api/v1/public/categories", cache);
-    return data ?? [];
+    return (await site.listCategories({})).items;
   } catch {
     return [];
   }
 }
 
-export async function getCourse(slug: string) {
+/** A public course page; null when the course does not exist. */
+export type CourseDetail = Omit<PublicCourseDetail, "course"> & { course: PublicCourse };
+
+export async function getCourse(slug: string): Promise<CourseDetail | null> {
   try {
-    const { data } = await server.GET("/api/v1/public/courses/{slug}", { params: { path: { slug } }, ...cache });
-    return data ?? null;
+    const d = (await site.getPublicCourse({ slug })).course;
+    return d?.course ? { ...d, course: d.course } : null;
   } catch {
     return null;
   }
@@ -51,8 +68,7 @@ export async function getCourse(slug: string) {
 
 export async function getPosts(limit = 30) {
   try {
-    const { data } = await server.GET("/api/v1/public/blog", { params: { query: { limit } }, ...cache });
-    return data ?? [];
+    return (await site.listPublicPosts({ limit })).items;
   } catch {
     return [];
   }
@@ -60,8 +76,7 @@ export async function getPosts(limit = 30) {
 
 export async function getPost(slug: string) {
   try {
-    const { data } = await server.GET("/api/v1/public/blog/{slug}", { params: { path: { slug } }, ...cache });
-    return data ?? null;
+    return (await site.getPublicPost({ slug })).post ?? null;
   } catch {
     return null;
   }
@@ -69,8 +84,7 @@ export async function getPost(slug: string) {
 
 export async function verifyCertificate(code: string) {
   try {
-    const { data } = await server.GET("/api/v1/public/certificates/{code}", { params: { path: { code } }, cache: "no-store" });
-    return data ?? null;
+    return (await createClient(CertificateService, fresh).verifyCertificate({ code })).verification ?? null;
   } catch {
     return null;
   }

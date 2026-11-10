@@ -2,16 +2,17 @@
 import * as React from "react";
 import { ClipboardList } from "lucide-react";
 import { EmptyState, Skeleton, Tabs, TabsList, TabsTrigger } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { TaskRow } from "@/features/learn/cards";
+import { PortalService, useRpcQuery } from "@lms/api-client";
 
 const TABS = [{ v: "open", label: "To do" }, { v: "pending", label: "In review" }, { v: "approved", label: "Approved" }, { v: "", label: "All" }];
 
 export default function TasksPage() {
   const [tab, setTab] = React.useState("open");
-  const q = $api.useQuery("get", "/api/v1/me/tasks");
-  const items = (q.data ?? []).filter((t) => (tab === "open" ? ["todo", "rejected", "resubmit"].includes(t.status) : tab ? t.status === tab : true));
-  const count = (s: string) => (q.data ?? []).filter((t) => (s === "open" ? ["todo", "rejected", "resubmit"].includes(t.status) : s ? t.status === s : true)).length;
+  const q = useRpcQuery(PortalService.method.listMyTasks, {});
+  const items = (q.data?.items ?? []).filter((t) => (tab === "open" ? ["todo", "rejected", "resubmit"].includes(t.status) : tab ? t.status === tab : true));
+  const count = (s: string) => (q.data?.items ?? []).filter((t) => (s === "open" ? ["todo", "rejected", "resubmit"].includes(t.status) : s ? t.status === s : true)).length;
   return (
     <div className="mx-auto max-w-4xl">
       <h1 className="font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">Tasks</h1>

@@ -2,7 +2,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { ClipboardCheck, MonitorPlay, Play } from "lucide-react";
-import type { Schemas } from "@lms/api-client";
+import type { MyCourse } from "@lms/api-client";
 import { cn, lineColor } from "@lms/ui";
 
 /** Udemy-style violet accent, used for progress and the main buttons on the course pages. */
@@ -65,12 +65,12 @@ export function CourseCover({
 }
 
 /** One course in the grid: framed card, cover with status chip, details, then progress ring and next action. */
-export function CourseCard({ c }: { c: Schemas["MyCourse"] }) {
-  const st = courseStatus(c.progress_pct);
-  const sub = [c.batch_name, c.level && cap(c.level)].filter(Boolean).join(" · ") || c.subtitle;
+export function CourseCard({ c }: { c: MyCourse }) {
+  const st = courseStatus(c.progressPct);
+  const sub = [c.batchName, c.level && cap(c.level)].filter(Boolean).join(" · ") || c.subtitle;
   // Cover: the course thumbnail, or the first lesson's video thumbnail.
-  const cover = c.cover_url || c.thumbnail_url;
-  const preview = useHoverPreview(!!c.preview_url);
+  const cover = c.coverUrl || c.thumbnailUrl;
+  const preview = useHoverPreview(!!c.previewUrl);
   return (
     <div
       className="group relative isolate h-full transition duration-300 hover:-translate-y-1"
@@ -82,16 +82,16 @@ export function CourseCard({ c }: { c: Schemas["MyCourse"] }) {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 bottom-4 -z-10 overflow-hidden rounded-2xl opacity-0 blur-[36px] saturate-150 transition duration-500 group-hover:opacity-100"
       >
-        <CourseCover id={c.course_id} title="" src={cover} className="scale-125" />
+        <CourseCover id={c.courseId} title="" src={cover} className="scale-125" />
       </div>
       <Link
-        href={`/learn/courses/${c.course_id}`}
+        href={`/learn/courses/${c.courseId}`}
         className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition duration-300 group-hover:border-foreground/15 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:outline-none dark:shadow-none"
       >
         <div className="relative aspect-video overflow-hidden bg-muted">
           {/* Extra bottom space on generated covers so the progress pill doesn't sit on the cover title. */}
           <CourseCover
-            id={c.course_id}
+            id={c.courseId}
             title={c.title}
             label={c.category}
             src={cover}
@@ -100,7 +100,7 @@ export function CourseCard({ c }: { c: Schemas["MyCourse"] }) {
           {/* YouTube-style hover preview: the first lesson plays muted over the cover. */}
           {preview.on && (
             <iframe
-              src={c.preview_url}
+              src={c.previewUrl}
               title=""
               aria-hidden
               tabIndex={-1}
@@ -127,7 +127,7 @@ export function CourseCard({ c }: { c: Schemas["MyCourse"] }) {
         <div className="relative flex flex-1 flex-col p-4 pt-9">
           {/* Progress ring sits on the edge between the cover and the body. */}
           <span className="absolute -top-7 right-4 rounded-full border bg-card p-1 shadow-md">
-            <ProgressRing value={c.progress_pct} size={50} stroke={5} />
+            <ProgressRing value={c.progressPct} size={50} stroke={5} />
           </span>
           {c.category && (
             <span className={cn("text-[11px] font-bold tracking-[0.12em] uppercase", accent.text)}>{c.category}</span>
@@ -137,11 +137,11 @@ export function CourseCard({ c }: { c: Schemas["MyCourse"] }) {
           <ul className="mt-auto flex flex-wrap gap-x-4 gap-y-1 pt-3 text-xs text-muted-foreground">
             <li className="flex items-center gap-1.5">
               <MonitorPlay className="size-3.5" />
-              {c.video_count} lecture{c.video_count === 1 ? "" : "s"}
+              {c.videoCount} lecture{c.videoCount === 1 ? "" : "s"}
             </li>
             <li className="flex items-center gap-1.5">
               <ClipboardCheck className="size-3.5" />
-              {c.approved_tasks}/{c.total_tasks} tasks
+              {c.approvedTasks}/{c.totalTasks} tasks
             </li>
           </ul>
         </div>

@@ -14,7 +14,6 @@ import (
 
 	"buf.build/go/protovalidate"
 	"connectrpc.com/connect"
-	"github.com/redis/go-redis/v9"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -22,7 +21,7 @@ import (
 	lmsv1 "github.com/lms/backend/gen/lms/v1"
 	"github.com/lms/backend/internal/apperr"
 	"github.com/lms/backend/internal/auth"
-	"github.com/lms/backend/internal/middleware"
+	"github.com/lms/backend/internal/platform/ratelimit"
 )
 
 const internalMessage = "something went wrong, please try again"
@@ -89,8 +88,8 @@ func checkRule(r *lmsv1.Access) error {
 // accessInterceptor enforces each procedure's access rule and rate limit. Unknown procedures
 // are denied.
 type accessInterceptor struct {
-	rules map[string]*lmsv1.Access
-	redis *redis.Client
+	rules   map[string]*lmsv1.Access
+	limiter *ratelimit.Limiter
 }
 
 func (a *accessInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
@@ -122,7 +121,7 @@ func (a *accessInterceptor) check(ctx context.Context, procedure string) error {
 	}
 	if rl := rule.GetRateLimit(); rl != nil {
 		window := time.Duration(rl.GetWindowSeconds()) * time.Second
-		if !middleware.AllowRate(ctx, a.redis, rl.GetBucket(), auth.MetaFrom(ctx).IP, int(rl.GetLimit()), window) {
+		if !a.limiter.Allow(rl.GetBucket(), auth.MetaFrom(ctx).IP, int(rl.GetLimit()), window) {
 			err := connect.NewError(connect.CodeResourceExhausted, errors.New("too many requests, try again later"))
 			err.Meta().Set("Retry-After", strconv.Itoa(int(rl.GetWindowSeconds())))
 			return err

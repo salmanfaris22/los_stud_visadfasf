@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { ADMIN, ADMIN_URL, STUDENT_URL, apiAs, json, loginAdmin, loginStudent, stamp } from "./helpers";
+import { ADMIN, ADMIN_URL, STUDENT_URL, apiAs, json, loginAdmin, loginStudent, rpc, stamp } from "./helpers";
 
 test("full journey: assigned course → watch → submit → mentor approves → certificate verified", async ({ page, browser }) => {
   const s = stamp();
   const admin = await apiAs("admin", ADMIN);
-  const course = await json(await admin.post("/api/v1/courses", { data: { title: `Journey ${s}`, status: "published", is_public: true } }));
-  const video = await json(await admin.post(`/api/v1/courses/${course.id}/videos`, { data: { title: "Lesson one", provider: "youtube", url: "https://youtu.be/446E-r0rXHI" } }));
-  await json(await admin.post(`/api/v1/videos/${video.id}/tasks`, { data: { title: "Share your repo", allowed_types: ["text", "link"], max_marks: 10, pass_marks: 5 } }));
+  const { course } = await json(await rpc(admin, "CourseService/CreateCourse", { input: { title: `Journey ${s}`, status: "published", is_public: true } }));
+  const { video } = await json(await rpc(admin, "CourseService/CreateVideo", { course_id: course.id, input: { title: "Lesson one", provider: "youtube", url: "https://youtu.be/446E-r0rXHI" } }));
+  await json(await rpc(admin, "CourseService/CreateTask", { video_id: video.id, input: { title: "Share your repo", allowed_types: ["text", "link"], max_marks: 10, pass_marks: 5 } }));
   const email = `journey-${s}@example.com`;
-  await json(await admin.post("/api/v1/students", { data: { name: `Journey Student ${s}`, email, password: "Journey@123", enrollments: [{ course_id: course.id }] } }));
+  await json(await rpc(admin, "StudentService/CreateStudent", { input: { name: `Journey Student ${s}`, email, password: "Journey@123", enrollments: [{ course_id: course.id }] } }));
 
   // Student: dashboard → course → watch page with watermark
   await loginStudent(page, { email, password: "Journey@123" });

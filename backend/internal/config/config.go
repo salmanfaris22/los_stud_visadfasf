@@ -16,7 +16,6 @@ type Config struct {
 	Env           string
 	HTTPAddr      string
 	DatabaseURL   string
-	RedisURL      string
 	JWTSecret     []byte
 	EncryptionKey []byte // 32 bytes, AES-256-GCM for stored OAuth tokens
 
@@ -64,7 +63,6 @@ func Load() (*Config, error) {
 		Env:           get("APP_ENV", "development"),
 		HTTPAddr:      get("HTTP_ADDR", ":8080"),
 		DatabaseURL:   get("DATABASE_URL", "postgres://lms:lms@localhost:5432/lms?sslmode=disable"),
-		RedisURL:      get("REDIS_URL", "redis://localhost:6379/0"),
 		AdminAppURL:   strings.TrimRight(get("ADMIN_APP_URL", "http://localhost:3001"), "/"),
 		StudentAppURL: strings.TrimRight(get("STUDENT_APP_URL", "http://localhost:3000"), "/"),
 		APIPublicURL:  strings.TrimRight(get("API_PUBLIC_URL", "http://localhost:8080"), "/"),

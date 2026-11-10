@@ -6,9 +6,9 @@ import { Award, BookOpen, ClipboardCheck, Mail, Pencil, Phone, ShieldCheck, User
 import {
   Avatar, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Field, Input, Separator, Skeleton, Textarea, cn, timeAgo,
 } from "@lms/ui";
-import { AuthService, useRpcMutation } from "@lms/api-client";
+import { AuthService, useRpcMutation, AdminService, StaffService, useRpcQuery } from "@lms/api-client";
 import { ImageUpload } from "@lms/shared";
-import { $api } from "@/lib/api";
+
 import { feedback } from "@/lib/feedback";
 import { useSession } from "@/lib/session";
 import { Flower } from "@/features/dashboard/lilac-art";
@@ -97,9 +97,9 @@ function WeekBars({ daily }: { daily: { day: string; approved: number; submitted
 export default function ProfilePage() {
   const { me, can } = useSession();
   const [edit, setEdit] = React.useState(false);
-  const overview = $api.useQuery("get", "/api/v1/analytics/overview", { params: { query: { days: 30 } } }, { enabled: can("analytics") });
-  const audit = $api.useQuery("get", "/api/v1/audit", { params: { query: { actor_id: me?.id, per_page: 6 } } }, { enabled: !!me && can("audit") });
-  const staff = $api.useQuery("get", "/api/v1/staff", { params: { query: { per_page: 6 } } }, { enabled: can("users") });
+  const overview = useRpcQuery(AdminService.method.getAnalyticsOverview, { days: 30 }, { enabled: can("analytics"), select: (r) => r.overview });
+  const audit = useRpcQuery(AdminService.method.listAuditLog, { actorId: me?.id, perPage: 6 }, { enabled: !!me && can("audit") });
+  const staff = useRpcQuery(StaffService.method.listStaff, { perPage: 6 }, { enabled: can("users") });
   if (!me) return null;
   const c = overview.data?.counts;
   const modules = [...new Set(me.permissions.map((p) => p.split(":")[0]))];
@@ -131,9 +131,9 @@ export default function ProfilePage() {
 
       {can("analytics") && (
         <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
-          <Stat icon={BookOpen} label="Courses published" value={c?.published_courses} hint={c && `${c.active_batches} batches running`} href="/courses" />
-          <Stat icon={Users} label="Students" value={c?.students} hint={c && `${c.active_students} active this week`} href="/students" />
-          <Stat icon={ClipboardCheck} label="Tasks reviewed" value={c?.reviewed_submissions} hint={overview.data && `${overview.data.approval_rate}% approved`} href="/submissions" />
+          <Stat icon={BookOpen} label="Courses published" value={c?.publishedCourses} hint={c && `${c.activeBatches} batches running`} href="/courses" />
+          <Stat icon={Users} label="Students" value={c?.students} hint={c && `${c.activeStudents} active this week`} href="/students" />
+          <Stat icon={ClipboardCheck} label="Tasks reviewed" value={c?.reviewedSubmissions} hint={overview.data && `${overview.data.approvalRate}% approved`} href="/submissions" />
           <Stat icon={Award} label="Certificates" value={c?.certificates} hint={c && `${c.staff} staff on the team`} href="/certificates" />
         </div>
       )}
@@ -168,7 +168,7 @@ export default function ProfilePage() {
                 <li key={a.id} className="flex items-center gap-3 py-2.5 text-sm">
                   <span className="size-2 rounded-full bg-[var(--lilac)]" />
                   <span className="flex-1 truncate"><span className="capitalize">{a.action.replace(/[._]/g, " ")}</span> <span className="text-muted-foreground">{a.entity}</span></span>
-                  <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(a.created_at)}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(a.createdAt)}</span>
                 </li>
               ))}
             </ul>
@@ -184,8 +184,8 @@ export default function ProfilePage() {
               {staff.isLoading && <Skeleton className="h-24" />}
               {staff.data?.items.map((s, i) => (
                 <li key={s.id} className="flex items-center gap-3">
-                  <Avatar src={s.avatar_url} name={s.name} className={cn("size-9 [&>span]:text-foreground/80", SOFT[i % SOFT.length])} />
-                  <div className="min-w-0 flex-1"><div className="truncate text-sm font-medium">{s.name}</div><div className="truncate text-xs text-muted-foreground">{s.is_super_admin ? "Super admin" : s.role_names.join(", ") || "Staff"}</div></div>
+                  <Avatar src={s.avatarUrl} name={s.name} className={cn("size-9 [&>span]:text-foreground/80", SOFT[i % SOFT.length])} />
+                  <div className="min-w-0 flex-1"><div className="truncate text-sm font-medium">{s.name}</div><div className="truncate text-xs text-muted-foreground">{s.isSuperAdmin ? "Super admin" : s.roleNames.join(", ") || "Staff"}</div></div>
                 </li>
               ))}
             </ul>

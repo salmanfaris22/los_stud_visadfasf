@@ -1,19 +1,19 @@
 "use client";
 import * as React from "react";
 import { Code2, FileText, HardDrive, Image as ImageIcon, Link2, Plus, Send, Type, X } from "lucide-react";
-import { errorMessage, uploadFile, type Schemas } from "@lms/api-client";
+import { TaskRulesSchema, create, errorMessage, uploadFile, type MessageInitShape, type SubmissionItemInputSchema, type TaskPage, type TaskRules } from "@lms/api-client";
 import { Button, Card, Field, FileDrop, Input, Progress, Select, Textarea, cn, formatBytes, toast } from "@lms/ui";
 import { api } from "@/lib/api";
 
 type Up = { key: string; file: File; progress: number; uploadId?: string; error?: string; preview?: string };
-type Item = Schemas["SubmissionItemInput"];
+type Item = MessageInitShape<typeof SubmissionItemInputSchema>;
 
 const LANGS = ["go", "javascript", "typescript", "python", "java", "c", "cpp", "csharp", "php", "ruby", "rust", "kotlin", "swift", "sql", "html", "css", "bash", "other"];
 
-function Uploads({ kind, rules, ups, setUps }: { kind: "file" | "image"; rules: Schemas["TaskRules"]; ups: Up[]; setUps: React.Dispatch<React.SetStateAction<Up[]>> }) {
-  const limitMB = kind === "image" ? rules.max_image_mb : rules.max_file_mb;
+function Uploads({ kind, rules, ups, setUps }: { kind: "file" | "image"; rules: TaskRules; ups: Up[]; setUps: React.Dispatch<React.SetStateAction<Up[]>> }) {
+  const limitMB = kind === "image" ? rules.maxImageMb : rules.maxFileMb;
   const add = (files: File[]) => {
-    const room = rules.max_files > 0 ? rules.max_files - ups.length : files.length;
+    const room = rules.maxFiles > 0 ? rules.maxFiles - ups.length : files.length;
     files.slice(0, Math.max(room, 0)).forEach((file) => {
       const key = crypto.randomUUID();
       const preview = kind === "image" ? URL.createObjectURL(file) : undefined;
@@ -22,7 +22,7 @@ function Uploads({ kind, rules, ups, setUps }: { kind: "file" | "image"; rules: 
         .then((r) => setUps((u) => u.map((x) => (x.key === key ? { ...x, uploadId: r.id, progress: 1 } : x))))
         .catch((e) => setUps((u) => u.map((x) => (x.key === key ? { ...x, error: errorMessage(e) } : x))));
     });
-    if (files.length > room) toast.error(`You can attach up to ${rules.max_files} files`);
+    if (files.length > room) toast.error(`You can attach up to ${rules.maxFiles} files`);
   };
   return (
     <div className="grid gap-2">
@@ -44,8 +44,9 @@ function Uploads({ kind, rules, ups, setUps }: { kind: "file" | "image"; rules: 
 }
 
 /** Builds the submission from the answer types the task allows. */
-export function SubmitForm({ page, onSubmit, submitting }: { page: Schemas["TaskPage"]; onSubmit: (items: Item[]) => void; submitting: boolean }) {
-  const allowed = new Set(page.task.allowed_types);
+export function SubmitForm({ page, onSubmit, submitting }: { page: TaskPage; onSubmit: (items: Item[]) => void; submitting: boolean }) {
+  const allowed = new Set(page.task?.allowedTypes ?? []);
+  const rules = page.rules ?? create(TaskRulesSchema);
   const [files, setFiles] = React.useState<Up[]>([]);
   const [images, setImages] = React.useState<Up[]>([]);
   const [text, setText] = React.useState("");
@@ -58,8 +59,8 @@ export function SubmitForm({ page, onSubmit, submitting }: { page: Schemas["Task
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const items: Item[] = [
-      ...files.filter((u) => u.uploadId).map((u) => ({ kind: "file" as const, upload_id: u.uploadId })),
-      ...images.filter((u) => u.uploadId).map((u) => ({ kind: "image" as const, upload_id: u.uploadId })),
+      ...files.filter((u) => u.uploadId).map((u) => ({ kind: "file" as const, uploadId: u.uploadId })),
+      ...images.filter((u) => u.uploadId).map((u) => ({ kind: "image" as const, uploadId: u.uploadId })),
       ...(text.trim() ? [{ kind: "text" as const, content: text }] : []),
       ...links.filter((l) => l.trim()).map((l) => ({ kind: "link" as const, content: l.trim() })),
       ...(drive.trim() ? [{ kind: "drive" as const, content: drive.trim() }] : []),
@@ -76,8 +77,8 @@ export function SubmitForm({ page, onSubmit, submitting }: { page: Schemas["Task
     <Card className="p-5">
       <form onSubmit={submit} className="grid gap-6">
         <h2 className="text-lg font-bold">Your submission</h2>
-        {allowed.has("file") && section(<FileText className="size-4 text-primary" />, "Files", <Uploads kind="file" rules={page.rules} ups={files} setUps={setFiles} />)}
-        {allowed.has("image") && section(<ImageIcon className="size-4 text-primary" />, "Images", <Uploads kind="image" rules={page.rules} ups={images} setUps={setImages} />)}
+        {allowed.has("file") && section(<FileText className="size-4 text-primary" />, "Files", <Uploads kind="file" rules={rules} ups={files} setUps={setFiles} />)}
+        {allowed.has("image") && section(<ImageIcon className="size-4 text-primary" />, "Images", <Uploads kind="image" rules={rules} ups={images} setUps={setImages} />)}
         {allowed.has("text") && section(<Type className="size-4 text-primary" />, "Written answer", <Textarea rows={6} value={text} onChange={(e) => setText(e.target.value)} placeholder="Write your answer…" />)}
         {allowed.has("link") && section(<Link2 className="size-4 text-primary" />, "Links", (
           <div className="grid gap-2">
@@ -99,7 +100,7 @@ export function SubmitForm({ page, onSubmit, submitting }: { page: Schemas["Task
         ))}
         <div className="flex items-center gap-3">
           <Button type="submit" size="lg" loading={submitting} disabled={uploading}><Send /> {uploading ? "Uploading…" : "Submit task"}</Button>
-          {page.is_overdue && <span className="text-sm text-destructive">The deadline has passed — this will be marked late.</span>}
+          {page.isOverdue && <span className="text-sm text-destructive">The deadline has passed — this will be marked late.</span>}
         </div>
       </form>
     </Card>

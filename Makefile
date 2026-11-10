@@ -5,8 +5,8 @@ export PATH := /opt/homebrew/opt/postgresql@16/bin:$(PATH)
 help: ## Show commands
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk -F':.*?## ' '{printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 
-services: ## Start Postgres, Redis, MinIO, Mailpit (Homebrew services)
-	brew services start postgresql@16; brew services start redis; brew services start minio; brew services start mailpit
+services: ## Start Postgres, MinIO, Mailpit (Homebrew services)
+	brew services start postgresql@16; brew services start minio; brew services start mailpit
 
 db: ## Create the lms and lms_test databases (first time)
 	psql -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname='lms'" | grep -q 1 || psql -d postgres -c "CREATE ROLE lms LOGIN PASSWORD 'lms' CREATEDB"
@@ -29,8 +29,10 @@ sqlc: ## Regenerate the repository layer from SQL
 api: ## Run the Go API on :8080
 	cd backend && go run ./cmd/api
 
-gen: ## Regenerate OpenAPI spec + TypeScript client
-	cd frontend && pnpm gen:api
+gen: ## Regenerate the protos from internal/dto + backend/tools/rpcgen/spec.txt, then all code and docs/API.md
+	cd backend && go run ./tools/protogen && go run ./tools/rpcgen
+	$(MAKE) proto
+	python3 scripts/gen-api-docs.py
 
 proto: ## Regenerate Go + TypeScript code from proto/ (buf)
 	PATH="$(CURDIR)/frontend/node_modules/.bin:$$PATH" buf generate

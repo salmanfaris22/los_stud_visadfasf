@@ -8,7 +8,6 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 
 	"github.com/lms/backend/internal/auth"
 	"github.com/lms/backend/internal/config"
@@ -25,7 +24,6 @@ type Deps struct {
 	Cfg     *config.Config
 	Pool    *pgxpool.Pool
 	Q       *repository.Queries
-	Redis   *redis.Client
 	Store   *storage.Store
 	Mail    *mailer.Mailer
 	Hub     *realtime.Hub

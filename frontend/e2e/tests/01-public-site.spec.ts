@@ -39,6 +39,6 @@ test.describe("Public website", () => {
     await page.goto(`${STUDENT_URL}/verify/LMS-NOTREAL1`);
     await expect(page.getByText("Certificate not found")).toBeVisible();
     const health = await request.get(`${API_URL}/healthz`);
-    expect(await health.json()).toMatchObject({ status: "ok", db: "ok", redis: "ok", storage: "ok" });
+    expect(await health.json()).toMatchObject({ status: "ok", db: "ok", storage: "ok" });
   });
 });

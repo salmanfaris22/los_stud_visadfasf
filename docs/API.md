@@ -1,284 +1,331 @@
 # API reference
 
-Generated from `backend/internal/handler/*.go` by `scripts/gen-api-docs.py` — **147 JSON endpoints** in 19 groups.
-Interactive docs: run the API and open **http://localhost:8080/docs** (OpenAPI 3.1 at `/openapi.json`).
+The LMS API is gRPC only: **19 services, 183 RPCs**, served by one Go server on `:8080` that speaks gRPC, gRPC-Web and the Connect protocol (JSON or binary).
+The contract is `proto/lms/v1/*.proto` (generated from `backend/internal/dto` and `backend/tools/rpcgen/spec.txt` with `make gen`).
 
-Every request sends `X-LMS-App: admin|student`. Auth uses httpOnly cookies (`lms_<app>_at` 15 min, `lms_<app>_rt` 7 days).
-Access column: `module:action` = staff permission from roles (super admins pass everything) · *student* = student account · *signed in* = any user.
-
-| Group | Endpoints |
+| How to call | Detail |
 |---|---|
-| [Auth](#auth) | 10 |
-| [Staff & roles](#staff--roles) | 12 |
-| [Students](#students) | 10 |
-| [Courses](#courses) | 6 |
-| [Curriculum](#curriculum) | 10 |
-| [Batches](#batches) | 11 |
-| [Attendance](#attendance) | 9 |
-| [Task reviews](#task-reviews) | 5 |
-| [Uploads](#uploads) | 2 |
-| [Quizzes](#quizzes) | 9 |
-| [Certificates](#certificates) | 6 |
-| [Live sessions](#live-sessions) | 12 |
-| [Announcements](#announcements) | 5 |
-| [Video Q&A](#video-qa) | 5 |
-| [Notifications](#notifications) | 3 |
-| [Student portal](#student-portal) | 8 |
-| [Public website](#public-website) | 8 |
-| [Website admin](#website-admin) | 11 |
-| [Admin](#admin) | 5 |
+| Path | `POST /lms.v1.<Service>/<Method>` (web apps: `/rpc/lms.v1.<Service>/<Method>` through Next.js). Read RPCs also accept Connect `GET`. |
+| Body | Connect JSON (field names in camelCase or snake_case) or protobuf binary. |
+| Auth | Web: httpOnly cookies from `AuthService.Login` plus header `X-LMS-App: admin\|student`. |
+| Errors | Connect codes: `invalid_argument` 400, `unauthenticated` 401, `permission_denied` 403, `not_found` 404, `already_exists` 409, `resource_exhausted` 429. |
+| Explore | `grpcurl -plaintext localhost:8080 list` (server reflection) |
+| Plain HTTP | `/healthz`, `/api/v1/auth/google/{start,callback}`, `/api/v1/settings/google/{connect,callback}`, `/api/v1/files/{id}` |
 
-## Auth
+Access: **public** = anyone · **signed in** = any user · **student** / **staff** = that kind of user · `module:action` = staff with that permission (super admins always pass).
 
-| Method | Path | Access | What it does |
+## AdminService
+
+Institute administration: analytics, the audit log and settings.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `POST` | `/api/v1/auth/change-password` | signed in | Change own password |
-| `POST` | `/api/v1/auth/forgot` | rate 5/15×Minute | Email a password reset link |
-| `POST` | `/api/v1/auth/login` | rate 20/Minute | Sign in with email and password |
-| `POST` | `/api/v1/auth/logout` | public | Sign out |
-| `GET` | `/api/v1/auth/me` | signed in | Current user |
-| `PUT` | `/api/v1/auth/me` | signed in | Update own profile |
-| `GET` | `/api/v1/auth/providers` | public | Available sign-in options |
-| `POST` | `/api/v1/auth/refresh` | rate 120/Minute | Rotate the refresh token |
-| `POST` | `/api/v1/auth/register` | rate 10/Hour | Student self sign-up |
-| `POST` | `/api/v1/auth/reset` | rate 10/15×Minute | Set a new password with a reset token |
+| `GetAnalyticsOverview` | read | `analytics:view` | Dashboard numbers and charts |
+| `ListAuditLog` | read | `audit:view` | Audit log |
+| `GetSettings` | read | `settings:view` | Institute settings |
+| `UpdateSettings` | write | `settings:edit` | Update settings |
+| `DisconnectGoogle` | write | `settings:edit` | Disconnect the institute Google account |
 
-## Staff & roles
+## AnnouncementService
 
-| Method | Path | Access | What it does |
+Announcements to students (posting one notifies them).
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/permissions/modules` | staff | Modules and actions for the permission matrix |
-| `GET` | `/api/v1/roles` | `roles:view` | List roles |
-| `POST` | `/api/v1/roles` | `roles:create` | Create a role |
-| `DELETE` | `/api/v1/roles/{id}` | `roles:delete` | Delete a role |
-| `GET` | `/api/v1/roles/{id}` | `roles:view` | Get a role |
-| `PUT` | `/api/v1/roles/{id}` | `roles:edit` | Update a role and its permissions |
-| `GET` | `/api/v1/staff` | `users:view` | List staff users |
-| `POST` | `/api/v1/staff` | `users:create` | Create a staff user (admin / mentor) |
-| `GET` | `/api/v1/staff/options` | staff | Active staff for pickers |
-| `DELETE` | `/api/v1/staff/{id}` | `users:delete` | Delete a staff user |
-| `GET` | `/api/v1/staff/{id}` | `users:view` | Get a staff user |
-| `PUT` | `/api/v1/staff/{id}` | `users:edit` | Update a staff user |
+| `ListAnnouncements` | read | `announcements:view` | List announcements |
+| `CreateAnnouncement` | write | `announcements:create` | Post an announcement (notifies students) |
+| `UpdateAnnouncement` | write | `announcements:edit` | Update an announcement |
+| `DeleteAnnouncement` | write | `announcements:delete` | Delete an announcement |
+| `ListMyAnnouncements` | read | student | Announcements for me |
 
-## Students
+## AuthService
 
-| Method | Path | Access | What it does |
+AuthService signs users in and out and manages the signed-in user's own account. Web sessions live in httpOnly cookies set by Login/Register/Refresh; the portal is chosen by the X-LMS-App header (admin | student). Google sign-in stays a browser redirect (/api/v1/auth/google/start), outside gRPC.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `DELETE` | `/api/v1/enrollments/{id}` | `students:edit` | Remove a course from a student |
-| `PUT` | `/api/v1/enrollments/{id}` | `students:edit` | Change batch or status of an enrollment |
-| `GET` | `/api/v1/students` | `students:view` | List students |
-| `POST` | `/api/v1/students` | `students:create` | Create a student and assign courses |
-| `GET` | `/api/v1/students/export` | `students:view` | Download students as CSV |
-| `POST` | `/api/v1/students/import` | `students:create` | Bulk create students from CSV |
-| `DELETE` | `/api/v1/students/{id}` | `students:delete` | Delete a student |
-| `GET` | `/api/v1/students/{id}` | `students:view` | Student profile with enrollments |
-| `PUT` | `/api/v1/students/{id}` | `students:edit` | Update a student |
-| `POST` | `/api/v1/students/{id}/enrollments` | `students:edit` | Assign a course to a student |
+| `GetProviders` | read | public | Which sign-in options the portal shows. |
+| `Login` | write | public · 20/1 min | Sign in with email and password; sets the session cookies. |
+| `Register` | write | public · 10/60 min | Student self sign-up; sets the session cookies. |
+| `Refresh` | write | public · 120/1 min | Rotates the refresh cookie and issues a new access cookie. |
+| `Logout` | write | public | Signs out: revokes the refresh token and clears the cookies. |
+| `GetMe` | read | signed in | The signed-in user. |
+| `UpdateProfile` | write | signed in | Updates the signed-in user's own profile. |
+| `ChangePassword` | write | signed in | Changes the signed-in user's password. |
+| `ForgotPassword` | write | public · 5/15 min | Emails a password reset link (always answers the same, whether or not the email exists). |
+| `ResetPassword` | write | public · 10/15 min | Sets a new password with a reset token. |
 
-## Courses
+## BatchService
 
-| Method | Path | Access | What it does |
+Batches, batch types and offline class attendance (incl. QR check-in).
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/courses` | `courses:view` | List courses |
-| `POST` | `/api/v1/courses` | `courses:create` | Create a course |
-| `GET` | `/api/v1/courses/options` | staff | Courses for pickers |
-| `DELETE` | `/api/v1/courses/{id}` | `courses:delete` | Delete a course |
-| `GET` | `/api/v1/courses/{id}` | `courses:view` | Get a course |
-| `PUT` | `/api/v1/courses/{id}` | `courses:edit` | Update a course |
+| `ListBatchTypes` | read | staff | List batch types |
+| `CreateBatchType` | write | `batches:create` | Create a batch type (Online, Offline, Weekend…) |
+| `UpdateBatchType` | write | `batches:edit` | Update a batch type |
+| `DeleteBatchType` | write | `batches:delete` | Delete an unused batch type |
+| `ListBatchOptions` | read | staff | Batches for pickers |
+| `ListBatches` | read | `batches:view` | List batches |
+| `CreateBatch` | write | `batches:create` | Create a batch |
+| `GetBatch` | read | `batches:view` | Batch with mentors and students |
+| `UpdateBatch` | write | `batches:edit` | Update a batch |
+| `DeleteBatch` | write | `batches:delete` | Delete a batch |
+| `AddBatchStudents` | write | `students:edit` | Enroll students into the batch |
+| `ListClasses` | read | `attendance:view` | Offline class sessions of a batch |
+| `CreateClass` | write | `attendance:create` | Schedule a class session |
+| `UpdateClass` | write | `attendance:edit` | Update a class session |
+| `DeleteClass` | write | `attendance:delete` | Delete a class session |
+| `GetRoster` | read | `attendance:view` | Attendance roster |
+| `MarkAttendance` | write | `attendance:edit` | Mark attendance |
+| `StartClassQr` | write | `attendance:edit` | Start a 10-minute QR check-in |
+| `CheckIn` | write | student · 30/1 min | Student QR check-in |
+| `ListMyAttendance` | read | student | My offline class attendance |
 
-## Curriculum
+## CertificateService
 
-| Method | Path | Access | What it does |
+Course certificates: issue, revoke, download as PDF and verify publicly.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/courses/{id}/curriculum` | `courses:view` | Videos with their tasks |
-| `POST` | `/api/v1/courses/{id}/videos` | `courses:create` | Add a video (YouTube / Vimeo / Bunny / Cloudflare) |
-| `PUT` | `/api/v1/courses/{id}/videos/order` | `courses:edit` | Reorder videos |
-| `DELETE` | `/api/v1/tasks/{id}` | `courses:delete` | Delete a task |
-| `PUT` | `/api/v1/tasks/{id}` | `courses:edit` | Update a task |
-| `POST` | `/api/v1/videos/parse` | staff | Validate a video link and preview the embed |
-| `DELETE` | `/api/v1/videos/{id}` | `courses:delete` | Delete a video and its tasks |
-| `PUT` | `/api/v1/videos/{id}` | `courses:edit` | Update a video |
-| `POST` | `/api/v1/videos/{id}/tasks` | `courses:create` | Add a task under a video |
-| `PUT` | `/api/v1/videos/{id}/tasks/order` | `courses:edit` | Reorder tasks of a video |
+| `ListCertificates` | read | `certificates:view` | List issued certificates |
+| `IssueCertificate` | write | `certificates:create` | Issue a certificate manually |
+| `RevokeCertificate` | write | `certificates:delete` | Revoke a certificate |
+| `GetCertificatePdf` | read | `certificates:view` | Download a certificate PDF |
+| `ListMyCertificates` | read | student | My certificates |
+| `GetMyCertificatePdf` | read | student | Download my certificate |
+| `VerifyCertificate` | read | public · 60/1 min | Verify a certificate code |
 
-## Batches
+## CommentService
 
-| Method | Path | Access | What it does |
+Video Q&A: questions and answers under lesson videos, and moderation.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/batch-types` | staff | List batch types |
-| `POST` | `/api/v1/batch-types` | `batches:create` | Create a batch type (Online, Offline, Weekend…) |
-| `DELETE` | `/api/v1/batch-types/{id}` | `batches:delete` | Delete an unused batch type |
-| `PUT` | `/api/v1/batch-types/{id}` | `batches:edit` | Update a batch type |
-| `GET` | `/api/v1/batches` | `batches:view` | List batches |
-| `POST` | `/api/v1/batches` | `batches:create` | Create a batch |
-| `GET` | `/api/v1/batches/options` | staff | Batches for pickers |
-| `DELETE` | `/api/v1/batches/{id}` | `batches:delete` | Delete a batch |
-| `GET` | `/api/v1/batches/{id}` | `batches:view` | Batch with mentors and students |
-| `PUT` | `/api/v1/batches/{id}` | `batches:edit` | Update a batch |
-| `POST` | `/api/v1/batches/{id}/students` | `students:edit` | Enroll students into the batch |
+| `ListVideoComments` | read | signed in | Questions and answers under a video |
+| `CreateVideoComment` | write | signed in | Ask a question or reply |
+| `DeleteVideoComment` | write | signed in | Delete a comment |
+| `PinVideoComment` | write | `comments:edit` | Pin or unpin a comment |
+| `ListModerationComments` | read | `comments:view` | Recent comments across courses |
 
-## Attendance
+## CourseVersionService
 
-| Method | Path | Access | What it does |
+CourseVersionService freezes a course curriculum into versions and moves students between them. A version holds which lessons, tasks and quizzes exist and their order. Each enrollment is on one version: new students get the latest, existing students stay until an admin moves them. Text edits to an existing lesson/task/quiz reach every version.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/batches/{id}/classes` | `attendance:view` | Offline class sessions of a batch |
-| `POST` | `/api/v1/batches/{id}/classes` | `attendance:create` | Schedule a class session |
-| `DELETE` | `/api/v1/classes/{id}` | `attendance:delete` | Delete a class session |
-| `PUT` | `/api/v1/classes/{id}` | `attendance:edit` | Update a class session |
-| `GET` | `/api/v1/classes/{id}/attendance` | `attendance:view` | Attendance roster |
-| `PUT` | `/api/v1/classes/{id}/attendance` | `attendance:edit` | Mark attendance |
-| `POST` | `/api/v1/classes/{id}/qr` | `attendance:edit` | Start a 10-minute QR check-in |
-| `GET` | `/api/v1/me/attendance` | student | My offline class attendance |
-| `POST` | `/api/v1/me/attendance/checkin` | student · rate 30/Minute | Student QR check-in |
+| `GetVersionSummary` | read | `courses:view` | Versions (newest first), student counts, and what changed since the latest version. |
+| `BuildVersion` | write | `courses:edit` | Freezes the current curriculum as the next version ("Build update"). |
+| `ListVersionStudents` | read | `students:view` | Students enrolled in the course with the version each one is on. |
+| `MoveStudents` | write | `students:edit` | Puts the chosen enrollments on a version. Their work is kept. |
 
-## Task reviews
+## CourseService
 
-| Method | Path | Access | What it does |
+Courses and their curriculum: videos and the tasks under them.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/submissions` | `submissions:view` | Review queue |
-| `GET` | `/api/v1/submissions/{id}` | `submissions:view` | Submission with history and thread |
-| `POST` | `/api/v1/submissions/{id}/review` | `submissions:edit` | Approve, reject or ask to resubmit |
-| `GET` | `/api/v1/tasks/{task_id}/threads/{student_id}` | `submissions:view` | Task conversation with a student |
-| `POST` | `/api/v1/tasks/{task_id}/threads/{student_id}` | `submissions:edit` | Reply in a task conversation |
+| `ListCourseOptions` | read | staff | Courses for pickers |
+| `ListCourses` | read | `courses:view` | List courses |
+| `CreateCourse` | write | `courses:create` | Create a course |
+| `GetCourse` | read | `courses:view` | Get a course |
+| `UpdateCourse` | write | `courses:edit` | Update a course |
+| `DeleteCourse` | write | `courses:delete` | Delete a course |
+| `ParseVideoLink` | write | staff | Validate a video link and preview the embed |
+| `GetCurriculum` | read | `courses:view` | Videos with their tasks |
+| `CreateVideo` | write | `courses:create` | Add a video (YouTube / Vimeo / Bunny / Cloudflare) |
+| `ReorderVideos` | write | `courses:edit` | Reorder videos |
+| `UpdateVideo` | write | `courses:edit` | Update a video |
+| `DeleteVideo` | write | `courses:delete` | Delete a video and its tasks |
+| `CreateTask` | write | `courses:create` | Add a task under a video |
+| `ReorderTasks` | write | `courses:edit` | Reorder tasks of a video |
+| `UpdateTask` | write | `courses:edit` | Update a task |
+| `DeleteTask` | write | `courses:delete` | Delete a task |
 
-## Uploads
+## LeadService
 
-| Method | Path | Access | What it does |
+The sales CRM: leads, their pipeline stage, notes, calls, follow-ups and assignment.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `POST` | `/api/v1/uploads/presign` | signed in · rate 60/Minute | Get a URL to upload a file straight to storage |
-| `POST` | `/api/v1/uploads/{id}/complete` | signed in | Confirm an upload finished |
+| `ListLeads` | read | `leads:view` | Leads in my sales scope, with counts per stage |
+| `GetLead` | read | `leads:view` | Lead with activity and follow-ups |
+| `ListLeadSources` | read | `leads:view` | Lead sources seen so far |
+| `CreateLead` | write | `leads:create` | Add a lead by hand |
+| `UpdateLead` | write | `leads:edit` | Update a lead's details |
+| `DeleteLead` | write | `leads:delete` | Delete a lead |
+| `SetLeadStage` | write | `leads:edit` | Move a lead to another stage |
+| `AddLeadNote` | write | `leads:edit` | Add a note |
+| `LogLeadCall` | write | `leads:edit` | Log a call |
+| `AddFollowUp` | write | `leads:edit` | Schedule a follow-up |
+| `CompleteFollowUp` | write | `leads:edit` | Mark a follow-up done |
+| `DeleteFollowUp` | write | `leads:edit` | Delete a follow-up |
+| `ListFollowUps` | read | `leads:view` | Open follow-ups (today, overdue or this week) |
+| `AssignLead` | write | `leads:edit` | Assign a lead to a counsellor |
+| `BulkAssignLeads` | write | `leads:edit` | Assign many leads at once |
+| `TakeNextLead` | write | `leads:edit` | Take the next lead from the queue |
+| `GetMySales` | read | `leads:view` | My counts, targets and availability |
+| `SetAvailability` | write | `leads:view` | Turn new-lead assignment on or off for me |
+| `ExportLeads` | read | `leads:view` | Download leads as CSV |
+| `ImportLeads` | write | `leads:create` | Bulk add leads from CSV |
 
-## Quizzes
+## LiveService
 
-| Method | Path | Access | What it does |
+Live classes on Google Meet: schedule, attendance, recordings, calendar files.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `POST` | `/api/v1/me/quiz-attempts/{id}/submit` | student | Submit answers and get the result |
-| `POST` | `/api/v1/me/quizzes/{id}/start` | student | Start or resume an attempt |
-| `GET` | `/api/v1/me/videos/{id}/quizzes` | student | My quizzes for a video |
-| `DELETE` | `/api/v1/quizzes/{id}` | `quizzes:delete` | Delete a quiz |
-| `GET` | `/api/v1/quizzes/{id}` | `quizzes:view` | Quiz with questions and answers |
-| `PUT` | `/api/v1/quizzes/{id}` | `quizzes:edit` | Replace a quiz |
-| `GET` | `/api/v1/quizzes/{id}/attempts` | `quizzes:view` | Submitted attempts |
-| `GET` | `/api/v1/videos/{id}/quizzes` | `quizzes:view` | Quizzes under a video |
-| `POST` | `/api/v1/videos/{id}/quizzes` | `quizzes:create` | Create a quiz with questions |
+| `ListLive` | read | `live:view` | List live sessions |
+| `CreateLive` | write | `live:create` | Schedule a Google Meet session |
+| `GetLive` | read | `live:view` | Session with audience and attendance |
+| `UpdateLive` | write | `live:edit` | Update a session |
+| `DeleteLive` | write | `live:delete` | Delete a session |
+| `MarkLiveAttendance` | write | `live:edit` | Mark attendance manually |
+| `SetLiveRecording` | write | `live:edit` | Attach a recording link |
+| `SyncLive` | write | `live:edit` | Sync with Google Calendar / Meet / Drive |
+| `GetLiveIcs` | read | staff | Download .ics calendar file |
+| `ListMyLive` | read | student | My upcoming or past live sessions |
+| `JoinLive` | write | student | Join (records attendance) and get the Meet link |
+| `GetMyLiveIcs` | read | student | Add a session to my calendar (.ics) |
 
-## Certificates
+## NotificationService
 
-| Method | Path | Access | What it does |
+In-app notifications and the realtime event stream.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/certificates` | `certificates:view` | List issued certificates |
-| `POST` | `/api/v1/certificates` | `certificates:create` | Issue a certificate manually |
-| `DELETE` | `/api/v1/certificates/{id}` | `certificates:delete` | Revoke a certificate |
-| `GET` | `/api/v1/certificates/{id}/pdf` | `certificates:view` | Download a certificate PDF |
-| `GET` | `/api/v1/me/certificates` | student | My certificates |
-| `GET` | `/api/v1/me/certificates/{id}/pdf` | student | Download my certificate |
+| `ListNotifications` | read | signed in | My notifications and unread count |
+| `MarkNotificationsRead` | write | signed in | Mark notifications as read (no ids = all) |
+| `Subscribe` | stream | signed in | Realtime events for the signed-in user (server stream; the first event is "hello") |
 
-## Live sessions
+## PipelineService
 
-| Method | Path | Access | What it does |
+Sales setup: pipeline stages, lost reasons, teams, counsellors and assignment rules.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/live` | `live:view` | List live sessions |
-| `POST` | `/api/v1/live` | `live:create` | Schedule a Google Meet session |
-| `DELETE` | `/api/v1/live/{id}` | `live:delete` | Delete a session |
-| `GET` | `/api/v1/live/{id}` | `live:view` | Session with audience and attendance |
-| `PUT` | `/api/v1/live/{id}` | `live:edit` | Update a session |
-| `PUT` | `/api/v1/live/{id}/attendance` | `live:edit` | Mark attendance manually |
-| `GET` | `/api/v1/live/{id}/ics` | staff | Download .ics calendar file |
-| `PUT` | `/api/v1/live/{id}/recording` | `live:edit` | Attach a recording link |
-| `POST` | `/api/v1/live/{id}/sync` | `live:edit` | Sync with Google Calendar / Meet / Drive |
-| `GET` | `/api/v1/me/live` | student | My upcoming or past live sessions |
-| `GET` | `/api/v1/me/live/{id}/ics` | student | Add a session to my calendar (.ics) |
-| `POST` | `/api/v1/me/live/{id}/join` | student | Join (records attendance) and get the Meet link |
+| `ListStages` | read | `leads:view` | Pipeline stages in order |
+| `CreateStage` | write | `sales_settings:edit` | Add a stage |
+| `UpdateStage` | write | `sales_settings:edit` | Rename or recolour a stage |
+| `DeleteStage` | write | `sales_settings:edit` | Delete an unused stage |
+| `ReorderStages` | write | `sales_settings:edit` | Reorder stages |
+| `ListLostReasons` | read | `leads:view` | Reasons a lead can be lost |
+| `CreateLostReason` | write | `sales_settings:edit` | Add a lost reason |
+| `DeleteLostReason` | write | `sales_settings:edit` | Delete a lost reason |
+| `ListAssignmentRules` | read | `sales_settings:view` | Lead assignment rules |
+| `SaveAssignmentRule` | write | `sales_settings:edit` | Add (no id) or update an assignment rule |
+| `DeleteAssignmentRule` | write | `sales_settings:edit` | Delete an assignment rule |
+| `ListTeams` | read | `leads:view` | Sales teams |
+| `SaveTeam` | write | `sales_settings:edit` | Add (no id) or update a team |
+| `DeleteTeam` | write | `sales_settings:edit` | Delete a team |
+| `ListCounsellors` | read | `leads:view` | Counsellors (optionally of one team) |
+| `UpdateCounsellor` | write | `sales_settings:edit` | Change a counsellor's team, capacity or targets |
 
-## Announcements
+## PortalService
 
-| Method | Path | Access | What it does |
+The student portal: dashboard, my courses, the watch page and my tasks.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/announcements` | `announcements:view` | List announcements |
-| `POST` | `/api/v1/announcements` | `announcements:create` | Post an announcement (notifies students) |
-| `DELETE` | `/api/v1/announcements/{id}` | `announcements:delete` | Delete an announcement |
-| `PUT` | `/api/v1/announcements/{id}` | `announcements:edit` | Update an announcement |
-| `GET` | `/api/v1/me/announcements` | student | Announcements for me |
+| `GetDashboard` | read | student | Home: progress, next tasks, live classes, news |
+| `ListMyCourses` | read | student | My enrolled courses with progress |
+| `GetMyCourse` | read | student | Course overview and playlist |
+| `GetWatchPage` | read | student | Watch page: player, playlist, tasks, quizzes |
+| `ListMyTasks` | read | student | All my tasks with status |
+| `GetMyTask` | read | student | Task page with attempts and conversation |
+| `SubmitTask` | write | student | Submit a task |
+| `CommentTask` | write | student | Message the mentor about a task |
 
-## Video Q&A
+## QuizService
 
-| Method | Path | Access | What it does |
+Quizzes under videos: authoring, attempts, and the student quiz player.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/comments` | `comments:view` | Recent comments across courses |
-| `DELETE` | `/api/v1/comments/{id}` | signed in | Delete a comment |
-| `PUT` | `/api/v1/comments/{id}/pin` | `comments:edit` | Pin or unpin a comment |
-| `GET` | `/api/v1/videos/{id}/comments` | signed in | Questions and answers under a video |
-| `POST` | `/api/v1/videos/{id}/comments` | signed in | Ask a question or reply |
+| `ListVideoQuizzes` | read | `quizzes:view` | Quizzes under a video |
+| `CreateQuiz` | write | `quizzes:create` | Create a quiz with questions |
+| `GetQuiz` | read | `quizzes:view` | Quiz with questions and answers |
+| `UpdateQuiz` | write | `quizzes:edit` | Replace a quiz |
+| `DeleteQuiz` | write | `quizzes:delete` | Delete a quiz |
+| `ListQuizAttempts` | read | `quizzes:view` | Submitted attempts |
+| `ListMyVideoQuizzes` | read | student | My quizzes for a video |
+| `StartQuiz` | write | student | Start or resume an attempt |
+| `SubmitQuiz` | write | student | Submit answers and get the result |
 
-## Notifications
+## SiteService
 
-| Method | Path | Access | What it does |
+The public website (no sign-in) and its admin: landing page blocks and the blog.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/notifications` | signed in | My notifications and unread count |
-| `POST` | `/api/v1/notifications/read` | signed in | Mark notifications as read |
-| `POST` | `/api/v1/ws/ticket` | signed in | One-time ticket to open the realtime WebSocket |
+| `GetSite` | read | public | Branding and landing page content |
+| `ListPublicCourses` | read | public | Course catalog |
+| `ListCategories` | read | public | Catalog categories |
+| `GetPublicCourse` | read | public | Course page: syllabus, mentors, batches |
+| `ListPublicPosts` | read | public | Published blog posts |
+| `GetPublicPost` | read | public | One blog post |
+| `SendEnquiry` | write | public · 10/60 min | Enquiry / contact form |
+| `ListCmsBlocks` | read | `cms:view` | Landing page blocks |
+| `SaveCmsBlock` | write | `cms:edit` | Save a landing page block |
+| `ListPosts` | read | `blog:view` | Blog posts |
+| `CreatePost` | write | `blog:create` | Write a blog post |
+| `GetPost` | read | `blog:view` | Get a blog post |
+| `UpdatePost` | write | `blog:edit` | Update a blog post |
+| `DeletePost` | write | `blog:delete` | Delete a blog post |
 
-## Student portal
+## StaffService
 
-| Method | Path | Access | What it does |
+Staff users, roles and the permission matrix.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/me/courses` | student | My enrolled courses with progress |
-| `GET` | `/api/v1/me/courses/{id}` | student | Course overview and playlist |
-| `GET` | `/api/v1/me/dashboard` | student | Home: progress, next tasks, live classes, news |
-| `GET` | `/api/v1/me/tasks` | student | All my tasks with status |
-| `GET` | `/api/v1/me/tasks/{id}` | student | Task page with attempts and conversation |
-| `POST` | `/api/v1/me/tasks/{id}/comments` | student | Message the mentor about a task |
-| `POST` | `/api/v1/me/tasks/{id}/submissions` | student | Submit a task |
-| `GET` | `/api/v1/me/videos/{id}` | student | Watch page: player, playlist, tasks, quizzes |
+| `GetPermissionCatalog` | read | staff | Modules and actions for the permission matrix |
+| `ListRoles` | read | `roles:view` | List roles |
+| `GetRole` | read | `roles:view` | Get a role |
+| `CreateRole` | write | `roles:create` | Create a role |
+| `UpdateRole` | write | `roles:edit` | Update a role and its permissions |
+| `DeleteRole` | write | `roles:delete` | Delete a role |
+| `ListStaffOptions` | read | staff | Active staff for pickers |
+| `ListStaff` | read | `users:view` | List staff users |
+| `GetStaff` | read | `users:view` | Get a staff user |
+| `CreateStaff` | write | `users:create` | Create a staff user (admin / mentor) |
+| `UpdateStaff` | write | `users:edit` | Update a staff user |
+| `DeleteStaff` | write | `users:delete` | Delete a staff user |
 
-## Public website
+## StudentService
 
-| Method | Path | Access | What it does |
+Students and their course enrollments.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/public/blog` | public | Published blog posts |
-| `GET` | `/api/v1/public/blog/{slug}` | public | One blog post |
-| `GET` | `/api/v1/public/categories` | public | Catalog categories |
-| `GET` | `/api/v1/public/certificates/{code}` | rate 60/Minute | Verify a certificate code |
-| `GET` | `/api/v1/public/courses` | public | Course catalog |
-| `GET` | `/api/v1/public/courses/{slug}` | public | Course page: syllabus, mentors, batches |
-| `POST` | `/api/v1/public/leads` | rate 10/Hour | Enquiry / contact form |
-| `GET` | `/api/v1/public/site` | public | Branding and landing page content |
+| `ListStudents` | read | `students:view` | List students |
+| `ExportStudents` | read | `students:view` | Download students as CSV |
+| `ImportStudents` | write | `students:create` | Bulk create students from CSV |
+| `GetStudent` | read | `students:view` | Student profile with enrollments |
+| `CreateStudent` | write | `students:create` | Create a student and assign courses |
+| `UpdateStudent` | write | `students:edit` | Update a student |
+| `DeleteStudent` | write | `students:delete` | Delete a student |
+| `EnrollStudent` | write | `students:edit` | Assign a course to a student |
+| `UpdateEnrollment` | write | `students:edit` | Change batch or status of an enrollment |
+| `DeleteEnrollment` | write | `students:edit` | Remove a course from a student |
 
-## Website admin
+## SubmissionService
 
-| Method | Path | Access | What it does |
+Task reviews: the review queue, reviews and the task conversation with a student.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/blog` | `blog:view` | Blog posts |
-| `POST` | `/api/v1/blog` | `blog:create` | Write a blog post |
-| `DELETE` | `/api/v1/blog/{id}` | `blog:delete` | Delete a blog post |
-| `GET` | `/api/v1/blog/{id}` | `blog:view` | Get a blog post |
-| `PUT` | `/api/v1/blog/{id}` | `blog:edit` | Update a blog post |
-| `GET` | `/api/v1/cms` | `cms:view` | Landing page blocks |
-| `PUT` | `/api/v1/cms/{key}` | `cms:edit` | Save a landing page block |
-| `GET` | `/api/v1/leads` | `leads:view` | Enquiries |
-| `GET` | `/api/v1/leads/export` | `leads:view` | Download enquiries as CSV |
-| `DELETE` | `/api/v1/leads/{id}` | `leads:delete` | Delete a lead |
-| `PUT` | `/api/v1/leads/{id}` | `leads:edit` | Update lead status / notes |
+| `ListSubmissions` | read | `submissions:view` | Review queue |
+| `GetSubmission` | read | `submissions:view` | Submission with history and thread |
+| `ReviewSubmission` | write | `submissions:edit` | Approve, reject or ask to resubmit |
+| `GetThread` | read | `submissions:view` | Task conversation with a student |
+| `ReplyThread` | write | `submissions:edit` | Reply in a task conversation |
 
-## Admin
+## UploadService
 
-| Method | Path | Access | What it does |
+Direct uploads to object storage: presign, PUT the bytes, then confirm.
+
+| RPC | Kind | Access | What it does |
 |---|---|---|---|
-| `GET` | `/api/v1/analytics/overview` | `analytics:view` | Dashboard numbers and charts |
-| `GET` | `/api/v1/audit` | `audit:view` | Audit log |
-| `GET` | `/api/v1/settings` | `settings:view` | Institute settings |
-| `PUT` | `/api/v1/settings` | `settings:edit` | Update settings |
-| `DELETE` | `/api/v1/settings/google` | `settings:edit` | Disconnect the institute Google account |
-
-## Non-JSON routes
-
-| Method | Path | What it does |
-|---|---|---|
-| `GET` | `/healthz` | DB / Redis / storage health |
-| `GET` | `/ws?ticket=…` | Realtime WebSocket (ticket from `POST /api/v1/ws/ticket`) |
-| `GET` | `/api/v1/files/{id}` | Access-checked redirect to a signed download URL |
-| `GET` | `/api/v1/auth/google/start?app=` | Google sign-in redirect |
-| `GET` | `/api/v1/auth/google/callback` | Google sign-in callback |
-| `GET` | `/api/v1/settings/google/connect` | Connect institute Google account (Calendar/Meet/Drive) |
-| `GET` | `/api/v1/settings/google/callback` | Google connect callback |
-| `GET` | `/docs` · `/openapi.json` | Interactive API docs and spec |
+| `PresignUpload` | write | signed in · 60/1 min | Get a URL to upload a file straight to storage |
+| `CompleteUpload` | write | signed in | Confirm an upload finished |

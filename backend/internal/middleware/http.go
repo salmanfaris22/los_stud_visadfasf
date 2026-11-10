@@ -3,7 +3,6 @@ package middleware
 import (
 	"log/slog"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
@@ -24,17 +23,6 @@ func CORS(origins ...string) func(http.Handler) http.Handler {
 		AllowCredentials: true,
 		MaxAge:           600,
 	})
-}
-
-// OriginHosts converts app URLs into WebSocket origin patterns ("localhost:3000").
-func OriginHosts(urls ...string) []string {
-	out := []string{}
-	for _, u := range urls {
-		if p, err := url.Parse(u); err == nil && p.Host != "" {
-			out = append(out, p.Host)
-		}
-	}
-	return out
 }
 
 // SecurityHeaders adds conservative headers to every API response.

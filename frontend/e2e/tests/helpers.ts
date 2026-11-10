@@ -19,6 +19,11 @@ export async function apiAs(app: "admin" | "student", creds: { email: string; pa
   return ctx;
 }
 
+/** Calls an RPC with Connect JSON: rpc(admin, "CourseService/CreateCourse", { input: {...} }). Fields may be snake_case. */
+export function rpc(ctx: APIRequestContext, procedure: string, body: unknown = {}) {
+  return ctx.post(`/lms.v1.${procedure}`, { data: body, headers: { "Content-Type": "application/json" } });
+}
+
 export async function json<T = any>(res: Awaited<ReturnType<APIRequestContext["get"]>>): Promise<T> {
   expect(res.ok(), `${res.url()} → ${res.status()} ${await res.text()}`).toBeTruthy();
   return (await res.json()) as T;

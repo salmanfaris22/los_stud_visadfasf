@@ -14,8 +14,8 @@ export default async function VerifyPage({ params }: { params: Promise<{ code: s
         <>
           <span className="rounded-full border-[6px] border-foreground bg-signal p-4 text-signal-foreground shadow-[0_0_0_8px_var(--background),0_0_0_12px_var(--foreground)]"><BadgeCheck className="size-12" /></span>
           <h1 className="mt-6 font-display text-4xl font-extrabold">Certificate verified</h1>
-          <p className="mt-4 text-lg"><b>{c.student_name}</b> completed <b>{c.course_title}</b></p>
-          <p className="mt-2 text-sm text-muted-foreground">Issued by {c.issuer} on {formatDate(c.issued_at)} · ID {c.code}</p>
+          <p className="mt-4 text-lg"><b>{c.studentName}</b> completed <b>{c.courseTitle}</b></p>
+          <p className="mt-2 text-sm text-muted-foreground">Issued by {c.issuer} on {formatDate(c.issuedAt)} · ID {c.code}</p>
         </>
       ) : (
         <>

@@ -1,8 +1,8 @@
 "use client";
-import { createApi, invalidatePaths, type InvalidateTarget } from "@lms/api-client";
+import { createApi, createClient, invalidateRpc, type DescService, type InvalidateTarget } from "@lms/api-client";
 import type { QueryClient } from "@tanstack/react-query";
 
-/** Typed client for the student portal (cookies: lms_student_*). */
+/** gRPC client for the student portal (cookies: lms_student_*). */
 export const api = createApi({
   app: "student",
   onUnauthorized: () => {
@@ -12,5 +12,8 @@ export const api = createApi({
   },
 });
 
-export const $api = api.$api;
-export const invalidate = (qc: QueryClient, ...paths: InvalidateTarget[]) => invalidatePaths(qc, ...paths);
+/** A typed client for one service, for calls outside hooks. */
+export const rpc = <S extends DescService>(service: S) => createClient(service, api.transport);
+
+/** Refetch every query of the given services / methods. */
+export const invalidate = (qc: QueryClient, ...targets: InvalidateTarget[]) => invalidateRpc(qc, ...targets);

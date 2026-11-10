@@ -3,27 +3,26 @@ import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Clock, XCircle } from "lucide-react";
-import { errorMessage, type Schemas } from "@lms/api-client";
-import { Badge, Button, Card, Checkbox, EmptyState, Progress, Skeleton, cn, toast } from "@lms/ui";
-import { $api } from "@/lib/api";
+import { errorMessage, type PlayQuestion, type QuizPlay, type QuizResult, QuizService, useRpcMutation } from "@lms/api-client";
+import { Badge, Button, Card, Checkbox, EmptyState, Progress, Skeleton, asDate, cn, toast } from "@lms/ui";
 
 export default function QuizPage() {
   const { id } = useParams<{ id: string }>();
-  const [play, setPlay] = React.useState<Schemas["QuizPlay"] | null>(null);
+  const [play, setPlay] = React.useState<QuizPlay | null>(null);
   const [answers, setAnswers] = React.useState<Record<string, string[]>>({});
-  const [result, setResult] = React.useState<Schemas["QuizResult"] | null>(null);
+  const [result, setResult] = React.useState<QuizResult | null>(null);
   const [left, setLeft] = React.useState<number | null>(null);
-  const start = $api.useMutation("post", "/api/v1/me/quizzes/{id}/start", { onSuccess: setPlay, onError: (e) => toast.error(errorMessage(e)) });
-  const submit = $api.useMutation("post", "/api/v1/me/quiz-attempts/{id}/submit", { onSuccess: setResult, onError: (e) => toast.error(errorMessage(e)) });
-  React.useEffect(() => { start.mutate({ params: { path: { id } } }); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const start = useRpcMutation(QuizService.method.startQuiz, { onSuccess: (r) => setPlay(r.play ?? null), onError: (e) => toast.error(errorMessage(e)) });
+  const submit = useRpcMutation(QuizService.method.submitQuiz, { onSuccess: (r) => setResult(r.result ?? null), onError: (e) => toast.error(errorMessage(e)) });
+  React.useEffect(() => { start.mutate({ id }); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
   const finish = React.useCallback(() => {
     if (!play || submit.isPending || result) return;
-    submit.mutate({ params: { path: { id: play.attempt_id } }, body: { answers: Object.entries(answers).map(([question_id, option_ids]) => ({ question_id, option_ids })) } });
+    submit.mutate({ attemptId: play.attemptId, input: { answers: Object.entries(answers).map(([questionId, optionIds]) => ({ questionId, optionIds })) } });
   }, [play, answers, submit, result]);
   React.useEffect(() => {
     if (!play?.deadline || result) return;
     const t = setInterval(() => {
-      const s = Math.round((new Date(play.deadline!).getTime() - Date.now()) / 1000);
+      const s = Math.round((asDate(play.deadline).getTime() - Date.now()) / 1000);
       setLeft(s);
       if (s <= 0) { clearInterval(t); finish(); }
     }, 1000);
@@ -32,12 +31,12 @@ export default function QuizPage() {
 
   if (start.isError) return <EmptyState title="Can't start this quiz" description={errorMessage(start.error)} action={<Button asChild variant="outline"><Link href="/learn">Back</Link></Button>} />;
   if (!play) return <Skeleton className="h-96" />;
-  const choose = (q: Schemas["PlayQuestion"], opt: string) => {
+  const choose = (q: PlayQuestion, opt: string) => {
     const cur = answers[q.id] ?? [];
     setAnswers({ ...answers, [q.id]: q.multi ? (cur.includes(opt) ? cur.filter((x) => x !== opt) : [...cur, opt]) : [opt] });
   };
   const answered = Object.values(answers).filter((a) => a.length).length;
-  const review = new Map(result?.review.map((r) => [r.question_id, r]));
+  const review = new Map(result?.review.map((r) => [r.questionId, r]));
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -52,7 +51,7 @@ export default function QuizPage() {
       {result && (
         <Card className={cn("mt-4 p-6 text-center", result.passed ? "border-success/50 bg-success/10" : "border-warning/50 bg-warning/10")}>
           <div className="font-display text-5xl font-extrabold">{result.pct}%</div>
-          <p className="mt-2">{result.score}/{result.max_score} points · pass mark {result.pass_pct}%</p>
+          <p className="mt-2">{result.score}/{result.maxScore} points · pass mark {result.passPct}%</p>
           <Badge variant={result.passed ? "success" : "warning"} className="mt-3 text-sm">{result.passed ? "Passed 🎉" : "Not passed — review and try again"}</Badge>
         </Card>
       )}
@@ -66,7 +65,7 @@ export default function QuizPage() {
               <div className="mt-3 grid gap-2">
                 {q.options.map((o) => {
                   const chosen = (answers[q.id] ?? []).includes(o.id);
-                  const correct = r?.correct_option_ids.includes(o.id);
+                  const correct = r?.correctOptionIds.includes(o.id);
                   return (
                     <label key={o.id} className={cn("flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition",
                       !r && chosen && "border-foreground bg-signal/15", r && correct && "border-success bg-success/10", r && chosen && !correct && "border-destructive bg-destructive/10", r && "cursor-default")}>

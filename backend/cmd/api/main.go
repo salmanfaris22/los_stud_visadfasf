@@ -1,4 +1,4 @@
-// Command api runs the LMS server (gRPC/Connect + REST + WebSocket + background jobs).
+// Command api runs the LMS server (gRPC/Connect, a few plain-HTTP routes and background jobs).
 package main
 
 import (
@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 
 	dbfiles "github.com/lms/backend/db"
 	"github.com/lms/backend/internal/auth"
@@ -73,26 +72,14 @@ func run() error {
 		return err
 	}
 
-	ropt, err := redis.ParseURL(cfg.RedisURL)
-	if err != nil {
-		return err
-	}
-	rdb := redis.NewClient(ropt)
-	defer rdb.Close()
-	if err := rdb.Ping(ctx).Err(); err != nil {
-		slog.Warn("redis unavailable: rate limits and realtime fan-out are disabled", "err", err)
-		rdb = nil
-	}
-
 	store, err := storage.New(ctx, cfg)
 	if err != nil {
 		return err
 	}
-	hub := realtime.NewHub(rdb)
-	go hub.Run(ctx)
+	hub := realtime.NewHub()
 
 	deps := &service.Deps{
-		Cfg: cfg, Pool: pool, Q: repository.New(pool), Redis: rdb, Store: store, Mail: mailer.New(cfg), Hub: hub, Google: google.New(cfg),
+		Cfg: cfg, Pool: pool, Q: repository.New(pool), Store: store, Mail: mailer.New(cfg), Hub: hub, Google: google.New(cfg),
 		Tokens: auth.NewTokens(cfg.JWTSecret, cfg.AccessTTL), Cookies: auth.CookieFactory{Domain: cfg.CookieDomain, Secure: cfg.CookieSecure},
 	}
 	app := server.New(deps)

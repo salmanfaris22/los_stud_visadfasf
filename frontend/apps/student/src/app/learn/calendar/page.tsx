@@ -2,18 +2,18 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { MonthCalendar, Skeleton } from "@lms/ui";
-import { $api } from "@/lib/api";
+import { LiveService, PortalService, useRpcQuery } from "@lms/api-client";
 
 export default function CalendarPage() {
   const router = useRouter();
   const [month, setMonth] = React.useState(new Date());
-  const up = $api.useQuery("get", "/api/v1/me/live", { params: { query: { scope: "upcoming" } } });
-  const past = $api.useQuery("get", "/api/v1/me/live", { params: { query: { scope: "past" } } });
-  const tasks = $api.useQuery("get", "/api/v1/me/tasks");
+  const up = useRpcQuery(LiveService.method.listMyLive, { scope: "upcoming" });
+  const past = useRpcQuery(LiveService.method.listMyLive, { scope: "past" });
+  const tasks = useRpcQuery(PortalService.method.listMyTasks, {});
   if (up.isLoading || tasks.isLoading) return <Skeleton className="h-[600px]" />;
   const events = [
-    ...[...(up.data ?? []), ...(past.data ?? [])].map((l) => ({ id: "l" + l.id, title: l.title, start: l.starts_at, tone: "primary" as const, href: "/learn/live" })),
-    ...(tasks.data ?? []).filter((t) => t.due_at).map((t) => ({ id: "t" + t.id, title: `Due: ${t.title}`, start: t.due_at!, tone: t.status === "approved" ? ("success" as const) : ("warning" as const), href: `/learn/tasks/${t.id}` })),
+    ...[...(up.data?.items ?? []), ...(past.data?.items ?? [])].map((l) => ({ id: "l" + l.id, title: l.title, start: l.startsAt, tone: "primary" as const, href: "/learn/live" })),
+    ...(tasks.data?.items ?? []).filter((t) => t.dueAt).map((t) => ({ id: "t" + t.id, title: `Due: ${t.title}`, start: t.dueAt!, tone: t.status === "approved" ? ("success" as const) : ("warning" as const), href: `/learn/tasks/${t.id}` })),
   ];
   return (
     <div className="mx-auto max-w-6xl">

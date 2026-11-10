@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { BookOpen, Plus, Users, Video } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, EmptyState, LineBadge, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, lineColor } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { feedback } from "@/lib/feedback";
 import { Can } from "@/lib/session";
 import { CourseForm, emptyCourse } from "@/features/courses/course-form";
+import { CourseService, useRpcMutation, useRpcQuery } from "@lms/api-client";
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -18,8 +19,8 @@ export default function CoursesPage() {
   const [page, setPage] = React.useState(1);
   const [creating, setCreating] = React.useState(false);
   const [draft, setDraft] = React.useState(emptyCourse());
-  const list = $api.useQuery("get", "/api/v1/courses", { params: { query: { q: q || undefined, status: (status || undefined) as "draft" | undefined, page, per_page: 12 } } });
-  const create = $api.useMutation("post", "/api/v1/courses", feedback(qc, "Course created", ["/api/v1/courses"], (c) => router.push(`/courses/${c.id}`)));
+  const list = useRpcQuery(CourseService.method.listCourses, { q: q || undefined, status: (status || undefined) as "draft" | undefined, page, perPage: 12 });
+  const create = useRpcMutation(CourseService.method.createCourse, feedback(qc, "Course created", [CourseService], (r) => router.push(`/courses/${r.course?.id}`)));
 
   return (
     <>
@@ -39,9 +40,9 @@ export default function CoursesPage() {
           {list.data?.items.map((c) => (
             <Link key={c.id} href={`/courses/${c.id}`} className="group flex flex-col overflow-hidden rounded-[20px] border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:shadow-none">
               <div className="relative aspect-video overflow-hidden" style={{ background: `color-mix(in oklab, ${lineColor(c.id)} 18%, var(--card))` }}>
-                {c.thumbnail_url ? (
+                {c.thumbnailUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.thumbnail_url} alt="" className="size-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                  <img src={c.thumbnailUrl} alt="" className="size-full object-cover transition duration-500 group-hover:scale-[1.04]" />
                 ) : (
                   <div className="map-grid flex size-full items-center justify-center"><LineBadge id={c.id} name={c.title} size="xl" /></div>
                 )}
@@ -53,19 +54,19 @@ export default function CoursesPage() {
                 <h3 className="mt-3 line-clamp-1 font-bold">{c.title}</h3>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{c.subtitle}</p>
                 <div className="mt-auto flex gap-4 pt-4 text-xs font-medium text-muted-foreground">
-                  <span className="inline-flex items-center gap-1"><Video className="size-3.5" />{c.video_count} stops</span>
-                  <span className="inline-flex items-center gap-1"><Users className="size-3.5" />{c.student_count} students</span>
+                  <span className="inline-flex items-center gap-1"><Video className="size-3.5" />{c.videoCount} stops</span>
+                  <span className="inline-flex items-center gap-1"><Users className="size-3.5" />{c.studentCount} students</span>
                 </div>
               </div>
             </Link>
           ))}
         </div>
       )}
-      {list.data && <Pagination page={page} perPage={list.data.per_page} total={list.data.total} onPage={setPage} />}
+      {list.data && <Pagination page={page} perPage={list.data.perPage} total={list.data.total} onPage={setPage} />}
       <Dialog open={creating} onOpenChange={setCreating}>
         <DialogContent size="lg">
           <DialogHeader><DialogTitle>New course</DialogTitle></DialogHeader>
-          <form onSubmit={(e) => { e.preventDefault(); create.mutate({ body: draft }); }} className="grid gap-4">
+          <form onSubmit={(e) => { e.preventDefault(); create.mutate({ input: draft }); }} className="grid gap-4">
             <CourseForm value={draft} onChange={setDraft} compact />
             <DialogFooter><Button type="button" variant="outline" onClick={() => setCreating(false)}>Cancel</Button><Button type="submit" loading={create.isPending}>Create & add videos</Button></DialogFooter>
           </form>

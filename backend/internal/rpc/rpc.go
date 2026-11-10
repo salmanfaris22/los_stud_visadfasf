@@ -18,6 +18,8 @@ import (
 	"github.com/lms/backend/gen/lms/v1/lmsv1connect"
 	"github.com/lms/backend/internal/auth"
 	"github.com/lms/backend/internal/config"
+	"github.com/lms/backend/internal/platform/ratelimit"
+	"github.com/lms/backend/internal/platform/realtime"
 	"github.com/lms/backend/internal/service"
 )
 
@@ -27,6 +29,7 @@ type server struct {
 	cfg     *config.Config
 	tokens  *auth.Tokens
 	cookies auth.CookieFactory
+	hub     *realtime.Hub
 }
 
 // mount registers one generated service handler.
@@ -36,14 +39,14 @@ type mount struct {
 }
 
 func (srv *server) mounts() []mount {
-	return []mount{
+	return append(srv.genMounts(), []mount{
 		{lmsv1connect.AuthServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
 			return lmsv1connect.NewAuthServiceHandler(authServer{srv}, o...)
 		}},
 		{lmsv1connect.CourseVersionServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
 			return lmsv1connect.NewCourseVersionServiceHandler(courseVersionServer{srv}, o...)
 		}},
-	}
+	}...)
 }
 
 // ServiceNames lists every gRPC service the API serves (used by reflection, health and tests).
@@ -59,7 +62,7 @@ func ServiceNames() []string {
 // Handler serves every procedure (at /<package>.<Service>/<Method>), gRPC reflection and
 // gRPC health. It fails when an RPC has no valid access rule.
 func Handler(s *service.Services, d *service.Deps) (http.Handler, error) {
-	srv := &server{s: s, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies}
+	srv := &server{s: s, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies, hub: d.Hub}
 	names := ServiceNames()
 	rules, err := AccessRules(names)
 	if err != nil {
@@ -71,7 +74,7 @@ func Handler(s *service.Services, d *service.Deps) (http.Handler, error) {
 	}
 	opts := []connect.HandlerOption{
 		// Outermost first: errors see everything, access runs before validation.
-		connect.WithInterceptors(errorInterceptor{}, &accessInterceptor{rules: rules, redis: d.Redis}, validateInterceptor{v: validator}),
+		connect.WithInterceptors(errorInterceptor{}, &accessInterceptor{rules: rules, limiter: ratelimit.New()}, validateInterceptor{v: validator}),
 		connect.WithRecover(recoverPanic),
 	}
 	mux := http.NewServeMux()

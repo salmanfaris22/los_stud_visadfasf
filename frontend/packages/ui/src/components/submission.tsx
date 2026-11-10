@@ -1,13 +1,13 @@
 "use client";
 import * as React from "react";
 import { Download, ExternalLink, FileText, HardDrive, Link2, Paperclip, Send, X } from "lucide-react";
-import { cn, formatBytes, timeAgo } from "../lib/utils";
+import { cn, formatBytes, timeAgo, type DateLike } from "../lib/utils";
 import { Button } from "./button";
 import { Textarea } from "./input";
 import { Avatar } from "./primitives";
 import { CodeBlock } from "./content";
 
-export type SubmissionItemView = { id: string; kind: string; content: string; language?: string; file_name?: string; mime?: string; size_bytes?: number; url?: string };
+export type SubmissionItemView = { id: string; kind: string; content: string; language?: string; fileName?: string; mime?: string; sizeBytes?: number | bigint; url?: string };
 
 /** Shows every part of a task submission: files, images, text, links, Drive links and code. */
 export function SubmissionItems({ items }: { items: SubmissionItemView[] }) {
@@ -19,15 +19,15 @@ export function SubmissionItems({ items }: { items: SubmissionItemView[] }) {
             return (
               <a key={it.id} href={it.url} target="_blank" rel="noreferrer" className="block w-fit overflow-hidden rounded-xl border">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={it.url} alt={it.file_name} className="max-h-96 object-contain" />
-                <span className="block border-t px-3 py-1.5 text-xs text-muted-foreground">{it.file_name} · {formatBytes(it.size_bytes)}</span>
+                <img src={it.url} alt={it.fileName} className="max-h-96 object-contain" />
+                <span className="block border-t px-3 py-1.5 text-xs text-muted-foreground">{it.fileName} · {formatBytes(it.sizeBytes)}</span>
               </a>
             );
           case "file":
             return (
               <div key={it.id} className="flex items-center gap-3 rounded-xl border p-3">
                 <span className="rounded-lg bg-primary/10 p-2 text-primary"><FileText className="size-5" /></span>
-                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{it.file_name}</span><span className="text-xs text-muted-foreground">{formatBytes(it.size_bytes)}</span></span>
+                <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">{it.fileName}</span><span className="text-xs text-muted-foreground">{formatBytes(it.sizeBytes)}</span></span>
                 <Button variant="outline" size="sm" asChild><a href={it.url} target="_blank" rel="noreferrer"><ExternalLink /> Open</a></Button>
                 <Button variant="ghost" size="icon-sm" asChild><a href={`${it.url}?download=1`} aria-label="Download"><Download /></a></Button>
               </div>
@@ -51,7 +51,7 @@ export function SubmissionItems({ items }: { items: SubmissionItemView[] }) {
   );
 }
 
-export type ThreadMessage = { id: string; author_id: string; author_name: string; author_avatar?: string; author_kind: string; body: string; created_at: string; attachment?: { id: string; file_name: string; url: string } | null };
+export type ThreadMessage = { id: string; authorId: string; authorName: string; authorAvatar?: string; authorKind: string; body: string; createdAt?: DateLike; attachment?: { id: string; fileName: string; url: string } | null };
 
 /** Chat-style task conversation between a student and mentors. */
 export function ThreadView({ messages, meId, onSend, sending, onAttach, emptyText = "No messages yet. Ask a question about this task." }: {
@@ -77,18 +77,18 @@ export function ThreadView({ messages, meId, onSend, sending, onAttach, emptyTex
       <div className="flex max-h-[420px] flex-col gap-3 overflow-y-auto pr-1">
         {messages.length === 0 && <p className="py-6 text-center text-sm text-muted-foreground">{emptyText}</p>}
         {messages.map((m) => {
-          const mine = m.author_id === meId;
+          const mine = m.authorId === meId;
           return (
             <div key={m.id} className={cn("flex gap-2", mine && "flex-row-reverse")}>
-              <Avatar src={m.author_avatar} name={m.author_name} className="size-8" />
+              <Avatar src={m.authorAvatar} name={m.authorName} className="size-8" />
               <div className={cn("max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm", mine ? "rounded-tr-sm bg-primary text-primary-foreground" : "rounded-tl-sm bg-muted")}>
                 <div className={cn("mb-0.5 text-xs font-medium", mine ? "text-primary-foreground/80" : "text-muted-foreground")}>
-                  {m.author_name}{m.author_kind === "staff" && " · Mentor"} · {timeAgo(m.created_at)}
+                  {m.authorName}{m.authorKind === "staff" && " · Mentor"} · {timeAgo(m.createdAt)}
                 </div>
                 <div className="whitespace-pre-wrap">{m.body}</div>
                 {m.attachment && (
                   <a href={m.attachment.url} target="_blank" rel="noreferrer" className={cn("mt-2 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs underline-offset-4 hover:underline", mine ? "bg-white/15" : "bg-background")}>
-                    <Paperclip className="size-3" /> {m.attachment.file_name}
+                    <Paperclip className="size-3" /> {m.attachment.fileName}
                   </a>
                 )}
               </div>

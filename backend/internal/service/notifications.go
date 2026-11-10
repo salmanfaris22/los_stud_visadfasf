@@ -3,16 +3,12 @@ package service
 import (
 	"context"
 	"log/slog"
-	"strings"
-	"time"
 
 	"github.com/google/uuid"
 
-	"github.com/lms/backend/internal/apperr"
 	"github.com/lms/backend/internal/auth"
 	"github.com/lms/backend/internal/dto"
 	"github.com/lms/backend/internal/platform/realtime"
-	"github.com/lms/backend/internal/platform/secure"
 	"github.com/lms/backend/internal/repository"
 )
 
@@ -72,29 +68,4 @@ func (s *NotificationService) MarkRead(ctx context.Context, actor *auth.Principa
 		ids = []uuid.UUID{}
 	}
 	return dbErr(s.deps.Q.MarkNotificationsRead(ctx, repository.MarkNotificationsReadParams{UserID: actor.ID, Ids: ids}), "notifications")
-}
-
-// Ticket creates a 60-second single-use token for opening the WebSocket.
-func (s *NotificationService) Ticket(ctx context.Context, actor *auth.Principal) (dto.WSTicket, error) {
-	if s.deps.Redis == nil {
-		return dto.WSTicket{}, apperr.Unavailable("realtime is not available")
-	}
-	t := secure.Token(24)
-	if err := s.deps.Redis.Set(ctx, "wst:"+t, actor.ID.String(), time.Minute).Err(); err != nil {
-		return dto.WSTicket{}, apperr.Unavailable("realtime is not available")
-	}
-	ws := strings.Replace(strings.Replace(s.deps.Cfg.APIPublicURL, "https://", "wss://", 1), "http://", "ws://", 1)
-	return dto.WSTicket{Ticket: t, URL: ws + "/ws?ticket=" + t}, nil
-}
-
-// RedeemTicket consumes a ticket and returns its user id.
-func (s *NotificationService) RedeemTicket(ctx context.Context, ticket string) (uuid.UUID, error) {
-	if s.deps.Redis == nil || ticket == "" {
-		return uuid.Nil, apperr.Unauthorized("invalid ticket")
-	}
-	v, err := s.deps.Redis.GetDel(ctx, "wst:"+ticket).Result()
-	if err != nil {
-		return uuid.Nil, apperr.Unauthorized("invalid ticket")
-	}
-	return uuid.Parse(v)
 }

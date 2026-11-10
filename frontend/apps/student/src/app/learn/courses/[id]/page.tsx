@@ -4,30 +4,32 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Award, Check, CheckCircle2, ChevronRight, ClipboardCheck, MonitorPlay, Play } from "lucide-react";
 import { Avatar, Button, EmptyState, Markdown, Skeleton, cn, formatDuration, formatHours } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { CourseCover, ThinProgress, accent } from "@/features/learn/course-card";
+import { PortalService, useRpcQuery } from "@lms/api-client";
 
 export default function MyCoursePage() {
   const { id } = useParams<{ id: string }>();
-  const q = $api.useQuery("get", "/api/v1/me/courses/{id}", { params: { path: { id } } });
+  const q = useRpcQuery(PortalService.method.getMyCourse, { id });
   const [more, setMore] = React.useState(false);
 
   if (q.isLoading) return <Skeleton className="h-96" />;
-  if (!q.data) return <EmptyState title="Course not available" description="You may not be enrolled in this course." />;
+  const detail = q.data?.course;
+  if (!detail?.course) return <EmptyState title="Course not available" description="You may not be enrolled in this course." />;
 
-  const { course: c, playlist, mentors, what_you_learn, description } = q.data;
+  const { course: c, playlist, mentors, whatYouLearn, description } = detail;
   const next = playlist.find((v) => !v.done) ?? playlist[0];
   const doneCount = playlist.filter((v) => v.done).length;
-  const totalSec = playlist.reduce((s, v) => s + (v.duration_seconds || 0), 0);
-  const taskCount = playlist.reduce((s, v) => s + v.task_count, 0);
-  const finished = c.progress_pct >= 100;
-  const cta = finished ? "Watch again" : c.progress_pct > 0 ? "Continue course" : "Start course";
+  const totalSec = playlist.reduce((s, v) => s + (v.durationSeconds || 0), 0);
+  const taskCount = playlist.reduce((s, v) => s + v.taskCount, 0);
+  const finished = c.progressPct >= 100;
+  const cta = finished ? "Watch again" : c.progressPct > 0 ? "Continue course" : "Start course";
   const longText = description.length > 600;
 
   const sideCard = (
     <div className="overflow-hidden rounded-lg border bg-card text-card-foreground shadow-xl dark:border-rail-border">
       <Link href={next ? `/learn/watch/${next.id}` : "#"} className="group relative block aspect-video overflow-hidden bg-muted">
-        <CourseCover id={id} title={c.title} label={c.category} src={c.thumbnail_url || next?.thumbnail_url} />
+        <CourseCover id={id} title={c.title} label={c.category} src={c.thumbnailUrl || next?.thumbnailUrl} />
         <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/25 transition group-hover:bg-black/40">
           <span className="flex size-14 items-center justify-center rounded-full bg-white text-black shadow-lg transition group-hover:scale-110"><Play className="size-6 translate-x-0.5 fill-current" /></span>
         </span>
@@ -70,7 +72,7 @@ export default function MyCoursePage() {
             {c.subtitle && <p className="mt-3 max-w-3xl text-base sm:text-lg">{c.subtitle}</p>}
             <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
               {c.level && <span className="rounded bg-amber-200 px-2 py-0.5 text-xs font-bold text-amber-950 capitalize">{c.level}</span>}
-              {c.batch_name && <span>Batch <b>{c.batch_name}</b></span>}
+              {c.batchName && <span>Batch <b>{c.batchName}</b></span>}
               <span className="text-rail-muted">{playlist.length} lectures · {formatHours(totalSec)} total</span>
             </div>
             {mentors.length > 0 && (
@@ -78,10 +80,10 @@ export default function MyCoursePage() {
             )}
             <div className="mt-6 max-w-md">
               <div className="mb-1.5 flex justify-between text-xs text-rail-muted">
-                <span><b className="text-rail-foreground tabular-nums">{c.progress_pct}%</b> complete</span>
-                <span className="tabular-nums">{c.approved_tasks}/{c.total_tasks} tasks approved</span>
+                <span><b className="text-rail-foreground tabular-nums">{c.progressPct}%</b> complete</span>
+                <span className="tabular-nums">{c.approvedTasks}/{c.totalTasks} tasks approved</span>
               </div>
-              <ThinProgress value={c.progress_pct} className="bg-white/15" />
+              <ThinProgress value={c.progressPct} className="bg-white/15" />
             </div>
           </div>
 
@@ -92,11 +94,11 @@ export default function MyCoursePage() {
 
       <div className="mx-auto grid max-w-7xl gap-8 pt-8 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0 space-y-9">
-          {what_you_learn.length > 0 && (
+          {whatYouLearn.length > 0 && (
             <section className="rounded-lg border p-6">
               <h2 className="font-display text-xl font-extrabold">What you'll learn</h2>
               <ul className="mt-4 grid gap-x-6 gap-y-2.5 text-sm sm:grid-cols-2">
-                {what_you_learn.map((w) => <li key={w} className="flex gap-3"><Check className="mt-0.5 size-4 shrink-0" />{w}</li>)}
+                {whatYouLearn.map((w) => <li key={w} className="flex gap-3"><Check className="mt-0.5 size-4 shrink-0" />{w}</li>)}
               </ul>
             </section>
           )}
@@ -114,17 +116,17 @@ export default function MyCoursePage() {
                     <li key={v.id}>
                       <Link href={`/learn/watch/${v.id}`} className="group block rounded-xl outline-offset-4">
                         <div className={cn("relative aspect-video overflow-hidden rounded-xl bg-muted ring-2 ring-transparent transition", isNext && "ring-violet-500")}>
-                          <CourseCover id={id} title={v.title} label={`Lecture ${i + 1}`} src={v.thumbnail_url} className="transition duration-300 group-hover:scale-105" />
+                          <CourseCover id={id} title={v.title} label={`Lecture ${i + 1}`} src={v.thumbnailUrl} className="transition duration-300 group-hover:scale-105" />
                           <span className="absolute inset-0 grid place-items-center bg-black/30 opacity-0 transition group-hover:opacity-100">
                             <Play className="size-9 fill-white text-white drop-shadow" />
                           </span>
                           {v.done && <CheckCircle2 className="absolute top-2 left-2 size-5 rounded-full bg-black/60 text-white" aria-label="Done" />}
-                          {v.duration_seconds > 0 && <span className="absolute right-1.5 bottom-1.5 rounded bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white tabular-nums">{formatDuration(v.duration_seconds)}</span>}
+                          {v.durationSeconds > 0 && <span className="absolute right-1.5 bottom-1.5 rounded bg-black/80 px-1.5 py-0.5 text-[11px] font-medium text-white tabular-nums">{formatDuration(v.durationSeconds)}</span>}
                         </div>
                         <span className="mt-2.5 line-clamp-2 text-sm leading-snug font-bold group-hover:underline">{i + 1}. {v.title}</span>
                         <span className="mt-1 block text-xs text-muted-foreground">
                           {isNext ? <span className={cn("font-bold", accent.text)}>Up next · </span> : null}
-                          {v.task_count > 0 ? `${v.approved_count}/${v.task_count} tasks approved` : "No tasks"}
+                          {v.taskCount > 0 ? `${v.approvedCount}/${v.taskCount} tasks approved` : "No tasks"}
                         </span>
                       </Link>
                     </li>
@@ -151,7 +153,7 @@ export default function MyCoursePage() {
               <div className="mt-4 grid gap-5 sm:grid-cols-2">
                 {mentors.map((m) => (
                   <div key={m.id} className="flex items-center gap-4">
-                    <Avatar src={m.avatar_url} name={m.name} className="size-16 text-lg" />
+                    <Avatar src={m.avatarUrl} name={m.name} className="size-16 text-lg" />
                     <span className="min-w-0">
                       <b className={cn("block underline-offset-2", accent.text)}>{m.name}</b>
                       <span className="block truncate text-sm text-muted-foreground">{m.email}</span>

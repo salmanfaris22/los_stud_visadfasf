@@ -3,10 +3,11 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Settings2, UsersRound } from "lucide-react";
 import { Button, Card, EmptyState, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table } from "@lms/ui";
-import { $api } from "@/lib/api";
+
 import { Can } from "@/lib/session";
 import { useCourseOptions } from "@/features/common/options";
 import { BatchFormDialog, BatchTypesDialog } from "@/features/batches/batch-form";
+import { BatchService, useRpcQuery } from "@lms/api-client";
 
 export default function BatchesPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function BatchesPage() {
   const [creating, setCreating] = React.useState(false);
   const [types, setTypes] = React.useState(false);
   const courses = useCourseOptions();
-  const list = $api.useQuery("get", "/api/v1/batches", { params: { query: { q: q || undefined, course_id: courseId || undefined, status: (status || undefined) as "running" | undefined, page, per_page: 20 } } });
+  const list = useRpcQuery(BatchService.method.listBatches, { q: q || undefined, courseId: courseId || undefined, status: (status || undefined) as "running" | undefined, page, perPage: 20 });
   return (
     <>
       <PageHeader title="Batches" description="Online and offline groups of students with their own mentors and schedule."
@@ -35,19 +36,19 @@ export default function BatchesPage() {
               {list.data?.items.map((b) => (
                 <TR key={b.id} className="cursor-pointer" onClick={() => router.push(`/batches/${b.id}`)}>
                   <TD className="font-medium">{b.name}</TD>
-                  <TD className="text-muted-foreground">{b.course_title}</TD>
-                  <TD><span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-full" style={{ background: b.type_color }} />{b.type_name}</span></TD>
-                  <TD className="text-muted-foreground">{b.start_date || "—"} → {b.end_date || "—"}</TD>
-                  <TD>{b.student_count}{b.capacity ? ` / ${b.capacity}` : ""}</TD>
+                  <TD className="text-muted-foreground">{b.courseTitle}</TD>
+                  <TD><span className="inline-flex items-center gap-1.5"><span className="size-2.5 rounded-full" style={{ background: b.typeColor }} />{b.typeName}</span></TD>
+                  <TD className="text-muted-foreground">{b.startDate || "—"} → {b.endDate || "—"}</TD>
+                  <TD>{b.studentCount}{b.capacity ? ` / ${b.capacity}` : ""}</TD>
                   <TD><StatusBadge status={b.status} /></TD>
                 </TR>
               ))}
             </TBody>
           </Table>
         )}
-        {list.data && <Pagination page={page} perPage={list.data.per_page} total={list.data.total} onPage={setPage} />}
+        {list.data && <Pagination page={page} perPage={list.data.perPage} total={list.data.total} onPage={setPage} />}
       </Card>
-      <BatchFormDialog open={creating} onOpenChange={setCreating} onSaved={(d) => router.push(`/batches/${d.batch.id}`)} />
+      <BatchFormDialog open={creating} onOpenChange={setCreating} onSaved={(d) => router.push(`/batches/${d.batch?.id}`)} />
       <BatchTypesDialog open={types} onOpenChange={setTypes} />
     </>
   );

@@ -10,18 +10,25 @@ import (
 	"github.com/lms/backend/internal/service"
 )
 
-// Run blocks until ctx is cancelled. A Redis lock keeps reminders single-instance.
+// Run blocks until ctx is cancelled. A Postgres advisory lock keeps each job single-instance,
+// so a second API process (or an overlapping run) skips the tick instead of doubling work.
 func Run(ctx context.Context, s *service.Services, d *service.Deps) {
 	minute := time.NewTicker(time.Minute)
 	hour := time.NewTicker(time.Hour)
 	defer minute.Stop()
 	defer hour.Stop()
-	tick := func(name string, ttl time.Duration, fn func(context.Context) error) {
-		if d.Redis != nil {
-			ok, err := d.Redis.SetNX(ctx, "lock:job:"+name, "1", ttl).Result()
-			if err != nil || !ok {
+	tick := func(name string, _ time.Duration, fn func(context.Context) error) {
+		if d.Pool != nil {
+			conn, err := d.Pool.Acquire(ctx)
+			if err != nil {
 				return
 			}
+			defer conn.Release()
+			var ok bool
+			if err := conn.QueryRow(ctx, "SELECT pg_try_advisory_lock(hashtext($1))", "lms:job:"+name).Scan(&ok); err != nil || !ok {
+				return
+			}
+			defer conn.Exec(context.WithoutCancel(ctx), "SELECT pg_advisory_unlock(hashtext($1))", "lms:job:"+name)
 		}
 		if err := fn(ctx); err != nil {
 			slog.Error("job failed", "job", name, "err", err)
