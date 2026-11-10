@@ -185,7 +185,7 @@ func (s *SubmissionService) Comment(ctx context.Context, actor *auth.Principal, 
 	}
 	if actor.IsStudent() {
 		studentID = actor.ID
-		if err := s.access.EnsureEnrolled(ctx, actor, t.CourseID); err != nil {
+		if err := s.access.EnsureHasItem(ctx, actor, t.CourseID, "task", taskID); err != nil {
 			return nil, err
 		}
 	} else if err := s.access.EnsureStudent(ctx, actor, studentID); err != nil {
@@ -222,7 +222,7 @@ func (s *SubmissionService) Submit(ctx context.Context, student *auth.Principal,
 	if err != nil {
 		return repository.Submission{}, dbErr(err, "task")
 	}
-	if err := s.access.EnsureEnrolled(ctx, student, t.CourseID); err != nil {
+	if err := s.access.EnsureHasItem(ctx, student, t.CourseID, "task", taskID); err != nil {
 		return repository.Submission{}, err
 	}
 	if latest, err := s.Q.LatestSubmission(ctx, repository.LatestSubmissionParams{TaskID: taskID, StudentID: student.ID}); err == nil {

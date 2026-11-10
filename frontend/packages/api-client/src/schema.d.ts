@@ -74,160 +74,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/change-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Change own password */
-        post: operations["auth-change-password"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/forgot": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Email a password reset link */
-        post: operations["auth-forgot"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sign in with email and password */
-        post: operations["auth-login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sign out */
-        post: operations["auth-logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Current user */
-        get: operations["auth-me"];
-        /** Update own profile */
-        put: operations["auth-update-profile"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/providers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Available sign-in options */
-        get: operations["auth-providers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Rotate the refresh token */
-        post: operations["auth-refresh"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Student self sign-up */
-        post: operations["auth-register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/auth/reset": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Set a new password with a reset token */
-        post: operations["auth-reset"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/batch-types": {
         parameters: {
             query?: never;
@@ -2086,10 +1932,6 @@ export interface components {
             student_name: string;
             valid: boolean;
         };
-        ChangePasswordInput: {
-            current_password?: string;
-            new_password: string;
-        };
         CheckinInput: {
             token: string;
         };
@@ -2158,6 +2000,16 @@ export interface components {
             /** Format: date-time */
             created_at: string;
             description: string;
+            /**
+             * Format: int64
+             * @description Course fee incl. GST, in paise
+             */
+            fee_paise: number;
+            /**
+             * Format: int32
+             * @description GST rate in basis points (1800 = 18%)
+             */
+            gst_bp: number;
             id: string;
             is_public: boolean;
             language: string;
@@ -2180,6 +2032,16 @@ export interface components {
         CourseInput: {
             category?: string;
             description?: string;
+            /**
+             * Format: int64
+             * @description Course fee incl. GST, in paise (used for admissions)
+             */
+            fee_paise?: number;
+            /**
+             * Format: int32
+             * @description GST rate in basis points; empty = default rate
+             */
+            gst_bp?: number;
             /** @description Show on the public website catalog */
             is_public?: boolean;
             language?: string;
@@ -2196,6 +2058,10 @@ export interface components {
             what_you_learn?: string[];
         };
         CourseOption: {
+            /** Format: int64 */
+            fee_paise: number;
+            /** Format: int32 */
+            gst_bp: number;
             id: string;
             status: string;
             title: string;
@@ -2311,10 +2177,6 @@ export interface components {
              */
             type: string;
         };
-        ForgotInput: {
-            /** Format: email */
-            email: string;
-        };
         GoogleSettings: {
             /** @description Push live sessions to Google Calendar and email invites */
             calendar_sync: boolean;
@@ -2349,21 +2211,43 @@ export interface components {
             meet_url: string;
         };
         Lead: {
+            admission_id: string;
+            /** Format: date-time */
+            assigned_at: string | null;
+            city: string;
             course_id: string;
             course_title: string;
             /** Format: date-time */
             created_at: string;
             email: string;
+            /** Format: date-time */
+            first_contacted_at: string | null;
             id: string;
+            /** Format: date-time */
+            last_activity_at: string;
+            lost_reason: string;
             message: string;
             name: string;
-            notes: string;
+            /** Format: date-time */
+            next_follow_up_at: string | null;
+            owner_id: string;
+            owner_name: string;
             phone: string;
+            /** Format: date-time */
+            sla_due_at: string | null;
             source: string;
-            /** @enum {string} */
-            status: "new" | "contacted" | "converted" | "lost";
+            source_ref: string;
+            stage_color: string;
+            stage_id: string;
+            stage_kind: string;
+            stage_name: string;
+            student_id: string;
+            team_id: string;
+            team_name: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description Phone in international format, digits only */
+            whatsapp_id: string;
         };
         LeadInput: {
             course_id?: string;
@@ -2374,10 +2258,27 @@ export interface components {
             phone?: string;
             source?: string;
         };
+        LeadList: {
+            items: components["schemas"]["Lead"][];
+            /** Format: int64 */
+            page: number;
+            /** Format: int64 */
+            per_page: number;
+            /** @description stage id -> leads in scope */
+            stage_counts: {
+                [key: string]: number;
+            };
+            /** Format: int64 */
+            total: number;
+        };
         LeadUpdate: {
-            notes?: string;
-            /** @enum {string} */
-            status: "new" | "contacted" | "converted" | "lost";
+            city?: string;
+            course_id?: string;
+            email?: string;
+            message?: string;
+            name: string;
+            phone?: string;
+            source?: string;
         };
         ListAnnouncement: {
             items: components["schemas"]["Announcement"][];
@@ -2426,15 +2327,6 @@ export interface components {
         };
         ListCourse: {
             items: components["schemas"]["Course"][];
-            /** Format: int64 */
-            page: number;
-            /** Format: int64 */
-            per_page: number;
-            /** Format: int64 */
-            total: number;
-        };
-        ListLead: {
-            items: components["schemas"]["Lead"][];
             /** Format: int64 */
             page: number;
             /** Format: int64 */
@@ -2556,26 +2448,6 @@ export interface components {
             /** @enum {string} */
             type: "batch" | "course" | "student";
         };
-        LoginInput: {
-            /** Format: email */
-            email: string;
-            password: string;
-        };
-        Me: {
-            app: string;
-            avatar_url: string;
-            bio: string;
-            email: string;
-            id: string;
-            is_super_admin: boolean;
-            /** @enum {string} */
-            kind: "staff" | "student";
-            name: string;
-            permissions: string[];
-            phone: string;
-            scoped: boolean;
-            student_code: string;
-        };
         ModerationComment: {
             author_kind: string;
             author_name: string;
@@ -2612,10 +2484,14 @@ export interface components {
             batch_name: string;
             category: string;
             course_id: string;
+            /** @description Course thumbnail, or the first lesson's video thumbnail when the course has none */
+            cover_url: string;
             /** Format: date-time */
             enrolled_at: string;
             enrollment_id: string;
             level: string;
+            /** @description Muted autoplay embed of the first lesson, for hover previews */
+            preview_url: string;
             /** Format: int64 */
             progress_pct: number;
             slug: string;
@@ -2764,16 +2640,6 @@ export interface components {
             };
             put_url: string;
             upload: components["schemas"]["Upload"];
-        };
-        ProfileInput: {
-            avatar_url?: string;
-            bio?: string;
-            name: string;
-            phone?: string;
-        };
-        Providers: {
-            google: boolean;
-            signup: boolean;
         };
         PublicBatch: {
             end_date: string;
@@ -2966,17 +2832,6 @@ export interface components {
             /** @description YouTube, Vimeo, Drive… link. Empty clears it. */
             recording_url: string;
         };
-        RegisterInput: {
-            /** Format: email */
-            email: string;
-            name: string;
-            password: string;
-            phone?: string;
-        };
-        ResetInput: {
-            password: string;
-            token: string;
-        };
         ReviewInput: {
             feedback?: string;
             /** Format: int32 */
@@ -2993,6 +2848,11 @@ export interface components {
             permissions: {
                 [key: string]: string[];
             };
+            /**
+             * @description Which leads, admissions and commissions the role sees
+             * @enum {string}
+             */
+            sales_scope: "all" | "team" | "own";
             /** @description Only see assigned courses and batches */
             scoped: boolean;
             /** Format: int32 */
@@ -3004,6 +2864,8 @@ export interface components {
             permissions: {
                 [key: string]: string[];
             };
+            /** @enum {string} */
+            sales_scope?: "all" | "team" | "own";
             scoped?: boolean;
         };
         RoleRef: {
@@ -3569,324 +3431,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ListAuditEntry"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-change-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ChangePasswordInput"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OK"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-forgot": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ForgotInput"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OK"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["LoginInput"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Me"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OK"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Me"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-update-profile": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProfileInput"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Me"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-providers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Providers"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Me"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterInput"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    "Set-Cookie"?: string;
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Me"];
-                };
-            };
-            /** @description Error */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ErrorModel"];
-                };
-            };
-        };
-    };
-    "auth-reset": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ResetInput"];
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["OK"];
                 };
             };
             /** @description Error */
@@ -5311,7 +4855,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ListLead"];
+                    "application/json": components["schemas"]["LeadList"];
                 };
             };
             /** @description Error */

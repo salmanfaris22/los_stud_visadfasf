@@ -12,6 +12,8 @@ test("full journey: assigned course → watch → submit → mentor approves →
 
   // Student: dashboard → course → watch page with watermark
   await loginStudent(page, { email, password: "Journey@123" });
+  await expect(page).toHaveURL(/\/learn\/courses$/);
+  await page.goto(`${STUDENT_URL}/learn`);
   // Home: the task opens as a dropdown on the same page
   await page.getByRole("button", { name: /Share your repo/ }).click();
   await expect(page.getByRole("heading", { name: "Your submission" })).toBeVisible();

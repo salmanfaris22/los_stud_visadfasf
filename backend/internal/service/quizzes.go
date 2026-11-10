@@ -196,7 +196,7 @@ func (s *QuizService) Delete(ctx context.Context, actor *auth.Principal, id uuid
 	if err := s.access.EnsureCourse(ctx, actor, cur.CourseID); err != nil {
 		return err
 	}
-	if err := s.Q.DeleteQuiz(ctx, id); err != nil {
+	if err := s.removeItem(ctx, "quiz", id, s.Q.ArchiveQuiz, s.Q.DeleteQuiz); err != nil {
 		return dbErr(err, "quiz")
 	}
 	s.audit.Log(ctx, actor, "delete", "quiz", id, map[string]string{"title": cur.Title})
@@ -230,7 +230,7 @@ func (s *QuizService) MyForVideo(ctx context.Context, student *auth.Principal, v
 	if err != nil {
 		return nil, err
 	}
-	if err := s.access.EnsureEnrolled(ctx, student, cid); err != nil {
+	if err := s.access.EnsureHasItem(ctx, student, cid, "video", videoID); err != nil {
 		return nil, err
 	}
 	rows, err := s.Q.MyVideoQuizzes(ctx, repository.MyVideoQuizzesParams{StudentID: student.ID, VideoID: videoID})
@@ -260,7 +260,7 @@ func (s *QuizService) Start(ctx context.Context, student *auth.Principal, quizID
 	if err != nil {
 		return dto.QuizPlay{}, err
 	}
-	if err := s.access.EnsureEnrolled(ctx, student, q.CourseID); err != nil {
+	if err := s.access.EnsureHasItem(ctx, student, q.CourseID, "quiz", quizID); err != nil {
 		return dto.QuizPlay{}, err
 	}
 	attempt, err := s.Q.OpenQuizAttempt(ctx, repository.OpenQuizAttemptParams{QuizID: quizID, StudentID: student.ID})

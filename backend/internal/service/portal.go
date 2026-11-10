@@ -31,7 +31,16 @@ func (s *PortalService) Courses(ctx context.Context, student *auth.Principal) ([
 	}
 	out := make([]dto.MyCourse, 0, len(rows))
 	for _, r := range rows {
+		cover := r.ThumbnailUrl
+		if cover == "" {
+			cover = ThumbnailURL(r.FirstVideoProvider, r.FirstVideoRef)
+		}
+		preview := ""
+		if r.FirstVideoRef != "" {
+			preview = PreviewEmbedURL(r.FirstVideoProvider, r.FirstVideoRef)
+		}
 		out = append(out, dto.MyCourse{EnrollmentID: r.EnrollmentID, CourseID: r.ID, Slug: r.Slug, Title: r.Title, Subtitle: r.Subtitle, ThumbnailURL: r.ThumbnailUrl,
+			CoverURL: cover, PreviewURL: preview,
 			Level: r.Level, Category: r.Category, BatchID: r.BatchID, BatchName: str(r.BatchName), Status: r.EnrollmentStatus, EnrolledAt: r.EnrolledAt,
 			VideoCount: r.VideoCount, TotalTasks: r.TotalTasks, ApprovedTasks: r.ApprovedTasks, ProgressPct: pct(r.ApprovedTasks, r.TotalTasks)})
 	}
@@ -174,6 +183,9 @@ func (s *PortalService) Watch(ctx context.Context, student *auth.Principal, vide
 	if err != nil {
 		return dto.WatchPage{}, dbErr(err, "video")
 	}
+	if err := s.access.EnsureHasItem(ctx, student, v.CourseID, "video", videoID); err != nil {
+		return dto.WatchPage{}, err
+	}
 	mc, err := s.findCourse(ctx, student, v.CourseID)
 	if err != nil {
 		return dto.WatchPage{}, err
@@ -209,6 +221,9 @@ func (s *PortalService) Task(ctx context.Context, student *auth.Principal, taskI
 	t, err := s.Q.GetTask(ctx, taskID)
 	if err != nil {
 		return dto.TaskPage{}, dbErr(err, "task")
+	}
+	if err := s.access.EnsureHasItem(ctx, student, t.CourseID, "task", taskID); err != nil {
+		return dto.TaskPage{}, err
 	}
 	mc, err := s.findCourse(ctx, student, t.CourseID)
 	if err != nil {

@@ -1,0 +1,132 @@
+syntax = "proto3";
+
+package lms.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "lms/v1/options.proto";
+
+// CourseVersionService freezes a course curriculum into versions and moves students between them.
+// A version holds which lessons, tasks and quizzes exist and their order. Each enrollment is on
+// one version: new students get the latest, existing students stay until an admin moves them.
+// Text edits to an existing lesson/task/quiz reach every version.
+service CourseVersionService {
+  // Versions (newest first), student counts, and what changed since the latest version.
+  rpc GetVersionSummary(GetVersionSummaryRequest) returns (GetVersionSummaryResponse) {
+    option (lms.v1.access) = {
+      perm: {
+        module: "courses"
+        action: "view"
+      }
+    };
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Freezes the current curriculum as the next version ("Build update").
+  rpc BuildVersion(BuildVersionRequest) returns (BuildVersionResponse) {
+    option (lms.v1.access) = {
+      perm: {
+        module: "courses"
+        action: "edit"
+      }
+    };
+  }
+  // Students enrolled in the course with the version each one is on.
+  rpc ListVersionStudents(ListVersionStudentsRequest) returns (ListVersionStudentsResponse) {
+    option (lms.v1.access) = {
+      perm: {
+        module: "students"
+        action: "view"
+      }
+    };
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Puts the chosen enrollments on a version. Their work is kept.
+  rpc MoveStudents(MoveStudentsRequest) returns (MoveStudentsResponse) {
+    option (lms.v1.access) = {
+      perm: {
+        module: "students"
+        action: "edit"
+      }
+    };
+  }
+}
+
+message CourseVersion {
+  string id = 1;
+  int32 number = 2;
+  string note = 3;
+  google.protobuf.Timestamp created_at = 4;
+  string created_by_name = 5;
+  int32 student_count = 6;
+  int32 video_count = 7;
+  int32 task_count = 8;
+  int32 quiz_count = 9;
+}
+
+// VersionChanges is the difference between the current curriculum and the latest version.
+message VersionChanges {
+  int32 added_videos = 1;
+  int32 removed_videos = 2;
+  int32 added_tasks = 3;
+  int32 removed_tasks = 4;
+  int32 added_quizzes = 5;
+  int32 removed_quizzes = 6;
+  bool reordered = 7;
+}
+
+message VersionStudent {
+  string enrollment_id = 1;
+  string student_id = 2;
+  string name = 3;
+  string email = 4;
+  string student_code = 5;
+  string batch_id = 6;
+  string batch_name = 7;
+  string version_id = 8;
+  int32 version_number = 9;
+  int32 progress_pct = 10;
+}
+
+message GetVersionSummaryRequest {
+  string course_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetVersionSummaryResponse {
+  // Newest first; empty until the first build or first enrollment.
+  repeated CourseVersion versions = 1;
+  bool has_changes = 2;
+  VersionChanges changes = 3;
+}
+
+message BuildVersionRequest {
+  string course_id = 1 [(buf.validate.field).string.uuid = true];
+  string note = 2 [(buf.validate.field).string.max_len = 300];
+}
+
+message BuildVersionResponse {
+  CourseVersion version = 1;
+}
+
+message ListVersionStudentsRequest {
+  string course_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message ListVersionStudentsResponse {
+  repeated VersionStudent students = 1;
+}
+
+message MoveStudentsRequest {
+  string course_id = 1 [(buf.validate.field).string.uuid = true];
+  string version_id = 2 [(buf.validate.field).string.uuid = true];
+  repeated string enrollment_ids = 3 [(buf.validate.field).repeated = {
+    min_items: 1
+    max_items: 5000
+    items: {
+      string: {uuid: true}
+    }
+  }];
+}
+
+message MoveStudentsResponse {
+  int32 moved = 1;
+}

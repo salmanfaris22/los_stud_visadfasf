@@ -1,6 +1,6 @@
 -- name: ListCourses :many
 SELECT c.*,
-       (SELECT count(*) FROM videos v WHERE v.course_id = c.id)::int AS video_count,
+       (SELECT count(*) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS video_count,
        (SELECT count(*) FROM enrollments e WHERE e.course_id = c.id)::int AS student_count,
        count(*) OVER () AS total_count
 FROM courses c
@@ -58,8 +58,8 @@ SELECT (@course_id::uuid IN (SELECT mentor_course_ids(@mentor_id::uuid)))::boole
 
 -- name: ListPublicCourses :many
 SELECT c.id, c.slug, c.title, c.subtitle, c.thumbnail_url, c.level, c.language, c.category, c.price_label, c.created_at,
-       (SELECT count(*) FROM videos v WHERE v.course_id = c.id)::int AS video_count,
-       (SELECT COALESCE(sum(v.duration_seconds), 0) FROM videos v WHERE v.course_id = c.id)::int AS total_seconds,
+       (SELECT count(*) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS video_count,
+       (SELECT COALESCE(sum(v.duration_seconds), 0) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS total_seconds,
        (SELECT count(*) FROM enrollments e WHERE e.course_id = c.id)::int AS student_count
 FROM courses c
 WHERE c.status = 'published' AND c.is_public
@@ -78,14 +78,15 @@ WHERE b.course_id = $1 AND b.status IN ('upcoming', 'running')
 ORDER BY b.start_date NULLS LAST;
 
 -- name: ListCourseVideos :many
-SELECT * FROM videos WHERE course_id = $1 ORDER BY position, created_at;
+-- The working copy (archived lessons stay only in the versions that contain them).
+SELECT * FROM videos WHERE course_id = $1 AND archived_at IS NULL ORDER BY position, created_at;
 
 -- name: GetVideo :one
 SELECT * FROM videos WHERE id = $1;
 
 -- name: CreateVideo :one
 INSERT INTO videos (course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview)
-VALUES (@course_id, (SELECT COALESCE(max(position) + 1, 0) FROM videos WHERE course_id = @course_id)::int,
+VALUES (@course_id, (SELECT COALESCE(max(position) + 1, 0) FROM videos WHERE course_id = @course_id AND archived_at IS NULL)::int,
         @title, @description, @provider, @provider_ref, @source_url, @duration_seconds, @is_preview)
 RETURNING *;
 
@@ -99,12 +100,17 @@ RETURNING *;
 -- name: DeleteVideo :exec
 DELETE FROM videos WHERE id = $1;
 
+-- name: ArchiveVideo :exec
+UPDATE videos SET archived_at = now() WHERE id = $1;
+
 -- name: ReorderVideos :exec
 UPDATE videos SET position = array_position(@ids::uuid[], id) - 1
 WHERE course_id = @course_id AND id = ANY (@ids::uuid[]);
 
 -- name: ListTasksByCourse :many
-SELECT t.* FROM tasks t JOIN videos v ON v.id = t.video_id WHERE v.course_id = $1 ORDER BY v.position, t.position;
+SELECT t.* FROM tasks t JOIN videos v ON v.id = t.video_id
+WHERE v.course_id = $1 AND v.archived_at IS NULL AND t.archived_at IS NULL
+ORDER BY v.position, t.position;
 
 -- name: GetTask :one
 SELECT t.*, v.course_id, v.title AS video_title
@@ -113,7 +119,7 @@ WHERE t.id = $1;
 
 -- name: CreateTask :one
 INSERT INTO tasks (video_id, position, title, instructions, allowed_types, max_marks, pass_marks, due_at, allow_late, max_files, max_file_mb)
-VALUES (@video_id, (SELECT COALESCE(max(position) + 1, 0) FROM tasks WHERE video_id = @video_id)::int,
+VALUES (@video_id, (SELECT COALESCE(max(position) + 1, 0) FROM tasks WHERE video_id = @video_id AND archived_at IS NULL)::int,
         @title, @instructions, @allowed_types, @max_marks, @pass_marks, sqlc.narg('due_at'), @allow_late, @max_files, @max_file_mb)
 RETURNING *;
 
@@ -126,6 +132,9 @@ RETURNING *;
 
 -- name: DeleteTask :exec
 DELETE FROM tasks WHERE id = $1;
+
+-- name: ArchiveTask :exec
+UPDATE tasks SET archived_at = now() WHERE id = $1;
 
 -- name: ReorderTasks :exec
 UPDATE tasks SET position = array_position(@ids::uuid[], id) - 1

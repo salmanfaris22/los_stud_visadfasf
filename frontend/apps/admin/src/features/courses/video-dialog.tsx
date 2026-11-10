@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { errorMessage, type Schemas } from "@lms/api-client";
+import { CourseVersionService, errorMessage, type Schemas } from "@lms/api-client";
 import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Switch, Textarea, VideoPlayer, cn } from "@lms/ui";
 import { $api, api } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
@@ -58,7 +58,7 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
     return () => clearTimeout(t);
   }, [provider, url]);
 
-  const paths = [`/api/v1/courses/${courseId}`];
+  const paths = [`/api/v1/courses/${courseId}`, CourseVersionService];
   const create = $api.useMutation("post", "/api/v1/courses/{id}/videos", feedback(qc, "Video added", paths, () => onOpenChange(false)));
   const update = $api.useMutation("put", "/api/v1/videos/{id}", feedback(qc, "Video saved", paths, () => onOpenChange(false)));
   const body = { title, description, provider, url, duration_seconds: toSeconds(duration), is_preview: preview };

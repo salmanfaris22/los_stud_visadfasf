@@ -13,6 +13,8 @@ type MyCourse struct {
 	Title         string     `json:"title"`
 	Subtitle      string     `json:"subtitle"`
 	ThumbnailURL  string     `json:"thumbnail_url"`
+	CoverURL      string     `json:"cover_url" doc:"Course thumbnail, or the first lesson's video thumbnail when the course has none"`
+	PreviewURL    string     `json:"preview_url" doc:"Muted autoplay embed of the first lesson, for hover previews"`
 	Level         string     `json:"level"`
 	Category      string     `json:"category"`
 	BatchID       *uuid.UUID `json:"batch_id"`

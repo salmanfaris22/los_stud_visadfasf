@@ -304,7 +304,7 @@ func (s *CourseService) DeleteVideo(ctx context.Context, actor *auth.Principal, 
 	if err != nil {
 		return err
 	}
-	if err := s.Q.DeleteVideo(ctx, id); err != nil {
+	if err := s.removeItem(ctx, "video", id, s.Q.ArchiveVideo, s.Q.DeleteVideo); err != nil {
 		return dbErr(err, "video")
 	}
 	s.audit.Log(ctx, actor, "delete", "video", id, map[string]string{"title": v.Title})
@@ -382,7 +382,7 @@ func (s *CourseService) DeleteTask(ctx context.Context, actor *auth.Principal, i
 	if err != nil {
 		return err
 	}
-	if err := s.Q.DeleteTask(ctx, id); err != nil {
+	if err := s.removeItem(ctx, "task", id, s.Q.ArchiveTask, s.Q.DeleteTask); err != nil {
 		return dbErr(err, "task")
 	}
 	s.audit.Log(ctx, actor, "delete", "task", id, map[string]string{"title": t.Title})

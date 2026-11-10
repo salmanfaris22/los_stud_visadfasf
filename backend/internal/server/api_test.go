@@ -96,6 +96,34 @@ func (c *client) authClient(withApp bool) lmsv1connect.AuthServiceClient {
 	return lmsv1connect.NewAuthServiceClient(c.hc, c.base+"/rpc", opts...)
 }
 
+// versionClient is a typed CourseVersionService client sharing this client's cookies.
+func (c *client) versionClient() lmsv1connect.CourseVersionServiceClient {
+	return lmsv1connect.NewCourseVersionServiceClient(c.hc, c.base+"/rpc", connect.WithInterceptors(appHeader(c.app)))
+}
+
+// buildAndMoveAll builds the course's working copy as a new version and moves every student onto it.
+func buildAndMoveAll(t *testing.T, admin *client, courseID string) *lmsv1.CourseVersion {
+	t.Helper()
+	ctx := context.Background()
+	vc := admin.versionClient()
+	b, err := vc.BuildVersion(ctx, connect.NewRequest(&lmsv1.BuildVersionRequest{CourseId: courseID, Note: "test"}))
+	if err != nil {
+		t.Fatalf("BuildVersion: %v", err)
+	}
+	st, err := vc.ListVersionStudents(ctx, connect.NewRequest(&lmsv1.ListVersionStudentsRequest{CourseId: courseID}))
+	if err != nil {
+		t.Fatalf("ListVersionStudents: %v", err)
+	}
+	ids := []string{}
+	for _, s := range st.Msg.GetStudents() {
+		ids = append(ids, s.GetEnrollmentId())
+	}
+	if _, err := vc.MoveStudents(ctx, connect.NewRequest(&lmsv1.MoveStudentsRequest{CourseId: courseID, VersionId: b.Msg.GetVersion().GetId(), EnrollmentIds: ids})); err != nil {
+		t.Fatalf("MoveStudents: %v", err)
+	}
+	return b.Msg.GetVersion()
+}
+
 func appHeader(app string) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
@@ -454,6 +482,9 @@ func TestAPI(t *testing.T) {
 		}
 		var play M
 		student.mustLogin("ann@test.local", "Student@123")
+		// The quiz is new since Ann enrolled: hidden until she is moved to a version that has it.
+		student.call("POST", "/api/v1/me/quizzes/"+quizID+"/start", nil, 404, nil)
+		buildAndMoveAll(t, admin, courseID)
 		student.call("POST", "/api/v1/me/quizzes/"+quizID+"/start", nil, 200, &play)
 		for _, pq := range play["questions"].([]any) {
 			for _, o := range pq.(map[string]any)["options"].([]any) {
@@ -542,9 +573,110 @@ func TestAPI(t *testing.T) {
 		}
 	})
 
+	t.Run("course versions: students keep their version until moved", func(t *testing.T) {
+		ctx := context.Background()
+		vc := admin.versionClient()
+		myCourse := func(c *client) M {
+			var list []M
+			c.call("GET", "/api/v1/me/courses", nil, 200, &list)
+			for _, m := range list {
+				if m["course_id"] == courseID {
+					return m
+				}
+			}
+			t.Fatalf("course not in my courses: %v", list)
+			return nil
+		}
+		annBefore := myCourse(student)
+
+		// Admin adds lesson 2 with a task: Ann (old version) must not see it.
+		var v2 M
+		admin.call("POST", "/api/v1/courses/"+courseID+"/videos", M{"title": "Lesson 2", "provider": "youtube", "url": "https://youtu.be/446E-r0rXHI"}, 200, &v2)
+		admin.call("POST", "/api/v1/videos/"+v2["id"].(string)+"/tasks", M{"title": "Lesson 2 task", "allowed_types": []string{"text"}, "max_marks": 10, "pass_marks": 5}, 200, nil)
+		student.call("GET", "/api/v1/me/videos/"+v2["id"].(string), nil, 404, nil)
+		if got := myCourse(student)["video_count"]; got != annBefore["video_count"] {
+			t.Fatalf("Ann sees %v videos before the update, want %v", got, annBefore["video_count"])
+		}
+
+		sum, err := vc.GetVersionSummary(ctx, connect.NewRequest(&lmsv1.GetVersionSummaryRequest{CourseId: courseID}))
+		if err != nil || !sum.Msg.GetHasChanges() || sum.Msg.GetChanges().GetAddedVideos() != 1 || sum.Msg.GetChanges().GetAddedTasks() != 1 {
+			t.Fatalf("summary = %v, %v", sum, err)
+		}
+		built, err := vc.BuildVersion(ctx, connect.NewRequest(&lmsv1.BuildVersionRequest{CourseId: courseID, Note: "Lesson 2"}))
+		if err != nil {
+			t.Fatalf("BuildVersion: %v", err)
+		}
+		newV := built.Msg.GetVersion()
+		if newV.GetVideoCount() != 2 || newV.GetStudentCount() != 0 {
+			t.Fatalf("built version = %v", newV)
+		}
+		_, err = vc.BuildVersion(ctx, connect.NewRequest(&lmsv1.BuildVersionRequest{CourseId: courseID}))
+		wantCode(t, err, connect.CodeAlreadyExists) // nothing changed since
+
+		// A new student gets the latest version straight away.
+		admin.call("POST", "/api/v1/students", M{"name": "Bob New", "email": "bob@test.local", "password": "Student@123", "enrollments": []M{{"course_id": courseID}}}, 200, nil)
+		bob := newClient(t, srv.URL, "student")
+		bob.mustLogin("bob@test.local", "Student@123")
+		if got := myCourse(bob)["video_count"]; got != float64(2) {
+			t.Fatalf("Bob sees %v videos, want 2", got)
+		}
+		bob.call("GET", "/api/v1/me/videos/"+v2["id"].(string), nil, 200, nil)
+
+		st, err := vc.ListVersionStudents(ctx, connect.NewRequest(&lmsv1.ListVersionStudentsRequest{CourseId: courseID}))
+		if err != nil {
+			t.Fatalf("ListVersionStudents: %v", err)
+		}
+		var annEnrollment string
+		for _, s := range st.Msg.GetStudents() {
+			switch s.GetEmail() {
+			case "ann@test.local":
+				annEnrollment = s.GetEnrollmentId()
+				if s.GetVersionNumber() >= newV.GetNumber() {
+					t.Fatalf("Ann is on v%d before the move", s.GetVersionNumber())
+				}
+			case "bob@test.local":
+				if s.GetVersionNumber() != newV.GetNumber() {
+					t.Fatalf("Bob is on v%d, want v%d", s.GetVersionNumber(), newV.GetNumber())
+				}
+			}
+		}
+
+		// A mentor who can only view students cannot move them.
+		tim := newClient(t, srv.URL, "admin")
+		tim.mustLogin("tim@test.local", "Tutor@1234")
+		_, err = tim.versionClient().MoveStudents(ctx, connect.NewRequest(&lmsv1.MoveStudentsRequest{CourseId: courseID, VersionId: newV.GetId(), EnrollmentIds: []string{annEnrollment}}))
+		wantCode(t, err, connect.CodePermissionDenied)
+
+		// Admin moves Ann: she now sees lesson 2, and her approved work still counts.
+		moved, err := vc.MoveStudents(ctx, connect.NewRequest(&lmsv1.MoveStudentsRequest{CourseId: courseID, VersionId: newV.GetId(), EnrollmentIds: []string{annEnrollment}}))
+		if err != nil || moved.Msg.GetMoved() != 1 {
+			t.Fatalf("MoveStudents = %v, %v", moved, err)
+		}
+		student.call("GET", "/api/v1/me/videos/"+v2["id"].(string), nil, 200, nil)
+		annAfter := myCourse(student)
+		if annAfter["video_count"] != float64(2) || annAfter["approved_tasks"] != annBefore["approved_tasks"] {
+			t.Fatalf("Ann after move = %v (before %v)", annAfter, annBefore)
+		}
+	})
+
 	t.Run("delete with confirmation of cascade", func(t *testing.T) {
 		admin.call("DELETE", "/api/v1/tasks/"+taskID, nil, 204, nil)
-		admin.call("GET", "/api/v1/submissions/"+submissionID, nil, 404, nil)
+		// The task is in a built version, so it is archived: gone from the curriculum, work kept.
+		var cur []M
+		admin.call("GET", "/api/v1/courses/"+courseID+"/curriculum", nil, 200, &cur)
+		for _, v := range cur {
+			for _, tk := range v["tasks"].([]any) {
+				if tk.(map[string]any)["id"] == taskID {
+					t.Fatal("archived task still in the curriculum")
+				}
+			}
+		}
+		admin.call("GET", "/api/v1/submissions/"+submissionID, nil, 200, nil)
+		// A task that was never built into a version is really deleted.
+		var draft M
+		admin.call("POST", "/api/v1/videos/"+videoID+"/tasks", M{"title": "Draft task", "allowed_types": []string{"text"}, "max_marks": 10, "pass_marks": 5}, 200, &draft)
+		admin.call("DELETE", "/api/v1/tasks/"+draft["id"].(string), nil, 204, nil)
+		admin.call("PUT", "/api/v1/tasks/"+draft["id"].(string), M{"title": "Gone", "allowed_types": []string{"text"}, "max_marks": 10, "pass_marks": 5}, 404, nil)
 		admin.call("DELETE", "/api/v1/staff/00000000-0000-0000-0000-000000000000", nil, 404, nil)
 		var audit M
 		admin.call("GET", "/api/v1/audit?entity=task", nil, 200, &audit)

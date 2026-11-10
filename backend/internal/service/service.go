@@ -45,6 +45,7 @@ type Services struct {
 	Roles         *RoleService
 	Students      *StudentService
 	Courses       *CourseService
+	Versions      *CourseVersionService
 	Batches       *BatchService
 	Attendance    *AttendanceService
 	Uploads       *UploadService
@@ -78,6 +79,7 @@ func New(d *Deps) *Services {
 	s.Roles = &RoleService{base: b}
 	s.Students = &StudentService{base: b}
 	s.Courses = &CourseService{base: b}
+	s.Versions = &CourseVersionService{base: b, courses: s.Courses}
 	s.Batches = &BatchService{base: b}
 	s.Attendance = &AttendanceService{base: b}
 	s.Uploads = &UploadService{base: b}

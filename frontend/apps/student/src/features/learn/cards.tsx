@@ -2,47 +2,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowRight, CalendarPlus, CheckCircle2, ChevronDown, Download, Film, Play, Video } from "lucide-react";
+import { ArrowRight, CalendarPlus, CheckCircle2, ChevronDown, Download, Film, Video } from "lucide-react";
 import { errorMessage, type Schemas } from "@lms/api-client";
 import { Badge, Button, LineBadge, LineTrack, Stop, StatusBadge, cn, formatTime, lineColor, timeAgo, toast } from "@lms/ui";
 import { $api } from "@/lib/api";
 import { download } from "@/lib/download";
 import { TaskPanel } from "./task-panel";
-
-/** Course as a line: thumbnail with the line colour, badge, and the line filled to progress. */
-export function CourseTile({ c }: { c: Schemas["MyCourse"] }) {
-  const color = lineColor(c.course_id);
-  return (
-    <Link href={`/learn/courses/${c.course_id}`} className="group flex h-full flex-col overflow-hidden rounded-[20px] border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:shadow-none">
-      <div className="relative aspect-video overflow-hidden" style={{ background: `color-mix(in oklab, ${color} 18%, var(--card))` }}>
-        {c.thumbnail_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.thumbnail_url} alt="" className="size-full object-cover transition duration-500 group-hover:scale-[1.04]" />
-        ) : (
-          <div className="map-grid flex size-full items-center justify-center"><LineBadge id={c.course_id} name={c.title} size="xl" /></div>
-        )}
-        <span className="absolute top-3 right-3 rounded-full bg-card/95 px-2.5 py-1 text-[11px] font-bold shadow-sm">{c.video_count} stops</span>
-        <span className="absolute inset-0 flex items-center justify-center opacity-0 transition group-hover:bg-black/25 group-hover:opacity-100">
-          <span className="flex size-14 items-center justify-center rounded-full bg-signal text-signal-foreground shadow-xl"><Play className="size-6 translate-x-0.5 fill-current" /></span>
-        </span>
-        <span className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: color }} />
-      </div>
-      <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start gap-3">
-          <LineBadge id={c.course_id} name={c.title} size="md" />
-          <div className="min-w-0">
-            <h3 className="line-clamp-2 leading-snug font-bold">{c.title}</h3>
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">{c.batch_name || c.category || "Course"}</p>
-          </div>
-        </div>
-        <div className="mt-auto pt-5">
-          <LineTrack color={color} stops={Math.min(Math.max(c.total_tasks, 1), 10)} progress={c.progress_pct} size="sm" />
-          <p className="mt-2 text-xs font-medium text-muted-foreground tabular-nums">{c.approved_tasks}/{c.total_tasks} tasks · {c.progress_pct}%</p>
-        </div>
-      </div>
-    </Link>
-  );
-}
 
 /** One row on the home page: the course drawn as a line, filled to progress. */
 export function CourseLine({ c }: { c: Schemas["MyCourse"] }) {

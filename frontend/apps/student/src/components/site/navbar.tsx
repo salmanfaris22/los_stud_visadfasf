@@ -70,7 +70,7 @@ export function Navbar({ name, logo, signup }: { name: string; logo?: string; si
         <div className="flex items-center justify-end gap-2">
           <ThemeToggle />
           {me.data ? (
-            <Link href="/learn" className="site-btn site-btn-md site-btn-violet hidden sm:inline-flex">My learning</Link>
+            <Link href="/learn/courses" className="site-btn site-btn-md site-btn-violet hidden sm:inline-flex">My learning</Link>
           ) : (
             <>
               <Link href="/login" className="site-btn site-btn-md site-btn-light hidden sm:inline-flex">Sign in</Link>
@@ -91,7 +91,7 @@ export function Navbar({ name, logo, signup }: { name: string; logo?: string; si
           ))}
           <div className="mt-2 grid grid-cols-2 gap-2">
             {me.data ? (
-              <Link href="/learn" className="site-btn site-btn-md site-btn-violet col-span-2">My learning</Link>
+              <Link href="/learn/courses" className="site-btn site-btn-md site-btn-violet col-span-2">My learning</Link>
             ) : (
               <>
                 <Link href="/login" className={cn("site-btn site-btn-md site-btn-light", !signup && "col-span-2")}>Sign in</Link>

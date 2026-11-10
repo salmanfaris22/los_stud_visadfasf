@@ -40,6 +40,9 @@ func (srv *server) mounts() []mount {
 		{lmsv1connect.AuthServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
 			return lmsv1connect.NewAuthServiceHandler(authServer{srv}, o...)
 		}},
+		{lmsv1connect.CourseVersionServiceName, func(o ...connect.HandlerOption) (string, http.Handler) {
+			return lmsv1connect.NewCourseVersionServiceHandler(courseVersionServer{srv}, o...)
+		}},
 	}
 }
 

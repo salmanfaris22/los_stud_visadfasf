@@ -13,7 +13,7 @@ function Form() {
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState(params.get("error"));
   const providers = useRpcQuery(AuthService.method.getProviders, {});
-  const login = useRpcMutation(AuthService.method.login, { onSuccess: () => router.replace(params.get("next") || "/learn"), onError: (e) => setError(errorMessage(e)) });
+  const login = useRpcMutation(AuthService.method.login, { onSuccess: () => router.replace(params.get("next") || "/learn/courses"), onError: (e) => setError(errorMessage(e)) });
   return (
     <div>
       <h1 className="font-display text-[32px] leading-tight font-extrabold">Welcome back</h1>

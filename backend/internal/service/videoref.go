@@ -151,6 +151,26 @@ func EmbedURL(provider, ref string) string {
 	return ""
 }
 
+// PreviewEmbedURL returns an iframe src that autoplays muted with no controls, for hover previews.
+func PreviewEmbedURL(provider, ref string) string {
+	switch provider {
+	case ProviderYouTube:
+		return "https://www.youtube-nocookie.com/embed/" + ref + "?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1&loop=1&playlist=" + ref
+	case ProviderVimeo:
+		id, hash, _ := strings.Cut(ref, ":")
+		q := url.Values{"dnt": {"1"}, "background": {"1"}, "muted": {"1"}, "autoplay": {"1"}}
+		if hash != "" {
+			q.Set("h", hash)
+		}
+		return "https://player.vimeo.com/video/" + id + "?" + q.Encode()
+	case ProviderBunny:
+		return "https://iframe.mediadelivery.net/embed/" + ref + "?autoplay=true&muted=true&loop=true&preload=true&responsive=true"
+	case ProviderCloudflare:
+		return "https://iframe.videodelivery.net/" + ref + "?autoplay=true&muted=true&loop=true&controls=false"
+	}
+	return ""
+}
+
 // ThumbnailURL returns a poster image when the provider exposes one without an API call.
 func ThumbnailURL(provider, ref string) string {
 	switch provider {

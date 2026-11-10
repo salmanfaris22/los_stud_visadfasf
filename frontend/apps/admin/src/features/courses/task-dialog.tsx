@@ -1,7 +1,7 @@
 "use client";
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Schemas } from "@lms/api-client";
+import { CourseVersionService, type Schemas } from "@lms/api-client";
 import { Button, Checkbox, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Switch, Textarea, fromLocalInput, toLocalInput } from "@lms/ui";
 import { $api } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
@@ -26,7 +26,7 @@ export function TaskDialog({ courseId, videoId, task, open, onOpenChange }: { co
         pass: task?.pass_marks ?? 0, due: toLocalInput(task?.due_at), late: task?.allow_late ?? true, files: task?.max_files ?? 5, mb: task?.max_file_mb ?? 10,
       });
   }, [open, task]);
-  const paths = [`/api/v1/courses/${courseId}`];
+  const paths = [`/api/v1/courses/${courseId}`, CourseVersionService];
   const create = $api.useMutation("post", "/api/v1/videos/{id}/tasks", feedback(qc, "Task added", paths, () => onOpenChange(false)));
   const update = $api.useMutation("put", "/api/v1/tasks/{id}", feedback(qc, "Task saved", paths, () => onOpenChange(false)));
   const body = {

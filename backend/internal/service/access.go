@@ -117,6 +117,22 @@ func (s *AccessService) EnsureStudent(ctx context.Context, p *auth.Principal, st
 	return nil
 }
 
+// EnsureHasItem checks a student is enrolled in the course and that the video, task or quiz
+// is in the course version they are on. Items from other versions look like they don't exist.
+func (s *AccessService) EnsureHasItem(ctx context.Context, p *auth.Principal, courseID uuid.UUID, kind string, itemID uuid.UUID) error {
+	if err := s.EnsureEnrolled(ctx, p, courseID); err != nil {
+		return err
+	}
+	ok, err := s.deps.Q.StudentHasCourseItem(ctx, repository.StudentHasCourseItemParams{StudentID: p.ID, Kind: kind, ItemID: itemID})
+	if err != nil {
+		return apperr.DB(err, kind)
+	}
+	if !ok {
+		return apperr.NotFound(kind)
+	}
+	return nil
+}
+
 // EnsureEnrolled checks a student can open the course.
 func (s *AccessService) EnsureEnrolled(ctx context.Context, p *auth.Principal, courseID uuid.UUID) error {
 	ok, err := s.deps.Q.IsEnrolled(ctx, repository.IsEnrolledParams{StudentID: p.ID, CourseID: courseID})

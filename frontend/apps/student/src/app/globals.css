@@ -1,3 +1,47 @@
 @import "@lms/ui/styles.css";
 @source "../";
 @source "../../../../packages/shared/src";
+
+/*
+ * YouTube-style neutrals for the student app (light #fff, dark #0f0f0f).
+ * Only the student app loads this file, so admin keeps the shared Transit colours;
+ * the public website sets its own colours in (site)/site.css.
+ */
+:root {
+  --background: #ffffff;
+  --foreground: #0f0f0f;
+  --card: #ffffff;
+  --card-foreground: #0f0f0f;
+  --popover: #ffffff;
+  --popover-foreground: #0f0f0f;
+  --secondary: #f2f2f2;
+  --secondary-foreground: #0f0f0f;
+  --muted: #f2f2f2;
+  --muted-foreground: #606060;
+  --accent: #f2f2f2;
+  --accent-foreground: #0f0f0f;
+  --border: #e5e5e5;
+  --input: #d3d3d3;
+  --sidebar: #ffffff;
+  --track: #e5e5e5;
+}
+
+.dark {
+  --background: #0f0f0f;
+  --foreground: #f1f1f1;
+  --card: #1a1a1a;
+  --card-foreground: #f1f1f1;
+  --popover: #212121;
+  --popover-foreground: #f1f1f1;
+  --secondary: #272727;
+  --secondary-foreground: #f1f1f1;
+  --muted: #272727;
+  --muted-foreground: #aaaaaa;
+  --accent: #272727;
+  --accent-foreground: #f1f1f1;
+  --border: #303030;
+  --input: #3f3f3f;
+  --sidebar: #0f0f0f;
+  --stage: #000000;
+  --track: #3f3f3f;
+}

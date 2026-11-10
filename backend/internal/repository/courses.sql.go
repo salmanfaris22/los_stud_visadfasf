@@ -28,6 +28,24 @@ func (q *Queries) AddCourseMentors(ctx context.Context, arg AddCourseMentorsPara
 	return err
 }
 
+const archiveTask = `-- name: ArchiveTask :exec
+UPDATE tasks SET archived_at = now() WHERE id = $1
+`
+
+func (q *Queries) ArchiveTask(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, archiveTask, id)
+	return err
+}
+
+const archiveVideo = `-- name: ArchiveVideo :exec
+UPDATE videos SET archived_at = now() WHERE id = $1
+`
+
+func (q *Queries) ArchiveVideo(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, archiveVideo, id)
+	return err
+}
+
 const clearCourseMentors = `-- name: ClearCourseMentors :exec
 DELETE FROM course_mentors WHERE course_id = $1
 `
@@ -165,9 +183,9 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 
 const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (video_id, position, title, instructions, allowed_types, max_marks, pass_marks, due_at, allow_late, max_files, max_file_mb)
-VALUES ($1, (SELECT COALESCE(max(position) + 1, 0) FROM tasks WHERE video_id = $1)::int,
+VALUES ($1, (SELECT COALESCE(max(position) + 1, 0) FROM tasks WHERE video_id = $1 AND archived_at IS NULL)::int,
         $2, $3, $4, $5, $6, $7, $8, $9, $10)
-RETURNING id, video_id, position, title, instructions, allowed_types, max_marks, pass_marks, due_at, allow_late, max_files, max_file_mb, created_at, updated_at
+RETURNING id, video_id, position, title, instructions, allowed_types, max_marks, pass_marks, due_at, allow_late, max_files, max_file_mb, created_at, updated_at, archived_at
 `
 
 type CreateTaskParams struct {
@@ -212,15 +230,16 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.MaxFileMb,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }
 
 const createVideo = `-- name: CreateVideo :one
 INSERT INTO videos (course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview)
-VALUES ($1, (SELECT COALESCE(max(position) + 1, 0) FROM videos WHERE course_id = $1)::int,
+VALUES ($1, (SELECT COALESCE(max(position) + 1, 0) FROM videos WHERE course_id = $1 AND archived_at IS NULL)::int,
         $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at
+RETURNING id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at, archived_at
 `
 
 type CreateVideoParams struct {
@@ -259,6 +278,7 @@ func (q *Queries) CreateVideo(ctx context.Context, arg CreateVideoParams) (Video
 		&i.IsPreview,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }
@@ -351,7 +371,7 @@ func (q *Queries) GetCourseBySlug(ctx context.Context, slug string) (Course, err
 }
 
 const getTask = `-- name: GetTask :one
-SELECT t.id, t.video_id, t.position, t.title, t.instructions, t.allowed_types, t.max_marks, t.pass_marks, t.due_at, t.allow_late, t.max_files, t.max_file_mb, t.created_at, t.updated_at, v.course_id, v.title AS video_title
+SELECT t.id, t.video_id, t.position, t.title, t.instructions, t.allowed_types, t.max_marks, t.pass_marks, t.due_at, t.allow_late, t.max_files, t.max_file_mb, t.created_at, t.updated_at, t.archived_at, v.course_id, v.title AS video_title
 FROM tasks t JOIN videos v ON v.id = t.video_id
 WHERE t.id = $1
 `
@@ -371,6 +391,7 @@ type GetTaskRow struct {
 	MaxFileMb    int32      `json:"max_file_mb"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
+	ArchivedAt   *time.Time `json:"archived_at"`
 	CourseID     uuid.UUID  `json:"course_id"`
 	VideoTitle   string     `json:"video_title"`
 }
@@ -393,6 +414,7 @@ func (q *Queries) GetTask(ctx context.Context, id uuid.UUID) (GetTaskRow, error)
 		&i.MaxFileMb,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 		&i.CourseID,
 		&i.VideoTitle,
 	)
@@ -400,7 +422,7 @@ func (q *Queries) GetTask(ctx context.Context, id uuid.UUID) (GetTaskRow, error)
 }
 
 const getVideo = `-- name: GetVideo :one
-SELECT id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at FROM videos WHERE id = $1
+SELECT id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at, archived_at FROM videos WHERE id = $1
 `
 
 func (q *Queries) GetVideo(ctx context.Context, id uuid.UUID) (Video, error) {
@@ -419,6 +441,7 @@ func (q *Queries) GetVideo(ctx context.Context, id uuid.UUID) (Video, error) {
 		&i.IsPreview,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }
@@ -514,9 +537,10 @@ func (q *Queries) ListCourseOpenBatches(ctx context.Context, courseID uuid.UUID)
 }
 
 const listCourseVideos = `-- name: ListCourseVideos :many
-SELECT id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at FROM videos WHERE course_id = $1 ORDER BY position, created_at
+SELECT id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at, archived_at FROM videos WHERE course_id = $1 AND archived_at IS NULL ORDER BY position, created_at
 `
 
+// The working copy (archived lessons stay only in the versions that contain them).
 func (q *Queries) ListCourseVideos(ctx context.Context, courseID uuid.UUID) ([]Video, error) {
 	rows, err := q.db.Query(ctx, listCourseVideos, courseID)
 	if err != nil {
@@ -539,6 +563,7 @@ func (q *Queries) ListCourseVideos(ctx context.Context, courseID uuid.UUID) ([]V
 			&i.IsPreview,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ArchivedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -552,7 +577,7 @@ func (q *Queries) ListCourseVideos(ctx context.Context, courseID uuid.UUID) ([]V
 
 const listCourses = `-- name: ListCourses :many
 SELECT c.id, c.slug, c.title, c.subtitle, c.description, c.thumbnail_url, c.level, c.language, c.category, c.status, c.is_public, c.price_label, c.what_you_learn, c.created_by, c.created_at, c.updated_at, c.fee_paise, c.gst_bp,
-       (SELECT count(*) FROM videos v WHERE v.course_id = c.id)::int AS video_count,
+       (SELECT count(*) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS video_count,
        (SELECT count(*) FROM enrollments e WHERE e.course_id = c.id)::int AS student_count,
        count(*) OVER () AS total_count
 FROM courses c
@@ -669,8 +694,8 @@ func (q *Queries) ListPublicCategories(ctx context.Context) ([]string, error) {
 
 const listPublicCourses = `-- name: ListPublicCourses :many
 SELECT c.id, c.slug, c.title, c.subtitle, c.thumbnail_url, c.level, c.language, c.category, c.price_label, c.created_at,
-       (SELECT count(*) FROM videos v WHERE v.course_id = c.id)::int AS video_count,
-       (SELECT COALESCE(sum(v.duration_seconds), 0) FROM videos v WHERE v.course_id = c.id)::int AS total_seconds,
+       (SELECT count(*) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS video_count,
+       (SELECT COALESCE(sum(v.duration_seconds), 0) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS total_seconds,
        (SELECT count(*) FROM enrollments e WHERE e.course_id = c.id)::int AS student_count
 FROM courses c
 WHERE c.status = 'published' AND c.is_public
@@ -737,7 +762,9 @@ func (q *Queries) ListPublicCourses(ctx context.Context, arg ListPublicCoursesPa
 }
 
 const listTasksByCourse = `-- name: ListTasksByCourse :many
-SELECT t.id, t.video_id, t.position, t.title, t.instructions, t.allowed_types, t.max_marks, t.pass_marks, t.due_at, t.allow_late, t.max_files, t.max_file_mb, t.created_at, t.updated_at FROM tasks t JOIN videos v ON v.id = t.video_id WHERE v.course_id = $1 ORDER BY v.position, t.position
+SELECT t.id, t.video_id, t.position, t.title, t.instructions, t.allowed_types, t.max_marks, t.pass_marks, t.due_at, t.allow_late, t.max_files, t.max_file_mb, t.created_at, t.updated_at, t.archived_at FROM tasks t JOIN videos v ON v.id = t.video_id
+WHERE v.course_id = $1 AND v.archived_at IS NULL AND t.archived_at IS NULL
+ORDER BY v.position, t.position
 `
 
 func (q *Queries) ListTasksByCourse(ctx context.Context, courseID uuid.UUID) ([]Task, error) {
@@ -764,6 +791,7 @@ func (q *Queries) ListTasksByCourse(ctx context.Context, courseID uuid.UUID) ([]
 			&i.MaxFileMb,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ArchivedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -879,7 +907,7 @@ UPDATE tasks
 SET title = $1, instructions = $2, allowed_types = $3, max_marks = $4, pass_marks = $5,
     due_at = $6, allow_late = $7, max_files = $8, max_file_mb = $9, updated_at = now()
 WHERE id = $10
-RETURNING id, video_id, position, title, instructions, allowed_types, max_marks, pass_marks, due_at, allow_late, max_files, max_file_mb, created_at, updated_at
+RETURNING id, video_id, position, title, instructions, allowed_types, max_marks, pass_marks, due_at, allow_late, max_files, max_file_mb, created_at, updated_at, archived_at
 `
 
 type UpdateTaskParams struct {
@@ -924,6 +952,7 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) (Task, e
 		&i.MaxFileMb,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }
@@ -933,7 +962,7 @@ UPDATE videos
 SET title = $1, description = $2, provider = $3, provider_ref = $4, source_url = $5,
     duration_seconds = $6, is_preview = $7, updated_at = now()
 WHERE id = $8
-RETURNING id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at
+RETURNING id, course_id, position, title, description, provider, provider_ref, source_url, duration_seconds, is_preview, created_at, updated_at, archived_at
 `
 
 type UpdateVideoParams struct {
@@ -972,6 +1001,7 @@ func (q *Queries) UpdateVideo(ctx context.Context, arg UpdateVideoParams) (Video
 		&i.IsPreview,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }

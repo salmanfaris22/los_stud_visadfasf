@@ -42,3 +42,16 @@ func TestEmbedURL(t *testing.T) {
 		t.Errorf("youtube embed = %s", got)
 	}
 }
+
+func TestPreviewEmbedURL(t *testing.T) {
+	cases := map[string]struct{ provider, ref, want string }{
+		"youtube loops muted": {ProviderYouTube, "446E-r0rXHI", "https://www.youtube-nocookie.com/embed/446E-r0rXHI?autoplay=1&mute=1&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1&loop=1&playlist=446E-r0rXHI"},
+		"vimeo background":    {ProviderVimeo, "76979871:abc", "https://player.vimeo.com/video/76979871?autoplay=1&background=1&dnt=1&h=abc&muted=1"},
+		"unknown provider":    {"other", "x", ""},
+	}
+	for name, c := range cases {
+		if got := PreviewEmbedURL(c.provider, c.ref); got != c.want {
+			t.Errorf("%s: got %q, want %q", name, got, c.want)
+		}
+	}
+}

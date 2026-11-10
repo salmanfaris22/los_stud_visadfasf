@@ -822,24 +822,6 @@
         ],
         "type": "object"
       },
-      "ChangePasswordInput": {
-        "additionalProperties": false,
-        "properties": {
-          "current_password": {
-            "maxLength": 200,
-            "type": "string"
-          },
-          "new_password": {
-            "maxLength": 200,
-            "minLength": 8,
-            "type": "string"
-          }
-        },
-        "required": [
-          "new_password"
-        ],
-        "type": "object"
-      },
       "CheckinInput": {
         "additionalProperties": false,
         "properties": {
@@ -1059,6 +1041,16 @@
           "description": {
             "type": "string"
           },
+          "fee_paise": {
+            "description": "Course fee incl. GST, in paise",
+            "format": "int64",
+            "type": "integer"
+          },
+          "gst_bp": {
+            "description": "GST rate in basis points (1800 = 18%)",
+            "format": "int32",
+            "type": "integer"
+          },
           "id": {
             "type": "string"
           },
@@ -1127,6 +1119,8 @@
           "status",
           "is_public",
           "price_label",
+          "fee_paise",
+          "gst_bp",
           "what_you_learn",
           "video_count",
           "student_count",
@@ -1146,6 +1140,19 @@
           "description": {
             "maxLength": 20000,
             "type": "string"
+          },
+          "fee_paise": {
+            "description": "Course fee incl. GST, in paise (used for admissions)",
+            "format": "int64",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "gst_bp": {
+            "description": "GST rate in basis points; empty = default rate",
+            "format": "int32",
+            "maximum": 10000,
+            "minimum": 0,
+            "type": "integer"
           },
           "is_public": {
             "description": "Show on the public website catalog",
@@ -1216,6 +1223,14 @@
       "CourseOption": {
         "additionalProperties": false,
         "properties": {
+          "fee_paise": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "gst_bp": {
+            "format": "int32",
+            "type": "integer"
+          },
           "id": {
             "type": "string"
           },
@@ -1229,7 +1244,9 @@
         "required": [
           "id",
           "title",
-          "status"
+          "status",
+          "fee_paise",
+          "gst_bp"
         ],
         "type": "object"
       },
@@ -1537,20 +1554,6 @@
         },
         "type": "object"
       },
-      "ForgotInput": {
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "format": "email",
-            "maxLength": 200,
-            "type": "string"
-          }
-        },
-        "required": [
-          "email"
-        ],
-        "type": "object"
-      },
       "GoogleSettings": {
         "additionalProperties": false,
         "properties": {
@@ -1675,6 +1678,19 @@
       "Lead": {
         "additionalProperties": false,
         "properties": {
+          "admission_id": {
+            "type": "string"
+          },
+          "assigned_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "city": {
+            "type": "string"
+          },
           "course_id": {
             "type": "string"
           },
@@ -1688,7 +1704,21 @@
           "email": {
             "type": "string"
           },
+          "first_contacted_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "id": {
+            "type": "string"
+          },
+          "last_activity_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "lost_reason": {
             "type": "string"
           },
           "message": {
@@ -1697,26 +1727,62 @@
           "name": {
             "type": "string"
           },
-          "notes": {
+          "next_follow_up_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "owner_id": {
+            "type": "string"
+          },
+          "owner_name": {
             "type": "string"
           },
           "phone": {
             "type": "string"
           },
+          "sla_due_at": {
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "source": {
             "type": "string"
           },
-          "status": {
-            "enum": [
-              "new",
-              "contacted",
-              "converted",
-              "lost"
-            ],
+          "source_ref": {
+            "type": "string"
+          },
+          "stage_color": {
+            "type": "string"
+          },
+          "stage_id": {
+            "type": "string"
+          },
+          "stage_kind": {
+            "type": "string"
+          },
+          "stage_name": {
+            "type": "string"
+          },
+          "student_id": {
+            "type": "string"
+          },
+          "team_id": {
+            "type": "string"
+          },
+          "team_name": {
             "type": "string"
           },
           "updated_at": {
             "format": "date-time",
+            "type": "string"
+          },
+          "whatsapp_id": {
+            "description": "Phone in international format, digits only",
             "type": "string"
           }
         },
@@ -1725,12 +1791,29 @@
           "name",
           "email",
           "phone",
+          "whatsapp_id",
+          "city",
+          "source",
+          "source_ref",
+          "message",
           "course_id",
           "course_title",
-          "message",
-          "source",
-          "status",
-          "notes",
+          "stage_id",
+          "stage_name",
+          "stage_color",
+          "stage_kind",
+          "owner_id",
+          "owner_name",
+          "team_id",
+          "team_name",
+          "assigned_at",
+          "sla_due_at",
+          "first_contacted_at",
+          "last_activity_at",
+          "next_follow_up_at",
+          "lost_reason",
+          "student_id",
+          "admission_id",
           "created_at",
           "updated_at"
         ],
@@ -1770,25 +1853,79 @@
         ],
         "type": "object"
       },
+      "LeadList": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Lead"
+            },
+            "type": "array"
+          },
+          "page": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "per_page": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "stage_counts": {
+            "additionalProperties": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "description": "stage id -\u003e leads in scope",
+            "type": "object"
+          },
+          "total": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "stage_counts",
+          "items",
+          "total",
+          "page",
+          "per_page"
+        ],
+        "type": "object"
+      },
       "LeadUpdate": {
         "additionalProperties": false,
         "properties": {
-          "notes": {
-            "maxLength": 5000,
+          "city": {
+            "maxLength": 80,
             "type": "string"
           },
-          "status": {
-            "enum": [
-              "new",
-              "contacted",
-              "converted",
-              "lost"
-            ],
+          "course_id": {
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 3000,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "type": "string"
+          },
+          "phone": {
+            "maxLength": 30,
+            "type": "string"
+          },
+          "source": {
+            "maxLength": 60,
             "type": "string"
           }
         },
         "required": [
-          "status"
+          "name"
         ],
         "type": "object"
       },
@@ -1948,36 +2085,6 @@
           "items": {
             "items": {
               "$ref": "#/components/schemas/Course"
-            },
-            "type": "array"
-          },
-          "page": {
-            "format": "int64",
-            "type": "integer"
-          },
-          "per_page": {
-            "format": "int64",
-            "type": "integer"
-          },
-          "total": {
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "items",
-          "total",
-          "page",
-          "per_page"
-        ],
-        "type": "object"
-      },
-      "ListLead": {
-        "additionalProperties": false,
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/Lead"
             },
             "type": "array"
           },
@@ -2418,89 +2525,6 @@
         ],
         "type": "object"
       },
-      "LoginInput": {
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "format": "email",
-            "maxLength": 200,
-            "type": "string"
-          },
-          "password": {
-            "maxLength": 200,
-            "minLength": 1,
-            "type": "string"
-          }
-        },
-        "required": [
-          "email",
-          "password"
-        ],
-        "type": "object"
-      },
-      "Me": {
-        "additionalProperties": false,
-        "properties": {
-          "app": {
-            "type": "string"
-          },
-          "avatar_url": {
-            "type": "string"
-          },
-          "bio": {
-            "type": "string"
-          },
-          "email": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
-          "is_super_admin": {
-            "type": "boolean"
-          },
-          "kind": {
-            "enum": [
-              "staff",
-              "student"
-            ],
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "permissions": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "phone": {
-            "type": "string"
-          },
-          "scoped": {
-            "type": "boolean"
-          },
-          "student_code": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "kind",
-          "name",
-          "email",
-          "phone",
-          "avatar_url",
-          "bio",
-          "student_code",
-          "is_super_admin",
-          "scoped",
-          "permissions",
-          "app"
-        ],
-        "type": "object"
-      },
       "ModerationComment": {
         "additionalProperties": false,
         "properties": {
@@ -2630,6 +2654,10 @@
           "course_id": {
             "type": "string"
           },
+          "cover_url": {
+            "description": "Course thumbnail, or the first lesson's video thumbnail when the course has none",
+            "type": "string"
+          },
           "enrolled_at": {
             "format": "date-time",
             "type": "string"
@@ -2638,6 +2666,10 @@
             "type": "string"
           },
           "level": {
+            "type": "string"
+          },
+          "preview_url": {
+            "description": "Muted autoplay embed of the first lesson, for hover previews",
             "type": "string"
           },
           "progress_pct": {
@@ -2675,6 +2707,8 @@
           "title",
           "subtitle",
           "thumbnail_url",
+          "cover_url",
+          "preview_url",
           "level",
           "category",
           "batch_id",
@@ -3211,48 +3245,6 @@
           "upload",
           "put_url",
           "headers"
-        ],
-        "type": "object"
-      },
-      "ProfileInput": {
-        "additionalProperties": false,
-        "properties": {
-          "avatar_url": {
-            "maxLength": 600,
-            "type": "string"
-          },
-          "bio": {
-            "maxLength": 2000,
-            "type": "string"
-          },
-          "name": {
-            "maxLength": 120,
-            "minLength": 2,
-            "type": "string"
-          },
-          "phone": {
-            "maxLength": 30,
-            "type": "string"
-          }
-        },
-        "required": [
-          "name"
-        ],
-        "type": "object"
-      },
-      "Providers": {
-        "additionalProperties": false,
-        "properties": {
-          "google": {
-            "type": "boolean"
-          },
-          "signup": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "google",
-          "signup"
         ],
         "type": "object"
       },
@@ -3972,56 +3964,6 @@
         ],
         "type": "object"
       },
-      "RegisterInput": {
-        "additionalProperties": false,
-        "properties": {
-          "email": {
-            "format": "email",
-            "maxLength": 200,
-            "type": "string"
-          },
-          "name": {
-            "maxLength": 120,
-            "minLength": 2,
-            "type": "string"
-          },
-          "password": {
-            "maxLength": 200,
-            "minLength": 8,
-            "type": "string"
-          },
-          "phone": {
-            "maxLength": 30,
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "email",
-          "password"
-        ],
-        "type": "object"
-      },
-      "ResetInput": {
-        "additionalProperties": false,
-        "properties": {
-          "password": {
-            "maxLength": 200,
-            "minLength": 8,
-            "type": "string"
-          },
-          "token": {
-            "maxLength": 200,
-            "minLength": 10,
-            "type": "string"
-          }
-        },
-        "required": [
-          "token",
-          "password"
-        ],
-        "type": "object"
-      },
       "ReviewInput": {
         "additionalProperties": false,
         "properties": {
@@ -4074,6 +4016,15 @@
             "description": "module -\u003e actions",
             "type": "object"
           },
+          "sales_scope": {
+            "description": "Which leads, admissions and commissions the role sees",
+            "enum": [
+              "all",
+              "team",
+              "own"
+            ],
+            "type": "string"
+          },
           "scoped": {
             "description": "Only see assigned courses and batches",
             "type": "boolean"
@@ -4088,6 +4039,7 @@
           "name",
           "description",
           "scoped",
+          "sales_scope",
           "is_system",
           "user_count",
           "permissions"
@@ -4114,6 +4066,14 @@
               "type": "array"
             },
             "type": "object"
+          },
+          "sales_scope": {
+            "enum": [
+              "all",
+              "team",
+              "own"
+            ],
+            "type": "string"
           },
           "scoped": {
             "type": "boolean"
@@ -5869,402 +5829,6 @@
         "summary": "Audit log",
         "tags": [
           "Admin"
-        ]
-      }
-    },
-    "/api/v1/auth/change-password": {
-      "post": {
-        "operationId": "auth-change-password",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OK"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Change own password",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/forgot": {
-      "post": {
-        "operationId": "auth-forgot",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForgotInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OK"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Email a password reset link",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/login": {
-      "post": {
-        "operationId": "auth-login",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Me"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "Set-Cookie": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Sign in with email and password",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/logout": {
-      "post": {
-        "operationId": "auth-logout",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OK"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "Set-Cookie": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Sign out",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/me": {
-      "get": {
-        "operationId": "auth-me",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Me"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Current user",
-        "tags": [
-          "Auth"
-        ]
-      },
-      "put": {
-        "operationId": "auth-update-profile",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProfileInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Me"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Update own profile",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/providers": {
-      "get": {
-        "operationId": "auth-providers",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Providers"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Available sign-in options",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/refresh": {
-      "post": {
-        "operationId": "auth-refresh",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Me"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "Set-Cookie": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Rotate the refresh token",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/register": {
-      "post": {
-        "operationId": "auth-register",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegisterInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Me"
-                }
-              }
-            },
-            "description": "OK",
-            "headers": {
-              "Set-Cookie": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Student self sign-up",
-        "tags": [
-          "Auth"
-        ]
-      }
-    },
-    "/api/v1/auth/reset": {
-      "post": {
-        "operationId": "auth-reset",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ResetInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OK"
-                }
-              }
-            },
-            "description": "OK"
-          },
-          "default": {
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorModel"
-                }
-              }
-            },
-            "description": "Error"
-          }
-        },
-        "summary": "Set a new password with a reset token",
-        "tags": [
-          "Auth"
         ]
       }
     },
@@ -8317,7 +7881,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListLead"
+                  "$ref": "#/components/schemas/LeadList"
                 }
               }
             },

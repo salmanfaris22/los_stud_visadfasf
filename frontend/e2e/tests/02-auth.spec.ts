@@ -25,13 +25,13 @@ test.describe("Authentication & portals", () => {
     await page.waitForURL(/\/login/);
   });
 
-  test("self sign-up lands on the empty learning home", async ({ page }) => {
+  test("self sign-up lands on the empty courses page", async ({ page }) => {
     await page.goto(`${STUDENT_URL}/register`);
     await page.getByLabel("Full name").fill("New Learner");
     await page.getByLabel("Email").fill(`new-${stamp()}@example.com`);
     await page.getByLabel("Password").fill("Learner@123");
     await page.getByRole("button", { name: "Create account" }).click();
-    await page.waitForURL(/\/learn/);
+    await page.waitForURL(/\/learn\/courses$/);
     await expect(page.getByText("No courses yet")).toBeVisible();
   });
 

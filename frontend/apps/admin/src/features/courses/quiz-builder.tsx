@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Schemas } from "@lms/api-client";
+import { CourseVersionService, type Schemas } from "@lms/api-client";
 import { Button, Card, Checkbox, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Switch, Textarea } from "@lms/ui";
 import { $api } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
@@ -25,7 +25,7 @@ export function QuizBuilder({ videoId, quizId, open, onOpenChange }: { videoId: 
     setQuestions(d ? d.questions.map((q) => ({ body: q.body, multi: q.multi, points: q.points, explanation: q.explanation, options: q.options.map((o) => ({ body: o.body, is_correct: o.is_correct })) })) : [blankQ()]);
   }, [open, quizId, existing.data]);
 
-  const paths = [`/api/v1/videos/${videoId}/quizzes`, "/api/v1/quizzes"];
+  const paths = [`/api/v1/videos/${videoId}/quizzes`, "/api/v1/quizzes", CourseVersionService];
   const create = $api.useMutation("post", "/api/v1/videos/{id}/quizzes", feedback(qc, "Quiz created", paths, () => onOpenChange(false)));
   const update = $api.useMutation("put", "/api/v1/quizzes/{id}", feedback(qc, "Quiz saved", paths, () => onOpenChange(false)));
   const setQ = (i: number, q: Partial<Q>) => setQuestions(questions.map((x, j) => (j === i ? { ...x, ...q } : x)));

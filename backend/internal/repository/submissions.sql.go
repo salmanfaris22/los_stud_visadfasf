@@ -668,13 +668,15 @@ func (q *Queries) MyApprovedTaskIDs(ctx context.Context, studentID uuid.UUID) ([
 }
 
 const myCourseVideos = `-- name: MyCourseVideos :many
-SELECT v.id, v.course_id, v.position, v.title, v.description, v.provider, v.provider_ref, v.source_url, v.duration_seconds, v.is_preview, v.created_at, v.updated_at,
+SELECT v.id, v.course_id, v.position, v.title, v.description, v.provider, v.provider_ref, v.source_url, v.duration_seconds, v.is_preview, v.created_at, v.updated_at, v.archived_at,
        (SELECT count(*) FROM tasks t WHERE t.video_id = v.id)::int AS task_count,
        (SELECT count(DISTINCT s.task_id) FROM submissions s JOIN tasks t ON t.id = s.task_id
          WHERE t.video_id = v.id AND s.student_id = $1 AND s.status = 'approved')::int AS approved_count
 FROM videos v
+JOIN enrollments e ON e.student_id = $1 AND e.course_id = v.course_id
+JOIN course_version_items cvi ON cvi.version_id = e.version_id AND cvi.kind = 'video' AND cvi.item_id = v.id
 WHERE v.course_id = $2
-ORDER BY v.position, v.created_at
+ORDER BY cvi.position, v.created_at
 `
 
 type MyCourseVideosParams struct {
@@ -683,20 +685,21 @@ type MyCourseVideosParams struct {
 }
 
 type MyCourseVideosRow struct {
-	ID              uuid.UUID `json:"id"`
-	CourseID        uuid.UUID `json:"course_id"`
-	Position        int32     `json:"position"`
-	Title           string    `json:"title"`
-	Description     string    `json:"description"`
-	Provider        string    `json:"provider"`
-	ProviderRef     string    `json:"provider_ref"`
-	SourceUrl       string    `json:"source_url"`
-	DurationSeconds int32     `json:"duration_seconds"`
-	IsPreview       bool      `json:"is_preview"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
-	TaskCount       int32     `json:"task_count"`
-	ApprovedCount   int32     `json:"approved_count"`
+	ID              uuid.UUID  `json:"id"`
+	CourseID        uuid.UUID  `json:"course_id"`
+	Position        int32      `json:"position"`
+	Title           string     `json:"title"`
+	Description     string     `json:"description"`
+	Provider        string     `json:"provider"`
+	ProviderRef     string     `json:"provider_ref"`
+	SourceUrl       string     `json:"source_url"`
+	DurationSeconds int32      `json:"duration_seconds"`
+	IsPreview       bool       `json:"is_preview"`
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
+	ArchivedAt      *time.Time `json:"archived_at"`
+	TaskCount       int32      `json:"task_count"`
+	ApprovedCount   int32      `json:"approved_count"`
 }
 
 func (q *Queries) MyCourseVideos(ctx context.Context, arg MyCourseVideosParams) ([]MyCourseVideosRow, error) {
@@ -721,6 +724,7 @@ func (q *Queries) MyCourseVideos(ctx context.Context, arg MyCourseVideosParams) 
 			&i.IsPreview,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ArchivedAt,
 			&i.TaskCount,
 			&i.ApprovedCount,
 		); err != nil {
@@ -738,33 +742,41 @@ const myEnrollments = `-- name: MyEnrollments :many
 SELECT e.id AS enrollment_id, e.status AS enrollment_status, e.enrolled_at, e.batch_id, b.name AS batch_name,
        c.id, c.slug, c.title, c.subtitle, c.thumbnail_url, c.level, c.category,
        p.total_tasks, p.approved_tasks,
-       (SELECT count(*) FROM videos v WHERE v.course_id = c.id)::int AS video_count
+       (SELECT count(*) FROM course_version_items i WHERE i.version_id = e.version_id AND i.kind = 'video')::int AS video_count,
+       COALESCE(fv.provider, '')::text AS first_video_provider,
+       COALESCE(fv.provider_ref, '')::text AS first_video_ref
 FROM enrollments e
 JOIN courses c ON c.id = e.course_id
 LEFT JOIN batches b ON b.id = e.batch_id
 JOIN enrollment_progress p ON p.enrollment_id = e.id
+LEFT JOIN LATERAL (SELECT v.provider, v.provider_ref FROM course_version_items i JOIN videos v ON v.id = i.item_id
+                   WHERE i.version_id = e.version_id AND i.kind = 'video'
+                   ORDER BY i.position, v.created_at LIMIT 1) fv ON true
 WHERE e.student_id = $1 AND e.status <> 'suspended' AND c.status <> 'draft'
 ORDER BY e.enrolled_at DESC
 `
 
 type MyEnrollmentsRow struct {
-	EnrollmentID     uuid.UUID  `json:"enrollment_id"`
-	EnrollmentStatus string     `json:"enrollment_status"`
-	EnrolledAt       time.Time  `json:"enrolled_at"`
-	BatchID          *uuid.UUID `json:"batch_id"`
-	BatchName        *string    `json:"batch_name"`
-	ID               uuid.UUID  `json:"id"`
-	Slug             string     `json:"slug"`
-	Title            string     `json:"title"`
-	Subtitle         string     `json:"subtitle"`
-	ThumbnailUrl     string     `json:"thumbnail_url"`
-	Level            string     `json:"level"`
-	Category         string     `json:"category"`
-	TotalTasks       int32      `json:"total_tasks"`
-	ApprovedTasks    int32      `json:"approved_tasks"`
-	VideoCount       int32      `json:"video_count"`
+	EnrollmentID       uuid.UUID  `json:"enrollment_id"`
+	EnrollmentStatus   string     `json:"enrollment_status"`
+	EnrolledAt         time.Time  `json:"enrolled_at"`
+	BatchID            *uuid.UUID `json:"batch_id"`
+	BatchName          *string    `json:"batch_name"`
+	ID                 uuid.UUID  `json:"id"`
+	Slug               string     `json:"slug"`
+	Title              string     `json:"title"`
+	Subtitle           string     `json:"subtitle"`
+	ThumbnailUrl       string     `json:"thumbnail_url"`
+	Level              string     `json:"level"`
+	Category           string     `json:"category"`
+	TotalTasks         int32      `json:"total_tasks"`
+	ApprovedTasks      int32      `json:"approved_tasks"`
+	VideoCount         int32      `json:"video_count"`
+	FirstVideoProvider string     `json:"first_video_provider"`
+	FirstVideoRef      string     `json:"first_video_ref"`
 }
 
+// First lesson: its thumbnail is the fallback cover and it plays as the card's hover preview.
 func (q *Queries) MyEnrollments(ctx context.Context, studentID uuid.UUID) ([]MyEnrollmentsRow, error) {
 	rows, err := q.db.Query(ctx, myEnrollments, studentID)
 	if err != nil {
@@ -790,6 +802,8 @@ func (q *Queries) MyEnrollments(ctx context.Context, studentID uuid.UUID) ([]MyE
 			&i.TotalTasks,
 			&i.ApprovedTasks,
 			&i.VideoCount,
+			&i.FirstVideoProvider,
+			&i.FirstVideoRef,
 		); err != nil {
 			return nil, err
 		}
@@ -848,11 +862,13 @@ SELECT t.id, t.title, t.due_at, t.max_marks, t.allowed_types, t.position,
 FROM enrollments e
 JOIN courses c ON c.id = e.course_id
 JOIN videos v ON v.course_id = c.id
+JOIN course_version_items vi ON vi.version_id = e.version_id AND vi.kind = 'video' AND vi.item_id = v.id
 JOIN tasks t ON t.video_id = v.id
+JOIN course_version_items ti ON ti.version_id = e.version_id AND ti.kind = 'task' AND ti.item_id = t.id
 WHERE e.student_id = $1 AND e.status <> 'suspended' AND c.status <> 'draft'
   AND ($2::uuid IS NULL OR c.id = $2)
   AND ($3::uuid IS NULL OR v.id = $3)
-ORDER BY c.title, v.position, t.position
+ORDER BY c.title, vi.position, ti.position
 `
 
 type MyTasksParams struct {

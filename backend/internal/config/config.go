@@ -126,10 +126,14 @@ func Load() (*Config, error) {
 }
 
 func get(k, def string) string {
-	if v, ok := os.LookupEnv(k); ok && v != "" {
-		return v
+	v, ok := os.LookupEnv(k)
+	v = strings.TrimSpace(v)
+	// godotenv keeps the comment as the value for `KEY=   # note` (empty value + comment),
+	// so a value that starts with "#" counts as unset.
+	if !ok || v == "" || strings.HasPrefix(v, "#") {
+		return def
 	}
-	return def
+	return v
 }
 
 func getBool(k string, def bool) bool {

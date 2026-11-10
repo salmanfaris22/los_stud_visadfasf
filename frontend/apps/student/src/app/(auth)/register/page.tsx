@@ -10,7 +10,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [f, setF] = React.useState({ name: "", email: "", phone: "", password: "" });
   const providers = useRpcQuery(AuthService.method.getProviders, {});
-  const register = useRpcMutation(AuthService.method.register, { onSuccess: () => router.replace("/learn") });
+  const register = useRpcMutation(AuthService.method.register, { onSuccess: () => router.replace("/learn/courses") });
   if (providers.data && !providers.data.signup) {
     return (
       <div>

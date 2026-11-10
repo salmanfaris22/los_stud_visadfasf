@@ -9,7 +9,7 @@ import {
 import { NotificationBell } from "@lms/shared";
 import {
   Avatar, BrandMark, Button, Dialog, DialogContent, DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
-  DropdownMenuTrigger, SheetContent, Skeleton, ThemeToggle, cn,
+  DropdownMenuTrigger, SheetContent, Skeleton, cn,
 } from "@lms/ui";
 import { AuthService, useRpcMutation } from "@lms/api-client";
 import { SessionProvider, useSession } from "@/lib/session";
@@ -131,7 +131,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   };
   return (
     <div className="min-h-screen pb-20 md:pb-0">
-      <header className="sticky top-0 z-40 flex h-16 items-center gap-2 border-b bg-background/85 px-3 backdrop-blur-xl sm:px-5">
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-2 bg-background px-3 sm:px-5">
         <Button variant="ghost" size="icon" className="hidden md:inline-flex" onClick={() => setMini(!mini)} aria-label="Collapse menu"><PanelLeft /></Button>
         <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setDrawer(true)} aria-label="Menu"><Menu /></Button>
         <Link href="/learn" className="mr-2 flex items-center gap-2.5 font-display text-[17px] font-extrabold">
@@ -144,7 +144,6 @@ function Shell({ children }: { children: React.ReactNode }) {
         </button>
         <div className="ml-auto flex items-center gap-1">
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setJump(true)} aria-label="Search"><Search /></Button>
-          <ThemeToggle />
           <NotificationBell enabled viewAllHref="/learn/notifications" />
           <DropdownMenu>
             <DropdownMenuTrigger className="ml-1 rounded-full outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-ring" aria-label="Account"><Avatar src={me.avatarUrl} name={me.name} className="size-9" /></DropdownMenuTrigger>
@@ -161,10 +160,10 @@ function Shell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
       <div className="flex">
-        <aside className={cn("sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 flex-col overflow-y-auto border-r bg-sidebar px-3 pt-4 pb-6 transition-[width] duration-200 md:flex", mini ? "w-[84px] px-2" : "w-64")}>
+        <aside className={cn("sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 flex-col overflow-y-auto bg-background px-3 pt-4 pb-6 transition-[width] duration-200 md:flex", mini ? "w-[84px] px-2" : "w-64")}>
           <SideNav mini={mini} id="side" />
           {!mini && (
-            <div className="mt-auto rounded-[18px] border bg-background p-4 text-xs text-muted-foreground">
+            <div className="mt-auto rounded-[18px] bg-muted p-4 text-xs text-muted-foreground">
               <div className="mb-1 flex items-center gap-2 font-semibold text-foreground"><span className="size-2.5 rounded-full border-2 border-foreground bg-signal" />Signed in</div>
               <span className="block truncate">{me.name}</span>
               <span className="font-mono">{me.studentCode}</span>

@@ -117,11 +117,17 @@ WHERE u.status = 'active' AND (
 SELECT e.id AS enrollment_id, e.status AS enrollment_status, e.enrolled_at, e.batch_id, b.name AS batch_name,
        c.id, c.slug, c.title, c.subtitle, c.thumbnail_url, c.level, c.category,
        p.total_tasks, p.approved_tasks,
-       (SELECT count(*) FROM videos v WHERE v.course_id = c.id)::int AS video_count
+       (SELECT count(*) FROM course_version_items i WHERE i.version_id = e.version_id AND i.kind = 'video')::int AS video_count,
+       COALESCE(fv.provider, '')::text AS first_video_provider,
+       COALESCE(fv.provider_ref, '')::text AS first_video_ref
 FROM enrollments e
 JOIN courses c ON c.id = e.course_id
 LEFT JOIN batches b ON b.id = e.batch_id
 JOIN enrollment_progress p ON p.enrollment_id = e.id
+-- First lesson: its thumbnail is the fallback cover and it plays as the card's hover preview.
+LEFT JOIN LATERAL (SELECT v.provider, v.provider_ref FROM course_version_items i JOIN videos v ON v.id = i.item_id
+                   WHERE i.version_id = e.version_id AND i.kind = 'video'
+                   ORDER BY i.position, v.created_at LIMIT 1) fv ON true
 WHERE e.student_id = $1 AND e.status <> 'suspended' AND c.status <> 'draft'
 ORDER BY e.enrolled_at DESC;
 
@@ -131,8 +137,10 @@ SELECT v.*,
        (SELECT count(DISTINCT s.task_id) FROM submissions s JOIN tasks t ON t.id = s.task_id
          WHERE t.video_id = v.id AND s.student_id = @student_id AND s.status = 'approved')::int AS approved_count
 FROM videos v
+JOIN enrollments e ON e.student_id = @student_id AND e.course_id = v.course_id
+JOIN course_version_items cvi ON cvi.version_id = e.version_id AND cvi.kind = 'video' AND cvi.item_id = v.id
 WHERE v.course_id = @course_id
-ORDER BY v.position, v.created_at;
+ORDER BY cvi.position, v.created_at;
 
 -- name: MyTasks :many
 SELECT t.id, t.title, t.due_at, t.max_marks, t.allowed_types, t.position,
@@ -141,11 +149,13 @@ SELECT t.id, t.title, t.due_at, t.max_marks, t.allowed_types, t.position,
 FROM enrollments e
 JOIN courses c ON c.id = e.course_id
 JOIN videos v ON v.course_id = c.id
+JOIN course_version_items vi ON vi.version_id = e.version_id AND vi.kind = 'video' AND vi.item_id = v.id
 JOIN tasks t ON t.video_id = v.id
+JOIN course_version_items ti ON ti.version_id = e.version_id AND ti.kind = 'task' AND ti.item_id = t.id
 WHERE e.student_id = @student_id AND e.status <> 'suspended' AND c.status <> 'draft'
   AND (sqlc.narg('course_id')::uuid IS NULL OR c.id = sqlc.narg('course_id'))
   AND (sqlc.narg('video_id')::uuid IS NULL OR v.id = sqlc.narg('video_id'))
-ORDER BY c.title, v.position, t.position;
+ORDER BY c.title, vi.position, ti.position;
 
 -- name: MyLatestSubmissions :many
 SELECT DISTINCT ON (task_id) *

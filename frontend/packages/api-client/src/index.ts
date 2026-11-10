@@ -10,3 +10,4 @@ export { createRpc } from "./transport";
 export { useQuery as useRpcQuery, useMutation as useRpcMutation } from "@connectrpc/connect-query";
 export { ConnectError, Code } from "@connectrpc/connect";
 export { AuthService, type Me } from "./gen/lms/v1/auth_pb";
+export { CourseVersionService, type CourseVersion, type VersionChanges, type VersionStudent } from "./gen/lms/v1/course_versions_pb";

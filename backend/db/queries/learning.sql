@@ -1,7 +1,7 @@
 -- name: ListVideoQuizzes :many
 SELECT q.*, (SELECT count(*) FROM quiz_questions qq WHERE qq.quiz_id = q.id)::int AS question_count,
        (SELECT count(*) FROM quiz_attempts qa WHERE qa.quiz_id = q.id AND qa.submitted_at IS NOT NULL)::int AS attempt_count
-FROM quizzes q WHERE q.video_id = $1 ORDER BY q.created_at;
+FROM quizzes q WHERE q.video_id = $1 AND q.archived_at IS NULL ORDER BY q.created_at;
 
 -- name: GetQuiz :one
 SELECT q.*, v.course_id, v.title AS video_title FROM quizzes q JOIN videos v ON v.id = q.video_id WHERE q.id = $1;
@@ -18,6 +18,9 @@ WHERE id = @id RETURNING *;
 
 -- name: DeleteQuiz :exec
 DELETE FROM quizzes WHERE id = $1;
+
+-- name: ArchiveQuiz :exec
+UPDATE quizzes SET archived_at = now() WHERE id = $1;
 
 -- name: ClearQuizQuestions :exec
 DELETE FROM quiz_questions WHERE quiz_id = $1;
@@ -71,8 +74,10 @@ SELECT q.*,
        COALESCE((SELECT bool_or(a.passed) FROM quiz_attempts a WHERE a.quiz_id = q.id AND a.student_id = @student_id), false)::boolean AS passed,
        (SELECT count(*) FROM quiz_attempts a WHERE a.quiz_id = q.id AND a.student_id = @student_id AND a.submitted_at IS NOT NULL)::int AS attempts_used
 FROM quizzes q
+JOIN enrollments e ON e.student_id = @student_id AND e.course_id = (SELECT v.course_id FROM videos v WHERE v.id = q.video_id)
+JOIN course_version_items cvi ON cvi.version_id = e.version_id AND cvi.kind = 'quiz' AND cvi.item_id = q.id
 WHERE q.video_id = @video_id
-ORDER BY q.created_at;
+ORDER BY cvi.position;
 
 -- name: IssueCertificate :one
 INSERT INTO certificates (code, student_id, course_id, issued_by)

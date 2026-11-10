@@ -4,9 +4,10 @@ import { ThemeProvider as NextThemes, useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "./button";
 
-export function ThemeProvider({ children, defaultTheme = "light" }: { children: React.ReactNode; defaultTheme?: "dark" | "light" | "system" }) {
+/** forcedTheme locks the current pages to one theme (the saved choice is kept for other pages). */
+export function ThemeProvider({ children, defaultTheme = "light", forcedTheme }: { children: React.ReactNode; defaultTheme?: "dark" | "light" | "system"; forcedTheme?: "dark" | "light" }) {
   return (
-    <NextThemes attribute="class" defaultTheme={defaultTheme} enableSystem disableTransitionOnChange>
+    <NextThemes attribute="class" defaultTheme={defaultTheme} forcedTheme={forcedTheme} enableSystem disableTransitionOnChange>
       {children}
     </NextThemes>
   );

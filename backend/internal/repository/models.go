@@ -254,6 +254,22 @@ type CourseMentor struct {
 	UserID   uuid.UUID `json:"user_id"`
 }
 
+type CourseVersion struct {
+	ID        uuid.UUID  `json:"id"`
+	CourseID  uuid.UUID  `json:"course_id"`
+	Number    int32      `json:"number"`
+	Note      string     `json:"note"`
+	CreatedBy *uuid.UUID `json:"created_by"`
+	CreatedAt time.Time  `json:"created_at"`
+}
+
+type CourseVersionItem struct {
+	VersionID uuid.UUID `json:"version_id"`
+	Kind      string    `json:"kind"`
+	ItemID    uuid.UUID `json:"item_id"`
+	Position  int32     `json:"position"`
+}
+
 type Enrollment struct {
 	ID          uuid.UUID  `json:"id"`
 	StudentID   uuid.UUID  `json:"student_id"`
@@ -263,6 +279,7 @@ type Enrollment struct {
 	AssignedBy  *uuid.UUID `json:"assigned_by"`
 	EnrolledAt  time.Time  `json:"enrolled_at"`
 	CompletedAt *time.Time `json:"completed_at"`
+	VersionID   *uuid.UUID `json:"version_id"`
 }
 
 type EnrollmentProgress struct {
@@ -432,15 +449,16 @@ type Payment struct {
 }
 
 type Quiz struct {
-	ID               uuid.UUID `json:"id"`
-	VideoID          uuid.UUID `json:"video_id"`
-	Title            string    `json:"title"`
-	Description      string    `json:"description"`
-	PassPct          int32     `json:"pass_pct"`
-	TimeLimitMinutes int32     `json:"time_limit_minutes"`
-	MaxAttempts      int32     `json:"max_attempts"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
+	ID               uuid.UUID  `json:"id"`
+	VideoID          uuid.UUID  `json:"video_id"`
+	Title            string     `json:"title"`
+	Description      string     `json:"description"`
+	PassPct          int32      `json:"pass_pct"`
+	TimeLimitMinutes int32      `json:"time_limit_minutes"`
+	MaxAttempts      int32      `json:"max_attempts"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
+	ArchivedAt       *time.Time `json:"archived_at"`
 }
 
 type QuizAttempt struct {
@@ -561,6 +579,7 @@ type Task struct {
 	MaxFileMb    int32      `json:"max_file_mb"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
+	ArchivedAt   *time.Time `json:"archived_at"`
 }
 
 type TaskComment struct {
@@ -616,18 +635,19 @@ type UserRole struct {
 }
 
 type Video struct {
-	ID              uuid.UUID `json:"id"`
-	CourseID        uuid.UUID `json:"course_id"`
-	Position        int32     `json:"position"`
-	Title           string    `json:"title"`
-	Description     string    `json:"description"`
-	Provider        string    `json:"provider"`
-	ProviderRef     string    `json:"provider_ref"`
-	SourceUrl       string    `json:"source_url"`
-	DurationSeconds int32     `json:"duration_seconds"`
-	IsPreview       bool      `json:"is_preview"`
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID              uuid.UUID  `json:"id"`
+	CourseID        uuid.UUID  `json:"course_id"`
+	Position        int32      `json:"position"`
+	Title           string     `json:"title"`
+	Description     string     `json:"description"`
+	Provider        string     `json:"provider"`
+	ProviderRef     string     `json:"provider_ref"`
+	SourceUrl       string     `json:"source_url"`
+	DurationSeconds int32      `json:"duration_seconds"`
+	IsPreview       bool       `json:"is_preview"`
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
+	ArchivedAt      *time.Time `json:"archived_at"`
 }
 
 type VideoComment struct {

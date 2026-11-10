@@ -1,8 +1,8 @@
 "use client";
 import * as React from "react";
-import { ChevronDown, ClipboardList, Clock, Eye, FileQuestion, Pencil, Plus, Trash2, Video } from "lucide-react";
+import { ChevronDown, ClipboardList, Clock, Eye, FileQuestion, Info, Pencil, Plus, Trash2, Video } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { errorMessage, type Schemas } from "@lms/api-client";
+import { CourseVersionService, errorMessage, type Schemas } from "@lms/api-client";
 import { Badge, Button, Card, EmptyState, Skeleton, cn, formatDuration, toast, useConfirm } from "@lms/ui";
 import { $api, api, invalidate } from "@/lib/api";
 import { feedback } from "@/lib/feedback";
@@ -10,6 +10,7 @@ import { useSession } from "@/lib/session";
 import { SortableList } from "@/features/common/sortable";
 import { QuizBuilder } from "./quiz-builder";
 import { TaskDialog } from "./task-dialog";
+import { useVersionSummary } from "./version-dialog";
 import { VideoDialog } from "./video-dialog";
 
 const providerColor: Record<string, string> = { youtube: "bg-red-500/15 text-red-500", vimeo: "bg-sky-500/15 text-sky-500", bunny: "bg-orange-500/15 text-orange-500", cloudflare: "bg-amber-500/15 text-amber-600" };
@@ -20,7 +21,7 @@ function Quizzes({ videoId }: { videoId: string }) {
   const q = $api.useQuery("get", "/api/v1/videos/{id}/quizzes", { params: { path: { id: videoId } } }, { enabled: can("quizzes") });
   const qc = useQueryClient();
   const confirm = useConfirm();
-  const del = $api.useMutation("delete", "/api/v1/quizzes/{id}", feedback(qc, "Quiz deleted", [`/api/v1/videos/${videoId}/quizzes`]));
+  const del = $api.useMutation("delete", "/api/v1/quizzes/{id}", feedback(qc, "Quiz deleted", [`/api/v1/videos/${videoId}/quizzes`, CourseVersionService]));
   if (!can("quizzes")) return null;
   return (
     <div className="mt-3 space-y-2">
@@ -46,7 +47,7 @@ function VideoCard({ courseId, video, handle }: { courseId: string; video: Schem
   const [open, setOpen] = React.useState(true);
   const [editing, setEditing] = React.useState(false);
   const [task, setTask] = React.useState<{ task?: Schemas["Task"] } | null>(null);
-  const paths = [`/api/v1/courses/${courseId}`];
+  const paths = [`/api/v1/courses/${courseId}`, CourseVersionService];
   const delVideo = $api.useMutation("delete", "/api/v1/videos/{id}", feedback(qc, "Video deleted", paths));
   const delTask = $api.useMutation("delete", "/api/v1/tasks/{id}", feedback(qc, "Task deleted", paths));
   const reorderTasks = async (ids: string[]) => {
@@ -77,7 +78,7 @@ function VideoCard({ courseId, video, handle }: { courseId: string; video: Schem
         </button>
         {can("courses", "edit") && <Button variant="ghost" size="icon-sm" onClick={() => setEditing(true)} aria-label="Edit video"><Pencil /></Button>}
         {can("courses", "delete") && (
-          <Button variant="ghost" size="icon-sm" aria-label="Delete video" onClick={async () => { if (await confirm({ title: `Delete “${video.title}”?`, description: "Its tasks, quizzes, submissions and comments are deleted too.", destructive: true, confirmText: "Delete" })) delVideo.mutate({ params: { path: { id: video.id } } }); }}><Trash2 /></Button>
+          <Button variant="ghost" size="icon-sm" aria-label="Delete video" onClick={async () => { if (await confirm({ title: `Delete “${video.title}”?`, description: "It leaves the curriculum with its tasks and quizzes. Students on a built version keep it, with their work, until you move them.", destructive: true, confirmText: "Delete" })) delVideo.mutate({ params: { path: { id: video.id } } }); }}><Trash2 /></Button>
         )}
         <ChevronDown className={cn("size-4 text-muted-foreground transition", open && "rotate-180")} />
       </div>
@@ -94,7 +95,7 @@ function VideoCard({ courseId, video, handle }: { courseId: string; video: Schem
                 <span className="min-w-0 flex-1 truncate font-medium">{t.title}</span>
                 <span className="hidden text-xs text-muted-foreground md:inline">{t.allowed_types.join(" · ")} · {t.max_marks} marks{t.due_at && ` · due ${new Date(t.due_at).toLocaleDateString()}`}</span>
                 {can("courses", "edit") && <Button variant="ghost" size="icon-sm" onClick={() => setTask({ task: t })} aria-label="Edit task"><Pencil /></Button>}
-                {can("courses", "delete") && <Button variant="ghost" size="icon-sm" aria-label="Delete task" onClick={async () => { if (await confirm({ title: `Delete task “${t.title}”?`, description: "All submissions for this task are deleted.", destructive: true, confirmText: "Delete" })) delTask.mutate({ params: { path: { id: t.id } } }); }}><Trash2 /></Button>}
+                {can("courses", "delete") && <Button variant="ghost" size="icon-sm" aria-label="Delete task" onClick={async () => { if (await confirm({ title: `Delete task “${t.title}”?`, description: "It leaves the curriculum. Students on a built version keep it, with their work, until you move them.", destructive: true, confirmText: "Delete" })) delTask.mutate({ params: { path: { id: t.id } } }); }}><Trash2 /></Button>}
               </div>
             )}
           />
@@ -114,10 +115,11 @@ export function Curriculum({ courseId }: { courseId: string }) {
   const { can } = useSession();
   const [adding, setAdding] = React.useState(false);
   const q = $api.useQuery("get", "/api/v1/courses/{id}/curriculum", { params: { path: { id: courseId } } });
+  const summary = useVersionSummary(courseId);
   const reorder = async (ids: string[]) => {
     const r = await api.client.PUT("/api/v1/courses/{id}/videos/order", { params: { path: { id: courseId } }, body: { ids } });
     if (r.error) toast.error(errorMessage(r.error));
-    void invalidate(qc, `/api/v1/courses/${courseId}`);
+    void invalidate(qc, `/api/v1/courses/${courseId}`, CourseVersionService);
   };
   if (q.isLoading) return <Skeleton className="h-64" />;
   const videos = q.data ?? [];
@@ -128,6 +130,12 @@ export function Curriculum({ courseId }: { courseId: string }) {
         <p className="text-sm text-muted-foreground">{videos.length} videos · {tasks} tasks · drag to reorder</p>
         {can("courses", "create") && <Button onClick={() => setAdding(true)}><Plus /> Add video</Button>}
       </div>
+      {can("courses", "edit") && summary.data?.hasChanges && summary.data.versions.length > 0 && (
+        <p className="mb-4 flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 px-3 py-2 text-sm">
+          <Info className="mt-0.5 size-4 shrink-0 text-warning" />
+          <span>Nobody sees these changes yet. <b>Build update</b> releases them to new students, then you can move current students across.</span>
+        </p>
+      )}
       {videos.length === 0 ? (
         <EmptyState icon={<Video />} title="No videos yet" description="Add YouTube, Vimeo, Bunny or Cloudflare videos, then add tasks under each one." action={can("courses", "create") && <Button onClick={() => setAdding(true)}><Plus /> Add first video</Button>} />
       ) : (

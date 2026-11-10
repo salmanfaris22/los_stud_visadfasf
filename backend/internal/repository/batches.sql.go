@@ -367,7 +367,7 @@ func (q *Queries) GetClassSession(ctx context.Context, id uuid.UUID) (ClassSessi
 }
 
 const getEnrollment = `-- name: GetEnrollment :one
-SELECT id, student_id, course_id, batch_id, status, assigned_by, enrolled_at, completed_at FROM enrollments WHERE id = $1
+SELECT id, student_id, course_id, batch_id, status, assigned_by, enrolled_at, completed_at, version_id FROM enrollments WHERE id = $1
 `
 
 func (q *Queries) GetEnrollment(ctx context.Context, id uuid.UUID) (Enrollment, error) {
@@ -382,6 +382,7 @@ func (q *Queries) GetEnrollment(ctx context.Context, id uuid.UUID) (Enrollment, 
 		&i.AssignedBy,
 		&i.EnrolledAt,
 		&i.CompletedAt,
+		&i.VersionID,
 	)
 	return i, err
 }
@@ -734,7 +735,7 @@ func (q *Queries) ListClassAttendance(ctx context.Context, classID uuid.UUID) ([
 }
 
 const listStudentEnrollments = `-- name: ListStudentEnrollments :many
-SELECT e.id, e.student_id, e.course_id, e.batch_id, e.status, e.assigned_by, e.enrolled_at, e.completed_at, c.title AS course_title, c.slug AS course_slug, c.thumbnail_url AS course_thumbnail,
+SELECT e.id, e.student_id, e.course_id, e.batch_id, e.status, e.assigned_by, e.enrolled_at, e.completed_at, e.version_id, c.title AS course_title, c.slug AS course_slug, c.thumbnail_url AS course_thumbnail,
        b.name AS batch_name, p.total_tasks, p.approved_tasks
 FROM enrollments e
 JOIN courses c ON c.id = e.course_id
@@ -753,6 +754,7 @@ type ListStudentEnrollmentsRow struct {
 	AssignedBy      *uuid.UUID `json:"assigned_by"`
 	EnrolledAt      time.Time  `json:"enrolled_at"`
 	CompletedAt     *time.Time `json:"completed_at"`
+	VersionID       *uuid.UUID `json:"version_id"`
 	CourseTitle     string     `json:"course_title"`
 	CourseSlug      string     `json:"course_slug"`
 	CourseThumbnail string     `json:"course_thumbnail"`
@@ -779,6 +781,7 @@ func (q *Queries) ListStudentEnrollments(ctx context.Context, studentID uuid.UUI
 			&i.AssignedBy,
 			&i.EnrolledAt,
 			&i.CompletedAt,
+			&i.VersionID,
 			&i.CourseTitle,
 			&i.CourseSlug,
 			&i.CourseThumbnail,
@@ -1023,7 +1026,7 @@ UPDATE enrollments
 SET batch_id = $1, status = $2::text,
     completed_at = CASE WHEN $2::text = 'completed' THEN COALESCE(completed_at, now()) END
 WHERE id = $3
-RETURNING id, student_id, course_id, batch_id, status, assigned_by, enrolled_at, completed_at
+RETURNING id, student_id, course_id, batch_id, status, assigned_by, enrolled_at, completed_at, version_id
 `
 
 type UpdateEnrollmentParams struct {
@@ -1044,6 +1047,7 @@ func (q *Queries) UpdateEnrollment(ctx context.Context, arg UpdateEnrollmentPara
 		&i.AssignedBy,
 		&i.EnrolledAt,
 		&i.CompletedAt,
+		&i.VersionID,
 	)
 	return i, err
 }
@@ -1080,7 +1084,7 @@ VALUES ($1, $2, $3, $4)
 ON CONFLICT (student_id, course_id) DO UPDATE
 SET batch_id = EXCLUDED.batch_id,
     status = CASE WHEN enrollments.status = 'suspended' THEN 'active' ELSE enrollments.status END
-RETURNING id, student_id, course_id, batch_id, status, assigned_by, enrolled_at, completed_at
+RETURNING id, student_id, course_id, batch_id, status, assigned_by, enrolled_at, completed_at, version_id
 `
 
 type UpsertEnrollmentParams struct {
@@ -1107,6 +1111,7 @@ func (q *Queries) UpsertEnrollment(ctx context.Context, arg UpsertEnrollmentPara
 		&i.AssignedBy,
 		&i.EnrolledAt,
 		&i.CompletedAt,
+		&i.VersionID,
 	)
 	return i, err
 }

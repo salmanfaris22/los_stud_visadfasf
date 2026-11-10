@@ -46,6 +46,15 @@ func (q *Queries) AnnouncementAudience(ctx context.Context, arg AnnouncementAudi
 	return items, nil
 }
 
+const archiveQuiz = `-- name: ArchiveQuiz :exec
+UPDATE quizzes SET archived_at = now() WHERE id = $1
+`
+
+func (q *Queries) ArchiveQuiz(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, archiveQuiz, id)
+	return err
+}
+
 const clearQuizQuestions = `-- name: ClearQuizQuestions :exec
 DELETE FROM quiz_questions WHERE quiz_id = $1
 `
@@ -113,7 +122,7 @@ func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncement
 const createQuiz = `-- name: CreateQuiz :one
 INSERT INTO quizzes (video_id, title, description, pass_pct, time_limit_minutes, max_attempts)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, video_id, title, description, pass_pct, time_limit_minutes, max_attempts, created_at, updated_at
+RETURNING id, video_id, title, description, pass_pct, time_limit_minutes, max_attempts, created_at, updated_at, archived_at
 `
 
 type CreateQuizParams struct {
@@ -145,6 +154,7 @@ func (q *Queries) CreateQuiz(ctx context.Context, arg CreateQuizParams) (Quiz, e
 		&i.MaxAttempts,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }
@@ -394,21 +404,22 @@ func (q *Queries) GetCertificateByCode(ctx context.Context, code string) (GetCer
 }
 
 const getQuiz = `-- name: GetQuiz :one
-SELECT q.id, q.video_id, q.title, q.description, q.pass_pct, q.time_limit_minutes, q.max_attempts, q.created_at, q.updated_at, v.course_id, v.title AS video_title FROM quizzes q JOIN videos v ON v.id = q.video_id WHERE q.id = $1
+SELECT q.id, q.video_id, q.title, q.description, q.pass_pct, q.time_limit_minutes, q.max_attempts, q.created_at, q.updated_at, q.archived_at, v.course_id, v.title AS video_title FROM quizzes q JOIN videos v ON v.id = q.video_id WHERE q.id = $1
 `
 
 type GetQuizRow struct {
-	ID               uuid.UUID `json:"id"`
-	VideoID          uuid.UUID `json:"video_id"`
-	Title            string    `json:"title"`
-	Description      string    `json:"description"`
-	PassPct          int32     `json:"pass_pct"`
-	TimeLimitMinutes int32     `json:"time_limit_minutes"`
-	MaxAttempts      int32     `json:"max_attempts"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	CourseID         uuid.UUID `json:"course_id"`
-	VideoTitle       string    `json:"video_title"`
+	ID               uuid.UUID  `json:"id"`
+	VideoID          uuid.UUID  `json:"video_id"`
+	Title            string     `json:"title"`
+	Description      string     `json:"description"`
+	PassPct          int32      `json:"pass_pct"`
+	TimeLimitMinutes int32      `json:"time_limit_minutes"`
+	MaxAttempts      int32      `json:"max_attempts"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
+	ArchivedAt       *time.Time `json:"archived_at"`
+	CourseID         uuid.UUID  `json:"course_id"`
+	VideoTitle       string     `json:"video_title"`
 }
 
 func (q *Queries) GetQuiz(ctx context.Context, id uuid.UUID) (GetQuizRow, error) {
@@ -424,6 +435,7 @@ func (q *Queries) GetQuiz(ctx context.Context, id uuid.UUID) (GetQuizRow, error)
 		&i.MaxAttempts,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 		&i.CourseID,
 		&i.VideoTitle,
 	)
@@ -924,23 +936,24 @@ func (q *Queries) ListVideoComments(ctx context.Context, videoID uuid.UUID) ([]L
 }
 
 const listVideoQuizzes = `-- name: ListVideoQuizzes :many
-SELECT q.id, q.video_id, q.title, q.description, q.pass_pct, q.time_limit_minutes, q.max_attempts, q.created_at, q.updated_at, (SELECT count(*) FROM quiz_questions qq WHERE qq.quiz_id = q.id)::int AS question_count,
+SELECT q.id, q.video_id, q.title, q.description, q.pass_pct, q.time_limit_minutes, q.max_attempts, q.created_at, q.updated_at, q.archived_at, (SELECT count(*) FROM quiz_questions qq WHERE qq.quiz_id = q.id)::int AS question_count,
        (SELECT count(*) FROM quiz_attempts qa WHERE qa.quiz_id = q.id AND qa.submitted_at IS NOT NULL)::int AS attempt_count
-FROM quizzes q WHERE q.video_id = $1 ORDER BY q.created_at
+FROM quizzes q WHERE q.video_id = $1 AND q.archived_at IS NULL ORDER BY q.created_at
 `
 
 type ListVideoQuizzesRow struct {
-	ID               uuid.UUID `json:"id"`
-	VideoID          uuid.UUID `json:"video_id"`
-	Title            string    `json:"title"`
-	Description      string    `json:"description"`
-	PassPct          int32     `json:"pass_pct"`
-	TimeLimitMinutes int32     `json:"time_limit_minutes"`
-	MaxAttempts      int32     `json:"max_attempts"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	QuestionCount    int32     `json:"question_count"`
-	AttemptCount     int32     `json:"attempt_count"`
+	ID               uuid.UUID  `json:"id"`
+	VideoID          uuid.UUID  `json:"video_id"`
+	Title            string     `json:"title"`
+	Description      string     `json:"description"`
+	PassPct          int32      `json:"pass_pct"`
+	TimeLimitMinutes int32      `json:"time_limit_minutes"`
+	MaxAttempts      int32      `json:"max_attempts"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
+	ArchivedAt       *time.Time `json:"archived_at"`
+	QuestionCount    int32      `json:"question_count"`
+	AttemptCount     int32      `json:"attempt_count"`
 }
 
 func (q *Queries) ListVideoQuizzes(ctx context.Context, videoID uuid.UUID) ([]ListVideoQuizzesRow, error) {
@@ -962,6 +975,7 @@ func (q *Queries) ListVideoQuizzes(ctx context.Context, videoID uuid.UUID) ([]Li
 			&i.MaxAttempts,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ArchivedAt,
 			&i.QuestionCount,
 			&i.AttemptCount,
 		); err != nil {
@@ -1084,15 +1098,17 @@ func (q *Queries) MyCertificates(ctx context.Context, studentID uuid.UUID) ([]My
 }
 
 const myVideoQuizzes = `-- name: MyVideoQuizzes :many
-SELECT q.id, q.video_id, q.title, q.description, q.pass_pct, q.time_limit_minutes, q.max_attempts, q.created_at, q.updated_at,
+SELECT q.id, q.video_id, q.title, q.description, q.pass_pct, q.time_limit_minutes, q.max_attempts, q.created_at, q.updated_at, q.archived_at,
        (SELECT count(*) FROM quiz_questions qq WHERE qq.quiz_id = q.id)::int AS question_count,
        COALESCE((SELECT max(a.score) FROM quiz_attempts a WHERE a.quiz_id = q.id AND a.student_id = $1 AND a.submitted_at IS NOT NULL), 0)::int AS best_score,
        COALESCE((SELECT max(a.max_score) FROM quiz_attempts a WHERE a.quiz_id = q.id AND a.student_id = $1 AND a.submitted_at IS NOT NULL), 0)::int AS best_max,
        COALESCE((SELECT bool_or(a.passed) FROM quiz_attempts a WHERE a.quiz_id = q.id AND a.student_id = $1), false)::boolean AS passed,
        (SELECT count(*) FROM quiz_attempts a WHERE a.quiz_id = q.id AND a.student_id = $1 AND a.submitted_at IS NOT NULL)::int AS attempts_used
 FROM quizzes q
+JOIN enrollments e ON e.student_id = $1 AND e.course_id = (SELECT v.course_id FROM videos v WHERE v.id = q.video_id)
+JOIN course_version_items cvi ON cvi.version_id = e.version_id AND cvi.kind = 'quiz' AND cvi.item_id = q.id
 WHERE q.video_id = $2
-ORDER BY q.created_at
+ORDER BY cvi.position
 `
 
 type MyVideoQuizzesParams struct {
@@ -1101,20 +1117,21 @@ type MyVideoQuizzesParams struct {
 }
 
 type MyVideoQuizzesRow struct {
-	ID               uuid.UUID `json:"id"`
-	VideoID          uuid.UUID `json:"video_id"`
-	Title            string    `json:"title"`
-	Description      string    `json:"description"`
-	PassPct          int32     `json:"pass_pct"`
-	TimeLimitMinutes int32     `json:"time_limit_minutes"`
-	MaxAttempts      int32     `json:"max_attempts"`
-	CreatedAt        time.Time `json:"created_at"`
-	UpdatedAt        time.Time `json:"updated_at"`
-	QuestionCount    int32     `json:"question_count"`
-	BestScore        int32     `json:"best_score"`
-	BestMax          int32     `json:"best_max"`
-	Passed           bool      `json:"passed"`
-	AttemptsUsed     int32     `json:"attempts_used"`
+	ID               uuid.UUID  `json:"id"`
+	VideoID          uuid.UUID  `json:"video_id"`
+	Title            string     `json:"title"`
+	Description      string     `json:"description"`
+	PassPct          int32      `json:"pass_pct"`
+	TimeLimitMinutes int32      `json:"time_limit_minutes"`
+	MaxAttempts      int32      `json:"max_attempts"`
+	CreatedAt        time.Time  `json:"created_at"`
+	UpdatedAt        time.Time  `json:"updated_at"`
+	ArchivedAt       *time.Time `json:"archived_at"`
+	QuestionCount    int32      `json:"question_count"`
+	BestScore        int32      `json:"best_score"`
+	BestMax          int32      `json:"best_max"`
+	Passed           bool       `json:"passed"`
+	AttemptsUsed     int32      `json:"attempts_used"`
 }
 
 func (q *Queries) MyVideoQuizzes(ctx context.Context, arg MyVideoQuizzesParams) ([]MyVideoQuizzesRow, error) {
@@ -1136,6 +1153,7 @@ func (q *Queries) MyVideoQuizzes(ctx context.Context, arg MyVideoQuizzesParams) 
 			&i.MaxAttempts,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ArchivedAt,
 			&i.QuestionCount,
 			&i.BestScore,
 			&i.BestMax,
@@ -1281,7 +1299,7 @@ func (q *Queries) UpdateAnnouncement(ctx context.Context, arg UpdateAnnouncement
 const updateQuiz = `-- name: UpdateQuiz :one
 UPDATE quizzes SET title = $1, description = $2, pass_pct = $3, time_limit_minutes = $4,
     max_attempts = $5, updated_at = now()
-WHERE id = $6 RETURNING id, video_id, title, description, pass_pct, time_limit_minutes, max_attempts, created_at, updated_at
+WHERE id = $6 RETURNING id, video_id, title, description, pass_pct, time_limit_minutes, max_attempts, created_at, updated_at, archived_at
 `
 
 type UpdateQuizParams struct {
@@ -1313,6 +1331,7 @@ func (q *Queries) UpdateQuiz(ctx context.Context, arg UpdateQuizParams) (Quiz, e
 		&i.MaxAttempts,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ArchivedAt,
 	)
 	return i, err
 }
