@@ -75,7 +75,7 @@ func must(err error) {
 func role(name, desc string, scoped bool, perms map[string][]string) repository.Role {
 	r, err := q.GetRoleByName(ctx, name)
 	if errors.Is(err, pgx.ErrNoRows) {
-		r, err = q.CreateRole(ctx, repository.CreateRoleParams{Name: name, Description: desc, Scoped: scoped, IsSystem: name == "Admin" || name == "Mentor"})
+		r, err = q.CreateRole(ctx, repository.CreateRoleParams{Name: name, Description: desc, Scoped: scoped, SalesScope: auth.SalesAll, IsSystem: name == "Admin" || name == "Mentor"})
 		must(err)
 		must(service.SaveRolePermissions(ctx, q, r.ID, perms))
 	}

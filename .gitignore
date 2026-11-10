@@ -13,3 +13,8 @@ frontend/e2e/playwright-report
 .DS_Store
 *.tsbuildinfo
 frontend/e2e/screenshots
+
+# SSH keys / secrets - never commit
+*.pem
+*.ppk
+*.key

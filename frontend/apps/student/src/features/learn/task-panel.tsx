@@ -9,9 +9,17 @@ import { useSession } from "@/lib/session";
 import { SubmitForm } from "./submit-form";
 
 /**
- * Everything about one task: details, instructions, submission form, attempts and the mentor chat.
- * Used inline (task dropdown in lists) and on the full task page.
+ * One task: its details and the upload form. Used inline (task dropdown in lists) and on the full task page.
+ * Students only need the task and the upload for now, so the other parts are hidden (not deleted).
+ * Set a flag to true to show that part again.
  */
+const SHOW = {
+  instructions: false, // "Instructions" card
+  approvedNote: false, // green "Approved · 8/10 marks" banner and the "Approved — great work!" line
+  attempts: false, // "Your attempts" list
+  mentorChat: false, // "Ask your mentor" chat
+};
+
 export function TaskPanel({ taskId, inline }: { taskId: string; inline?: boolean }) {
   const qc = useQueryClient();
   const { me } = useSession();
@@ -54,20 +62,20 @@ export function TaskPanel({ taskId, inline }: { taskId: string; inline?: boolean
         {t.due_at && <span className={cn("inline-flex items-center gap-1", p.is_overdue && "text-destructive")}><CalendarClock className="size-4" />Due {formatDateTime(t.due_at)}</span>}
         <span className="flex flex-wrap gap-1">{t.allowed_types.map((a) => <Badge key={a} variant="secondary" className="capitalize">{a}</Badge>)}</span>
       </div>
-      <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+      <div className={cn("grid gap-6", SHOW.mentorChat && "lg:grid-cols-[1fr_360px]")}>
         <div className="min-w-0 space-y-5">
-          {t.instructions && <Card><CardHeader><CardTitle>Instructions</CardTitle></CardHeader><CardContent><Markdown>{t.instructions}</Markdown></CardContent></Card>}
+          {SHOW.instructions && t.instructions && <Card><CardHeader><CardTitle>Instructions</CardTitle></CardHeader><CardContent><Markdown>{t.instructions}</Markdown></CardContent></Card>}
           {latest && (latest.status === "approved" ? (
-            <div className="flex items-center gap-3 rounded-2xl border border-success/40 bg-success/10 p-4 text-success"><CheckCircle2 className="size-6" /><div><b>Approved</b>{latest.marks != null && ` · ${latest.marks}/${t.max_marks} marks`}{latest.feedback && <p className="text-sm text-foreground">{latest.feedback}</p>}</div></div>
+            SHOW.approvedNote && <div className="flex items-center gap-3 rounded-2xl border border-success/40 bg-success/10 p-4 text-success"><CheckCircle2 className="size-6" /><div><b>Approved</b>{latest.marks != null && ` · ${latest.marks}/${t.max_marks} marks`}{latest.feedback && <p className="text-sm text-foreground">{latest.feedback}</p>}</div></div>
           ) : latest.status !== "pending" && latest.feedback ? (
             <div className="flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning/10 p-4"><Info className="mt-0.5 size-5 text-warning" /><div><b className="text-warning">Mentor feedback</b><p className="text-sm">{latest.feedback}</p></div></div>
           ) : null)}
           {p.can_submit ? (
             <SubmitForm page={p} submitting={submit.isPending} onSubmit={(items) => submit.mutate({ params: { path: { id: taskId } }, body: { items } })} />
-          ) : (
+          ) : SHOW.approvedNote || p.status !== "approved" ? (
             <Card className="p-5 text-sm text-muted-foreground">{p.reason}</Card>
-          )}
-          {p.attempts.length > 0 && (
+          ) : null}
+          {SHOW.attempts && p.attempts.length > 0 && (
             <Card>
               <CardHeader><CardTitle>Your attempts</CardTitle></CardHeader>
               <CardContent className="space-y-6">
@@ -86,10 +94,12 @@ export function TaskPanel({ taskId, inline }: { taskId: string; inline?: boolean
             </Card>
           )}
         </div>
-        <Card className={cn("h-fit", !inline && "lg:sticky lg:top-20")}>
-          <CardHeader><CardTitle>Ask your mentor</CardTitle></CardHeader>
-          <CardContent><ThreadView messages={p.comments} meId={me?.id} onSend={send} sending={sending} onAttach /></CardContent>
-        </Card>
+        {SHOW.mentorChat && (
+          <Card className={cn("h-fit", !inline && "lg:sticky lg:top-20")}>
+            <CardHeader><CardTitle>Ask your mentor</CardTitle></CardHeader>
+            <CardContent><ThreadView messages={p.comments} meId={me?.id} onSend={send} sending={sending} onAttach /></CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

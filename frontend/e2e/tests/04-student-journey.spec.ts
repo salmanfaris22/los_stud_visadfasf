@@ -31,9 +31,9 @@ test("full journey: assigned course → watch → submit → mentor approves →
   await page.getByPlaceholder("https://github.com/you/project").fill("https://github.com/example/journey");
   await page.getByRole("button", { name: "Submit task" }).click();
   await expect(page.getByText("Your submission is waiting for review")).toBeVisible();
-  await page.getByPlaceholder("Write a message…").fill("Please check the README too.");
-  await page.getByRole("button", { name: "Send" }).click();
-  await expect(page.getByText("Please check the README too.")).toBeVisible();
+  // The task panel shows only the task and the upload: no mentor chat, attempts list or instructions.
+  await expect(page.getByText("Ask your mentor")).toHaveCount(0);
+  await expect(page.getByText("Your attempts")).toHaveCount(0);
 
   // Admin reviews in a second browser
   const ap = await browser.newPage();
@@ -42,7 +42,6 @@ test("full journey: assigned course → watch → submit → mentor approves →
   await ap.getByPlaceholder("Student or task…").fill(`Journey Student ${s}`);
   await ap.getByRole("cell", { name: new RegExp(`Journey Student ${s}`) }).click();
   await expect(ap.getByText("https://github.com/example/journey")).toBeVisible();
-  await expect(ap.getByText("Please check the README too.")).toBeVisible();
   await ap.getByLabel(/Marks/).fill("9");
   await ap.getByLabel("Feedback for the student").fill("Excellent work");
   await ap.getByRole("button", { name: "Approve" }).click();
@@ -50,10 +49,16 @@ test("full journey: assigned course → watch → submit → mentor approves →
 
   // Student sees approval, 100% progress and the certificate
   await page.reload();
-  await page.getByRole("button", { name: /Share your repo/ }).click();
-  await expect(page.getByText(/Approved — great work/)).toBeVisible();
+  const row = page.getByRole("button", { name: /Share your repo/ });
+  await expect(row).toContainText("9/10");
+  await row.click();
+  await expect(page.getByText("10 marks · pass 5")).toBeVisible();
+  await expect(page.getByText(/Approved — great work/)).toHaveCount(0);
   await page.goto(`${STUDENT_URL}/learn/courses`);
-  await expect(page.getByText(/1\/1 tasks · 100%/)).toBeVisible();
+  // My courses card: task count in the footer, percentage in the progress ring.
+  const card = page.locator('a[href^="/learn/courses/"]', { hasText: `Journey ${s}` });
+  await expect(card).toContainText("1/1 tasks");
+  await expect(card.getByRole("progressbar", { name: "100% complete" })).toBeVisible();
   await page.goto(`${STUDENT_URL}/learn/certificates`);
   await expect(page.getByText(`Journey ${s}`)).toBeVisible();
   const code = await page.locator("text=/LMS-[A-Z0-9]{8}/").first().textContent();

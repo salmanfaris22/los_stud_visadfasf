@@ -32,7 +32,7 @@ export function CourseLine({ c }: { c: Schemas["MyCourse"] }) {
   );
 }
 
-/** A task in a list. Clicking it opens the task (details, submit form, chat) right here as a dropdown. */
+/** A task in a list. Clicking it opens the task (details and upload form) right here as a dropdown. */
 export function TaskRow({ t, defaultOpen = false }: { t: Schemas["MyTask"]; defaultOpen?: boolean }) {
   const [open, setOpen] = React.useState(defaultOpen);
   return (
