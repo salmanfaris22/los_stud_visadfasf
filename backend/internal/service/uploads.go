@@ -52,6 +52,15 @@ func uploadLimit(st Settings, mime string) int64 {
 	return int64(st.Uploads.MaxFileMB) << 20
 }
 
+// limit is uploadLimit, lowered to what the store itself takes (disk storage: 2 MB).
+func (s *UploadService) limit(st Settings, mime string) int64 {
+	n := uploadLimit(st, mime)
+	if max := s.Store.MaxBytes(); max > 0 && n > max {
+		n = max
+	}
+	return n
+}
+
 // FileURL is the stable URL stored in records (it redirects to a signed link).
 func (b base) fileURL(u repository.Upload) string {
 	if u.IsPublic && b.Cfg.S3PublicURL != "" {
@@ -64,6 +73,14 @@ func fileURLByID(id uuid.UUID) string { return "/api/v1/files/" + id.String() }
 
 func (b base) toUpload(u repository.Upload) dto.Upload {
 	return dto.Upload{ID: u.ID, FileName: u.FileName, Mime: u.Mime, SizeBytes: u.SizeBytes, URL: b.fileURL(u), Status: u.Status}
+}
+
+// sizeText writes a byte limit for people: "2 MB", or "512 KB" below one megabyte.
+func sizeText(n int64) string {
+	if n >= 1<<20 {
+		return fmt.Sprintf("%d MB", n>>20)
+	}
+	return fmt.Sprintf("%d KB", n>>10)
 }
 
 var unsafeName = regexp.MustCompile(`[^A-Za-z0-9._-]+`)
@@ -95,15 +112,18 @@ func (s *UploadService) Presign(ctx context.Context, actor *auth.Principal, in d
 	if rule.imagesOnly && !imageMimes[mime] {
 		return dto.Presigned{}, apperr.Invalid("please upload a PNG, JPG, WEBP or GIF image")
 	}
+	if s.Store.ImagesOnly() && !imageMimes[mime] {
+		return dto.Presigned{}, apperr.Invalid("only images can be uploaded (PNG, JPG, WEBP or GIF, up to 2 MB)")
+	}
 	if !imageMimes[mime] && !fileMimes[mime] {
 		return dto.Presigned{}, apperr.Invalid("file type %s is not allowed", mime)
 	}
 	st := s.settings.Get(ctx)
-	if in.Size > uploadLimit(st, mime) {
+	if limit := s.limit(st, mime); in.Size > limit {
 		if imageMimes[mime] {
-			return dto.Presigned{}, apperr.Invalid("images must be %d MB or smaller", st.Uploads.MaxImageMB)
+			return dto.Presigned{}, apperr.Invalid("images must be %s or smaller", sizeText(limit))
 		}
-		return dto.Presigned{}, apperr.Invalid("files must be %d MB or smaller", st.Uploads.MaxFileMB)
+		return dto.Presigned{}, apperr.Invalid("files must be %s or smaller", sizeText(limit))
 	}
 	key := fmt.Sprintf("%s/%s/%s/%s", in.Purpose, time.Now().UTC().Format("2006/01"), uuid.NewString(), cleanFileName(in.FileName))
 	u, err := s.Q.CreateUpload(ctx, repository.CreateUploadParams{OwnerID: actor.ID, Purpose: in.Purpose, ObjectKey: key, FileName: strings.TrimSpace(in.FileName),
@@ -128,7 +148,7 @@ func (s *UploadService) Complete(ctx context.Context, actor *auth.Principal, id 
 	if err != nil {
 		return dto.Upload{}, apperr.Invalid("the file did not arrive, please upload again")
 	}
-	if size > uploadLimit(s.settings.Get(ctx), u.Mime) {
+	if size > s.limit(s.settings.Get(ctx), u.Mime) {
 		_ = s.Store.Remove(ctx, u.ObjectKey)
 		_ = s.Q.DeleteUpload(ctx, u.ID)
 		return dto.Upload{}, apperr.Invalid("file is larger than allowed")

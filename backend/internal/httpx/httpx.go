@@ -19,6 +19,7 @@ import (
 	"github.com/lms/backend/internal/middleware"
 	"github.com/lms/backend/internal/platform/google"
 	"github.com/lms/backend/internal/platform/secure"
+	"github.com/lms/backend/internal/platform/storage"
 	"github.com/lms/backend/internal/service"
 )
 
@@ -37,6 +38,9 @@ func Register(r chi.Router, s *service.Services, d *service.Deps) {
 	r.Get("/api/v1/settings/google/connect", h.googleConnect)
 	r.Get("/api/v1/settings/google/callback", h.googleConnectCallback)
 	r.Get("/api/v1/files/{id}", h.file)
+	if disk := d.Store.DiskHandler(); disk != nil { // STORAGE=disk: signed upload + view links
+		r.Handle(storage.DiskPathPrefix+"*", disk)
+	}
 	r.Get("/api/v1/certificate-art/{name}", certificateArt)
 }
 

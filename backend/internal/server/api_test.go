@@ -7,6 +7,7 @@ package server_test
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -763,6 +764,56 @@ func TestAPI(t *testing.T) {
 		code, _, _ = newClient(t, srv.URL, "student").raw("GET", "/api/v1/files/"+str(up, "id"), nil, true)
 		if code != 403 {
 			t.Fatalf("anonymous download = %d", code)
+		}
+	})
+
+	t.Run("uploads on the server disk: images only, 2 MB", func(t *testing.T) {
+		disk, err := storage.New(context.Background(), &config.Config{Storage: "disk", StorageDir: t.TempDir(), JWTSecret: d.Cfg.JWTSecret})
+		if err != nil {
+			t.Fatal(err)
+		}
+		dd := *d
+		dd.Store = disk
+		dsrv := httptest.NewServer(server.New(&dd).Router)
+		defer dsrv.Close()
+		// Same student session: the cookie jar does not split cookies by port.
+		ann := &client{t: t, base: dsrv.URL, app: "student", hc: student.hc}
+		png, _ := base64.StdEncoding.DecodeString("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==")
+		presign := func(in M, want int) M {
+			return ann.rpc("UploadService/PresignUpload", M{"input": in}, want, nil)
+		}
+		presign(M{"purpose": "submission", "file_name": "notes.pdf", "mime": "application/pdf", "size": 10}, 400)
+		presign(M{"purpose": "avatar", "file_name": "big.png", "mime": "image/png", "size": 3 << 20}, 400)
+		pre := obj(presign(M{"purpose": "avatar", "file_name": "me.png", "mime": "image/png", "size": len(png)}, 200), "presigned")
+		putURL := str(pre, "putUrl")
+		if !strings.HasPrefix(putURL, storage.DiskPathPrefix) {
+			t.Fatalf("put link %q is not on the API", putURL)
+		}
+		// The browser resolves the relative link against the site, which forwards /api/* to the API.
+		req, _ := http.NewRequest("PUT", dsrv.URL+putURL, bytes.NewReader(png))
+		req.Header.Set("Content-Type", "image/png")
+		res, err := http.DefaultClient.Do(req)
+		if err != nil || res.StatusCode != 200 {
+			t.Fatalf("put: %v %v", err, res)
+		}
+		res.Body.Close()
+		up := obj(pre, "upload")
+		ready := obj(ann.rpc("UploadService/CompleteUpload", M{"id": str(up, "id")}, 200, nil), "upload")
+		if str(ready, "status") != "ready" || num(ready, "sizeBytes") != float64(len(png)) {
+			t.Fatalf("upload = %v", ready)
+		}
+		code, _, hdr := ann.raw("GET", "/api/v1/files/"+str(up, "id"), nil, true)
+		if code != 302 || !strings.HasPrefix(hdr.Get("Location"), storage.DiskPathPrefix) {
+			t.Fatalf("file link %d %s", code, hdr.Get("Location"))
+		}
+		res, err = http.Get(dsrv.URL + hdr.Get("Location"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		body, _ := io.ReadAll(res.Body)
+		res.Body.Close()
+		if res.StatusCode != 200 || !bytes.Equal(body, png) || res.Header.Get("Content-Type") != "image/png" {
+			t.Fatalf("image = %d %q (%d bytes)", res.StatusCode, res.Header.Get("Content-Type"), len(body))
 		}
 	})
 

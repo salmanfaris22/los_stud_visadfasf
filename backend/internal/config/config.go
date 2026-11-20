@@ -31,6 +31,11 @@ type Config struct {
 	AccessTTL  time.Duration
 	RefreshTTL time.Duration
 
+	// Storage is where uploads live: "s3" (any S3-compatible store) or "disk" (a folder on this
+	// server, images only, 2 MB each; the browser uploads through the API's own signed links).
+	Storage    string
+	StorageDir string
+
 	S3Endpoint     string
 	S3Region       string
 	S3Bucket       string
@@ -74,6 +79,9 @@ func Load() (*Config, error) {
 		AccessTTL:     getDuration("ACCESS_TTL", 15*time.Minute),
 		RefreshTTL:    getDuration("REFRESH_TTL", 7*24*time.Hour),
 
+		Storage:    strings.ToLower(get("STORAGE", "s3")),
+		StorageDir: get("STORAGE_DIR", "data/uploads"),
+
 		S3Endpoint:     get("S3_ENDPOINT", "localhost:9000"),
 		S3Region:       get("S3_REGION", "auto"),
 		S3Bucket:       get("S3_BUCKET", "lms"),
@@ -94,6 +102,10 @@ func Load() (*Config, error) {
 
 		SeedAdminEmail:    get("SEED_ADMIN_EMAIL", "admin@lms.local"),
 		SeedAdminPassword: get("SEED_ADMIN_PASSWORD", "Admin@12345"),
+	}
+
+	if c.Storage != "s3" && c.Storage != "disk" {
+		return nil, fmt.Errorf("STORAGE must be s3 or disk, got %q", c.Storage)
 	}
 
 	secret := get("JWT_SECRET", "")
