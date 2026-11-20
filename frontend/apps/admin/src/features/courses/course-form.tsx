@@ -19,8 +19,13 @@ export function emptyCourse(c?: Course): CourseInput {
   };
 }
 
-/** All course fields; used on the course page and in the "new course" dialog. */
-export function CourseForm({ value, onChange, compact }: { value: CourseInput; onChange: (v: CourseInput) => void; compact?: boolean }) {
+/**
+ * All course fields; used on the course page and in the "new course" dialog.
+ * onThumbnailChange, when given, takes over the thumbnail (the course page saves it right away).
+ */
+export function CourseForm({ value, onChange, compact, onThumbnailChange }: {
+  value: CourseInput; onChange: (v: CourseInput) => void; compact?: boolean; onThumbnailChange?: (url: string) => void;
+}) {
   const staff = useStaffOptions();
   const templates = useCertificateTemplateOptions();
   const defaultTemplate = templates.data?.find((t) => t.isDefault);
@@ -34,7 +39,9 @@ export function CourseForm({ value, onChange, compact }: { value: CourseInput; o
       {!compact && (
         <>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Thumbnail"><ImageUpload value={value.thumbnailUrl} onChange={(u) => set("thumbnailUrl", u)} /></Field>
+            <Field label="Thumbnail" hint={onThumbnailChange ? "Saved as soon as it uploads · PNG, JPG, WEBP or GIF, up to 2 MB" : "PNG, JPG, WEBP or GIF, up to 2 MB"}>
+              <ImageUpload value={value.thumbnailUrl} onChange={(u) => (onThumbnailChange ? onThumbnailChange(u) : set("thumbnailUrl", u))} />
+            </Field>
             <div className="grid content-start gap-4">
               <Field label="URL slug" hint="Used in the public course link"><Input value={value.slug} pattern="[a-z0-9-]*" onChange={(e) => set("slug", e.target.value.toLowerCase())} placeholder="auto from title" /></Field>
               <Field label="Category"><Input value={value.category} onChange={(e) => set("category", e.target.value)} placeholder="Backend, Design…" /></Field>

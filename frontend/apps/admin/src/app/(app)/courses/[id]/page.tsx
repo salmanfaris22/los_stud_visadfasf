@@ -57,6 +57,16 @@ export default function CoursePage() {
   const [draft, setDraft] = React.useState(emptyCourse());
   React.useEffect(() => { if (q.data) setDraft(emptyCourse(q.data)); }, [q.data]);
   const save = useRpcMutation(CourseService.method.updateCourse, feedback(qc, "Course saved", [CourseService]));
+  // A new or removed thumbnail is saved at once (with the rest of the form), so it is not lost when
+  // the page is left without pressing "Save course". The ref keeps edits made while it uploads.
+  const draftRef = React.useRef(draft);
+  draftRef.current = draft;
+  const saveThumbnail = useRpcMutation(CourseService.method.updateCourse, feedback(qc, "Thumbnail saved", [CourseService]));
+  const onThumbnailChange = (url: string) => {
+    const next = { ...draftRef.current, thumbnailUrl: url };
+    setDraft(next);
+    saveThumbnail.mutate({ id, input: next });
+  };
   const del = useRpcMutation(CourseService.method.deleteCourse, feedback(qc, "Course deleted", [CourseService], () => router.replace("/courses")));
 
   if (q.isLoading) return <Skeleton className="h-96" />;
@@ -89,7 +99,7 @@ export default function CoursePage() {
           <Card className="max-w-3xl">
             <CardContent className="pt-5">
               <form onSubmit={(e) => { e.preventDefault(); save.mutate({ id, input: draft }); }} className="grid gap-4">
-                <CourseForm value={draft} onChange={setDraft} />
+                <CourseForm value={draft} onChange={setDraft} onThumbnailChange={can("courses", "edit") ? onThumbnailChange : undefined} />
                 {can("courses", "edit") && <div><Button type="submit" loading={save.isPending}>Save course</Button></div>}
               </form>
             </CardContent>
