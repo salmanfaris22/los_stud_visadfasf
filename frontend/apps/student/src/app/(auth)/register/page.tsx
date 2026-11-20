@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthService, errorMessage, useRpcMutation, useRpcQuery } from "@lms/api-client";
-import { Button, Field, Input } from "@lms/ui";
+import { Button, Field, Input, PasswordInput } from "@lms/ui";
 import { GoogleButton } from "../google";
 
 export default function RegisterPage() {
@@ -27,7 +27,7 @@ export default function RegisterPage() {
         <Field label="Full name"><Input required minLength={2} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} autoComplete="name" /></Field>
         <Field label="Email"><Input type="email" required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} autoComplete="email" /></Field>
         <Field label="Phone (optional)"><Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} autoComplete="tel" /></Field>
-        <Field label="Password" hint="At least 8 characters"><Input type="password" minLength={8} required value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} autoComplete="new-password" /></Field>
+        <Field label="Password" hint="At least 8 characters"><PasswordInput minLength={8} required value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} autoComplete="new-password" /></Field>
         {register.error && <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{errorMessage(register.error)}</p>}
         <Button type="submit" size="lg" loading={register.isPending}>Create account</Button>
       </form>

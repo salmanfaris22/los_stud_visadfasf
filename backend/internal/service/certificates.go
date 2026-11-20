@@ -19,23 +19,35 @@ type CertificateService struct{ base }
 func (s *CertificateService) verifyURL(code string) string { return s.Cfg.StudentAppURL + "/verify/" + code }
 
 // Issue creates (or restores) the certificate for a student/course and notifies the student.
+// The certificate keeps the template it was issued with: the course's template, else the current default.
 func (s *CertificateService) Issue(ctx context.Context, studentID, courseID uuid.UUID, issuedBy *uuid.UUID) (repository.Certificate, error) {
-	c, err := s.Q.IssueCertificate(ctx, repository.IssueCertificateParams{Code: "LMS-" + secure.Code(8), StudentID: studentID, CourseID: courseID, IssuedBy: issuedBy})
+	course, err := s.Q.GetCourse(ctx, courseID)
+	if err != nil {
+		return repository.Certificate{}, dbErr(err, "course")
+	}
+	tpl := course.CertificateTemplateID
+	if tpl == nil {
+		tpl = s.defaultTemplateID(ctx)
+	}
+	c, err := s.Q.IssueCertificate(ctx, repository.IssueCertificateParams{Code: "MS-" + secure.Code(8), StudentID: studentID, CourseID: courseID, IssuedBy: issuedBy, TemplateID: tpl})
 	if err != nil {
 		return c, dbErr(err, "certificate")
 	}
-	course, _ := s.Q.GetCourse(ctx, courseID)
 	s.notify.Send(ctx, []uuid.UUID{studentID}, "certificate", "Certificate earned 🎉", "You completed "+course.Title+". Download your certificate.", "/learn/certificates")
 	return c, nil
 }
 
-// CheckCompletion completes the enrollment and auto-issues a certificate once every task is approved.
+// CheckCompletion completes the enrollment and auto-issues a certificate once every task is approved
+// (unless the course has certificates turned off).
 func (s *CertificateService) CheckCompletion(ctx context.Context, studentID, courseID uuid.UUID) {
 	p, err := s.Q.GetEnrollmentProgress(ctx, repository.GetEnrollmentProgressParams{StudentID: studentID, CourseID: courseID})
 	if err != nil || p.TotalTasks == 0 || p.ApprovedTasks < p.TotalTasks {
 		return
 	}
 	_ = s.Q.MarkEnrollmentCompleted(ctx, repository.MarkEnrollmentCompletedParams{StudentID: studentID, CourseID: courseID})
+	if course, err := s.Q.GetCourse(ctx, courseID); err != nil || !course.CertificateEnabled {
+		return
+	}
 	if c, err := s.Issue(ctx, studentID, courseID, nil); err == nil {
 		s.audit.Log(ctx, nil, "auto_issue", "certificate", c.ID, map[string]string{"student": studentID.String(), "course": courseID.String()})
 	}
@@ -110,12 +122,23 @@ func (s *CertificateService) PDF(ctx context.Context, actor *auth.Principal, id 
 	if actor.IsStudent() && (r.StudentID != actor.ID || r.RevokedAt != nil) {
 		return dto.File{}, apperr.NotFound("certificate")
 	}
+	name := "certificate-" + r.Code + ".pdf"
+	if t, ok := s.templateFor(ctx, r.TemplateID, r.CourseTemplateID); ok {
+		v := CertValues{Student: r.StudentName, Course: r.CourseTitle, CourseText: r.CourseCertificateText, Code: r.Code,
+			VerifyURL: s.verifyURL(r.Code), Issued: r.IssuedAt.In(s.settings.Location(ctx))}
+		raw, err := s.render(ctx, t, v)
+		if err != nil {
+			return dto.File{}, err
+		}
+		return dto.File{Name: name, ContentType: "application/pdf", Data: raw}, nil
+	}
+	// No template at all (every template deleted): the plain built-in layout.
 	brand := s.settings.Get(ctx).Branding
 	raw, err := RenderCertificatePDF(brand.Name, brand.PrimaryColor, r.StudentName, r.CourseTitle, r.Code, r.IssuedAt, s.verifyURL(r.Code))
 	if err != nil {
 		return dto.File{}, apperr.Internal(err)
 	}
-	return dto.File{Name: "certificate-" + r.Code + ".pdf", ContentType: "application/pdf", Data: raw}, nil
+	return dto.File{Name: name, ContentType: "application/pdf", Data: raw}, nil
 }
 
 func (s *CertificateService) Verify(ctx context.Context, code string) (dto.CertificateVerification, error) {

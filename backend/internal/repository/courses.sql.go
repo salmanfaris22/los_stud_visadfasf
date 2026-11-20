@@ -115,28 +115,33 @@ func (q *Queries) CourseOptions(ctx context.Context, mentorID *uuid.UUID) ([]Cou
 
 const createCourse = `-- name: CreateCourse :one
 INSERT INTO courses (slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public,
-                     price_label, what_you_learn, fee_paise, gst_bp, created_by)
+                     price_label, what_you_learn, fee_paise, gst_bp, created_by,
+                     certificate_enabled, certificate_template_id, certificate_text)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15)
-RETURNING id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp
+        $11, $12, $13, $14, $15,
+        $16, $17, $18)
+RETURNING id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp, certificate_enabled, certificate_template_id, certificate_text
 `
 
 type CreateCourseParams struct {
-	Slug         string     `json:"slug"`
-	Title        string     `json:"title"`
-	Subtitle     string     `json:"subtitle"`
-	Description  string     `json:"description"`
-	ThumbnailUrl string     `json:"thumbnail_url"`
-	Level        string     `json:"level"`
-	Language     string     `json:"language"`
-	Category     string     `json:"category"`
-	Status       string     `json:"status"`
-	IsPublic     bool       `json:"is_public"`
-	PriceLabel   string     `json:"price_label"`
-	WhatYouLearn []string   `json:"what_you_learn"`
-	FeePaise     int64      `json:"fee_paise"`
-	GstBp        int32      `json:"gst_bp"`
-	CreatedBy    *uuid.UUID `json:"created_by"`
+	Slug                  string     `json:"slug"`
+	Title                 string     `json:"title"`
+	Subtitle              string     `json:"subtitle"`
+	Description           string     `json:"description"`
+	ThumbnailUrl          string     `json:"thumbnail_url"`
+	Level                 string     `json:"level"`
+	Language              string     `json:"language"`
+	Category              string     `json:"category"`
+	Status                string     `json:"status"`
+	IsPublic              bool       `json:"is_public"`
+	PriceLabel            string     `json:"price_label"`
+	WhatYouLearn          []string   `json:"what_you_learn"`
+	FeePaise              int64      `json:"fee_paise"`
+	GstBp                 int32      `json:"gst_bp"`
+	CreatedBy             *uuid.UUID `json:"created_by"`
+	CertificateEnabled    bool       `json:"certificate_enabled"`
+	CertificateTemplateID *uuid.UUID `json:"certificate_template_id"`
+	CertificateText       string     `json:"certificate_text"`
 }
 
 func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Course, error) {
@@ -156,6 +161,9 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 		arg.FeePaise,
 		arg.GstBp,
 		arg.CreatedBy,
+		arg.CertificateEnabled,
+		arg.CertificateTemplateID,
+		arg.CertificateText,
 	)
 	var i Course
 	err := row.Scan(
@@ -177,6 +185,9 @@ func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) (Cou
 		&i.UpdatedAt,
 		&i.FeePaise,
 		&i.GstBp,
+		&i.CertificateEnabled,
+		&i.CertificateTemplateID,
+		&i.CertificateText,
 	)
 	return i, err
 }
@@ -311,7 +322,7 @@ func (q *Queries) DeleteVideo(ctx context.Context, id uuid.UUID) error {
 }
 
 const getCourse = `-- name: GetCourse :one
-SELECT id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp FROM courses WHERE id = $1
+SELECT id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp, certificate_enabled, certificate_template_id, certificate_text FROM courses WHERE id = $1
 `
 
 func (q *Queries) GetCourse(ctx context.Context, id uuid.UUID) (Course, error) {
@@ -336,12 +347,15 @@ func (q *Queries) GetCourse(ctx context.Context, id uuid.UUID) (Course, error) {
 		&i.UpdatedAt,
 		&i.FeePaise,
 		&i.GstBp,
+		&i.CertificateEnabled,
+		&i.CertificateTemplateID,
+		&i.CertificateText,
 	)
 	return i, err
 }
 
 const getCourseBySlug = `-- name: GetCourseBySlug :one
-SELECT id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp FROM courses WHERE slug = $1
+SELECT id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp, certificate_enabled, certificate_template_id, certificate_text FROM courses WHERE slug = $1
 `
 
 func (q *Queries) GetCourseBySlug(ctx context.Context, slug string) (Course, error) {
@@ -366,6 +380,9 @@ func (q *Queries) GetCourseBySlug(ctx context.Context, slug string) (Course, err
 		&i.UpdatedAt,
 		&i.FeePaise,
 		&i.GstBp,
+		&i.CertificateEnabled,
+		&i.CertificateTemplateID,
+		&i.CertificateText,
 	)
 	return i, err
 }
@@ -576,7 +593,7 @@ func (q *Queries) ListCourseVideos(ctx context.Context, courseID uuid.UUID) ([]V
 }
 
 const listCourses = `-- name: ListCourses :many
-SELECT c.id, c.slug, c.title, c.subtitle, c.description, c.thumbnail_url, c.level, c.language, c.category, c.status, c.is_public, c.price_label, c.what_you_learn, c.created_by, c.created_at, c.updated_at, c.fee_paise, c.gst_bp,
+SELECT c.id, c.slug, c.title, c.subtitle, c.description, c.thumbnail_url, c.level, c.language, c.category, c.status, c.is_public, c.price_label, c.what_you_learn, c.created_by, c.created_at, c.updated_at, c.fee_paise, c.gst_bp, c.certificate_enabled, c.certificate_template_id, c.certificate_text,
        (SELECT count(*) FROM videos v WHERE v.course_id = c.id AND v.archived_at IS NULL)::int AS video_count,
        (SELECT count(*) FROM enrollments e WHERE e.course_id = c.id)::int AS student_count,
        count(*) OVER () AS total_count
@@ -597,27 +614,30 @@ type ListCoursesParams struct {
 }
 
 type ListCoursesRow struct {
-	ID           uuid.UUID  `json:"id"`
-	Slug         string     `json:"slug"`
-	Title        string     `json:"title"`
-	Subtitle     string     `json:"subtitle"`
-	Description  string     `json:"description"`
-	ThumbnailUrl string     `json:"thumbnail_url"`
-	Level        string     `json:"level"`
-	Language     string     `json:"language"`
-	Category     string     `json:"category"`
-	Status       string     `json:"status"`
-	IsPublic     bool       `json:"is_public"`
-	PriceLabel   string     `json:"price_label"`
-	WhatYouLearn []string   `json:"what_you_learn"`
-	CreatedBy    *uuid.UUID `json:"created_by"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
-	FeePaise     int64      `json:"fee_paise"`
-	GstBp        int32      `json:"gst_bp"`
-	VideoCount   int32      `json:"video_count"`
-	StudentCount int32      `json:"student_count"`
-	TotalCount   int64      `json:"total_count"`
+	ID                    uuid.UUID  `json:"id"`
+	Slug                  string     `json:"slug"`
+	Title                 string     `json:"title"`
+	Subtitle              string     `json:"subtitle"`
+	Description           string     `json:"description"`
+	ThumbnailUrl          string     `json:"thumbnail_url"`
+	Level                 string     `json:"level"`
+	Language              string     `json:"language"`
+	Category              string     `json:"category"`
+	Status                string     `json:"status"`
+	IsPublic              bool       `json:"is_public"`
+	PriceLabel            string     `json:"price_label"`
+	WhatYouLearn          []string   `json:"what_you_learn"`
+	CreatedBy             *uuid.UUID `json:"created_by"`
+	CreatedAt             time.Time  `json:"created_at"`
+	UpdatedAt             time.Time  `json:"updated_at"`
+	FeePaise              int64      `json:"fee_paise"`
+	GstBp                 int32      `json:"gst_bp"`
+	CertificateEnabled    bool       `json:"certificate_enabled"`
+	CertificateTemplateID *uuid.UUID `json:"certificate_template_id"`
+	CertificateText       string     `json:"certificate_text"`
+	VideoCount            int32      `json:"video_count"`
+	StudentCount          int32      `json:"student_count"`
+	TotalCount            int64      `json:"total_count"`
 }
 
 func (q *Queries) ListCourses(ctx context.Context, arg ListCoursesParams) ([]ListCoursesRow, error) {
@@ -654,6 +674,9 @@ func (q *Queries) ListCourses(ctx context.Context, arg ListCoursesParams) ([]Lis
 			&i.UpdatedAt,
 			&i.FeePaise,
 			&i.GstBp,
+			&i.CertificateEnabled,
+			&i.CertificateTemplateID,
+			&i.CertificateText,
 			&i.VideoCount,
 			&i.StudentCount,
 			&i.TotalCount,
@@ -837,27 +860,32 @@ const updateCourse = `-- name: UpdateCourse :one
 UPDATE courses
 SET slug = $1, title = $2, subtitle = $3, description = $4, thumbnail_url = $5,
     level = $6, language = $7, category = $8, status = $9, is_public = $10,
-    price_label = $11, what_you_learn = $12, fee_paise = $13, gst_bp = $14, updated_at = now()
-WHERE id = $15
-RETURNING id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp
+    price_label = $11, what_you_learn = $12, fee_paise = $13, gst_bp = $14,
+    certificate_enabled = $15, certificate_template_id = $16,
+    certificate_text = $17, updated_at = now()
+WHERE id = $18
+RETURNING id, slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public, price_label, what_you_learn, created_by, created_at, updated_at, fee_paise, gst_bp, certificate_enabled, certificate_template_id, certificate_text
 `
 
 type UpdateCourseParams struct {
-	Slug         string    `json:"slug"`
-	Title        string    `json:"title"`
-	Subtitle     string    `json:"subtitle"`
-	Description  string    `json:"description"`
-	ThumbnailUrl string    `json:"thumbnail_url"`
-	Level        string    `json:"level"`
-	Language     string    `json:"language"`
-	Category     string    `json:"category"`
-	Status       string    `json:"status"`
-	IsPublic     bool      `json:"is_public"`
-	PriceLabel   string    `json:"price_label"`
-	WhatYouLearn []string  `json:"what_you_learn"`
-	FeePaise     int64     `json:"fee_paise"`
-	GstBp        int32     `json:"gst_bp"`
-	ID           uuid.UUID `json:"id"`
+	Slug                  string     `json:"slug"`
+	Title                 string     `json:"title"`
+	Subtitle              string     `json:"subtitle"`
+	Description           string     `json:"description"`
+	ThumbnailUrl          string     `json:"thumbnail_url"`
+	Level                 string     `json:"level"`
+	Language              string     `json:"language"`
+	Category              string     `json:"category"`
+	Status                string     `json:"status"`
+	IsPublic              bool       `json:"is_public"`
+	PriceLabel            string     `json:"price_label"`
+	WhatYouLearn          []string   `json:"what_you_learn"`
+	FeePaise              int64      `json:"fee_paise"`
+	GstBp                 int32      `json:"gst_bp"`
+	CertificateEnabled    bool       `json:"certificate_enabled"`
+	CertificateTemplateID *uuid.UUID `json:"certificate_template_id"`
+	CertificateText       string     `json:"certificate_text"`
+	ID                    uuid.UUID  `json:"id"`
 }
 
 func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) (Course, error) {
@@ -876,6 +904,9 @@ func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) (Cou
 		arg.WhatYouLearn,
 		arg.FeePaise,
 		arg.GstBp,
+		arg.CertificateEnabled,
+		arg.CertificateTemplateID,
+		arg.CertificateText,
 		arg.ID,
 	)
 	var i Course
@@ -898,6 +929,9 @@ func (q *Queries) UpdateCourse(ctx context.Context, arg UpdateCourseParams) (Cou
 		&i.UpdatedAt,
 		&i.FeePaise,
 		&i.GstBp,
+		&i.CertificateEnabled,
+		&i.CertificateTemplateID,
+		&i.CertificateText,
 	)
 	return i, err
 }

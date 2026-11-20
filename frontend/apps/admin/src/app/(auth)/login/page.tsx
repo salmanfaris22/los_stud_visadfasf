@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthService, errorMessage, useRpcMutation, useRpcQuery } from "@lms/api-client";
-import { Button, Field, Input, Separator } from "@lms/ui";
+import { Button, Field, Input, PasswordInput, Separator } from "@lms/ui";
 
 function GoogleIcon() {
   return (
@@ -41,7 +41,7 @@ function LoginForm() {
           <Input type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@institute.com" />
         </Field>
         <Field label={<span className="flex w-full justify-between">Password <Link href="/forgot-password" className="font-medium underline decoration-signal decoration-2 underline-offset-4 hover:decoration-foreground">Forgot?</Link></span>}>
-          <Input type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
         {error && <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">{error}</p>}
         <Button type="submit" size="lg" loading={login.isPending}>Sign in</Button>

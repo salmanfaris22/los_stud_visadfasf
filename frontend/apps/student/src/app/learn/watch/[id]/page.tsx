@@ -5,7 +5,6 @@ import { useParams, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight, ClipboardList, FileQuestion, Info, MessagesSquare, PlayCircle } from "lucide-react";
 import { Badge, Button, Card, EmptyState, LineBadge, Markdown, Progress, Skeleton, Tabs, TabsContent, TabsList, TabsTrigger, VideoPlayer, lineColor } from "@lms/ui";
 
-import { useSession } from "@/lib/session";
 import { TaskRow } from "@/features/learn/cards";
 import { Playlist } from "@/features/learn/playlist";
 import { VideoQA } from "@/features/learn/video-qa";
@@ -14,7 +13,6 @@ import { PortalService, useRpcQuery } from "@lms/api-client";
 function Watch() {
   const { id } = useParams<{ id: string }>();
   const params = useSearchParams();
-  const { me } = useSession();
   const q = useRpcQuery(PortalService.method.getWatchPage, { videoId: id });
   if (q.isLoading) return <div className="grid gap-6 lg:grid-cols-[1fr_400px]"><Skeleton className="aspect-video" /><Skeleton className="h-96" /></div>;
   const page = q.data?.page;
@@ -27,9 +25,9 @@ function Watch() {
       <div className="min-w-0">
         {/* dark stage in both themes */}
         <div className="rounded-[28px] bg-stage p-2 shadow-xl sm:p-3">
-          <VideoPlayer embedUrl={v.embedUrl} title={v.title} watermark={me ? `${me.name} · ${me.email}` : undefined} />
+          <VideoPlayer embedUrl={v.embedUrl} title={v.title} />
           <div className="flex items-center gap-3 px-2 pt-3 pb-1 text-white/70">
-            <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full transition-[width] duration-700" style={{ width: `${page.progressPct}%`, background: color }} /></span>
+            <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><span className="block h-full rounded-full bg-signal transition-[width] duration-700" style={{ width: `${page.progressPct}%` }} /></span>
             <span className="text-xs font-semibold tabular-nums">Course {page.progressPct}%</span>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { AuthService, useRpcQuery } from "@lms/api-client";
-import { ThemeToggle, cn } from "@lms/ui";
+import { BrandMark, ThemeToggle, cn } from "@lms/ui";
 
 const LINKS = [
   { href: "/#features", label: "Features" },
@@ -15,16 +15,6 @@ const LINKS = [
   { href: "/contact", label: "Contact" },
 ];
 
-/** Default mark: a play button inside a ring (video lessons). */
-export function SiteMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 32 32" className={cn("size-8", className)} aria-hidden>
-      <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" strokeWidth="3" />
-      <path d="M13.2 11.2v9.6c0 .8.86 1.28 1.54.86l7.6-4.8a1 1 0 0 0 0-1.72l-7.6-4.8c-.68-.42-1.54.06-1.54.86Z" fill="currentColor" />
-    </svg>
-  );
-}
-
 export function Brand({ name, logo }: { name: string; logo?: string }) {
   return (
     <Link href="/" className="flex items-center gap-2 rounded-full text-[22px] font-bold tracking-[-0.035em] text-[var(--site-violet)]">
@@ -32,7 +22,7 @@ export function Brand({ name, logo }: { name: string; logo?: string }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={logo} alt="" className="h-8 w-auto" />
       ) : (
-        <SiteMark />
+        <BrandMark />
       )}
       <span>{name}</span>
     </Link>

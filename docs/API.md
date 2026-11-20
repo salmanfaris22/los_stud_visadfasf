@@ -1,6 +1,6 @@
 # API reference
 
-The LMS API is gRPC only: **20 services, 188 RPCs**, served by one Go server on `:8080` that speaks gRPC, gRPC-Web and the Connect protocol (JSON or binary).
+The LMS API is gRPC only: **20 services, 196 RPCs**, served by one Go server on `:8080` that speaks gRPC, gRPC-Web and the Connect protocol (JSON or binary).
 The contract is `proto/lms/v1/*.proto` (generated from `backend/internal/dto` and `backend/tools/rpcgen/spec.txt` with `make gen`).
 
 | How to call | Detail |
@@ -95,6 +95,14 @@ Course certificates: issue, revoke, download as PDF and verify publicly.
 | `ListMyCertificates` | read | student | My certificates |
 | `GetMyCertificatePdf` | read | student | Download my certificate |
 | `VerifyCertificate` | read | public · 60/1 min | Verify a certificate code |
+| `ListCertificateTemplates` | read | `certificates:view` | Certificate templates |
+| `ListCertificateTemplateOptions` | read | staff | Certificate templates for pickers |
+| `GetCertificateTemplate` | read | `certificates:view` | Get a certificate template |
+| `CreateCertificateTemplate` | write | `certificates:create` | Create a certificate template |
+| `UpdateCertificateTemplate` | write | `certificates:edit` | Update a certificate template |
+| `SetDefaultCertificateTemplate` | write | `certificates:edit` | Make a template the default |
+| `DeleteCertificateTemplate` | write | `certificates:delete` | Delete a certificate template (not the default) |
+| `PreviewCertificateTemplate` | write | `certificates:view` · 30/1 min | Render a template as a sample PDF |
 
 ## CommentService
 

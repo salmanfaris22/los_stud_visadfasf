@@ -37,6 +37,7 @@ func Register(r chi.Router, s *service.Services, d *service.Deps) {
 	r.Get("/api/v1/settings/google/connect", h.googleConnect)
 	r.Get("/api/v1/settings/google/callback", h.googleConnectCallback)
 	r.Get("/api/v1/files/{id}", h.file)
+	r.Get("/api/v1/certificate-art/{name}", certificateArt)
 }
 
 // message is the user-facing text of a service error.

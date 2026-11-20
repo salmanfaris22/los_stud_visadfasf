@@ -24,6 +24,13 @@
   --input: #d3d3d3;
   --sidebar: #ffffff;
   --track: #e5e5e5;
+  /* MS Ai School brand blue (from the logo) replaces the yellow signal. */
+  --signal: #12367c;
+  --signal-strong: #0c2858;
+  --signal-foreground: #ffffff;
+  --signal-text: #12367c;
+  --avatar-bg: #12367c;
+  --avatar-fg: #ffffff;
 }
 
 .dark {
@@ -44,4 +51,11 @@
   --sidebar: #0f0f0f;
   --stage: #000000;
   --track: #3f3f3f;
+  /* A slightly lifted navy so it still reads on black; text gets a lighter blue. */
+  --signal: #1f4fb5;
+  --signal-strong: #2a5fcf;
+  --signal-foreground: #ffffff;
+  --signal-text: #8fb0f5;
+  --avatar-bg: #1f4fb5;
+  --avatar-fg: #ffffff;
 }

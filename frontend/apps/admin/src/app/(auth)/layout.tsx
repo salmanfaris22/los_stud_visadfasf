@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="grid min-h-screen lg:grid-cols-[1fr_1.1fr]">
       <div className="flex flex-col p-6 sm:p-10">
-        <div className="flex items-center gap-2.5 font-display text-lg font-extrabold"><BrandMark /> LMS Admin</div>
+        <div className="flex items-center gap-2.5 font-display text-lg font-extrabold"><BrandMark /> Ai school Admin</div>
         <div className="flex flex-1 items-center justify-center py-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="w-full max-w-sm">
             {children}
@@ -38,7 +38,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 </motion.li>
               ))}
             </ul>
-            <p className="mt-10 text-sm text-muted-foreground/70">© {new Date().getFullYear()} LMS</p>
+            <p className="mt-10 text-sm text-muted-foreground/70">© {new Date().getFullYear()} MS Ai School</p>
           </div>
         </div>
       </div>

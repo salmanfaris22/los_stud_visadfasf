@@ -80,13 +80,14 @@ WHERE q.video_id = @video_id
 ORDER BY cvi.position;
 
 -- name: IssueCertificate :one
-INSERT INTO certificates (code, student_id, course_id, issued_by)
-VALUES (@code, @student_id, @course_id, sqlc.narg('issued_by'))
+INSERT INTO certificates (code, student_id, course_id, issued_by, template_id)
+VALUES (@code, @student_id, @course_id, sqlc.narg('issued_by'), sqlc.narg('template_id'))
 ON CONFLICT (student_id, course_id) DO UPDATE SET revoked_at = NULL
 RETURNING *;
 
 -- name: GetCertificate :one
-SELECT ce.*, u.name AS student_name, u.email AS student_email, c.title AS course_title
+SELECT ce.*, u.name AS student_name, u.email AS student_email, c.title AS course_title,
+       c.certificate_text AS course_certificate_text, c.certificate_template_id AS course_template_id
 FROM certificates ce JOIN users u ON u.id = ce.student_id JOIN courses c ON c.id = ce.course_id
 WHERE ce.id = $1;
 

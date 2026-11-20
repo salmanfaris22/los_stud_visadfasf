@@ -18,7 +18,7 @@ function Checkin() {
       ) : (
         <><XCircle className="size-16 text-destructive" /><h1 className="font-display text-2xl font-extrabold">Check-in failed</h1><p className="text-muted-foreground">{token ? errorMessage(checkin.error) : "Scan the QR code shown by your mentor."}</p></>
       )}
-      <Button asChild variant="outline"><Link href="/learn/attendance">My attendance</Link></Button>
+      <Button asChild variant="outline"><Link href="/learn">Go to home</Link></Button>
     </div>
   );
 }

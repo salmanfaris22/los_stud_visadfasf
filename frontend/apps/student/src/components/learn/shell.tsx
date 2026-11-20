@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import {
-  ArrowRight, Award, BookOpen, CalendarDays, ClipboardList, Home, LogOut, Megaphone, Menu, PanelLeft, QrCode, Search, User, Video,
+  ArrowRight, Award, BookOpen, CalendarDays, ClipboardList, Home, LogOut, Megaphone, Menu, PanelLeft, Search, User, Video,
 } from "lucide-react";
 import { NotificationBell } from "@lms/shared";
 import {
@@ -22,7 +22,6 @@ const NAV = [
   { href: "/learn/calendar", label: "Calendar", icon: CalendarDays },
   { href: "/learn/certificates", label: "Certificates", icon: Award },
   { href: "/learn/announcements", label: "Announcements", icon: Megaphone },
-  { href: "/learn/attendance", label: "Attendance", icon: QrCode },
 ];
 
 const MOBILE = [NAV[0]!, NAV[1]!, NAV[2]!, NAV[3]!, { href: "/learn/profile", label: "Profile", icon: User }];
@@ -136,7 +135,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setDrawer(true)} aria-label="Menu"><Menu /></Button>
         <Link href="/learn" className="mr-2 flex items-center gap-2.5 font-display text-[17px] font-extrabold">
           <BrandMark />
-          <span className="hidden sm:inline">LMS</span>
+          <span className="hidden sm:inline">Ai school</span>
         </Link>
         <button onClick={() => setJump(true)} className="mx-auto hidden h-11 w-full max-w-md items-center gap-3 rounded-full border bg-card px-4 text-sm text-muted-foreground shadow-xs transition hover:border-foreground/30 md:flex">
           <Search className="size-4" /> Search your courses
@@ -174,7 +173,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       </div>
       <Dialog open={drawer} onOpenChange={setDrawer}>
         <SheetContent side="left">
-          <div className="mb-2 flex items-center gap-2.5 px-2 pt-1 font-display text-lg font-extrabold"><BrandMark /> LMS</div>
+          <div className="mb-2 flex items-center gap-2.5 px-2 pt-1 font-display text-lg font-extrabold"><BrandMark /> Ai school</div>
           <SideNav onNavigate={() => setDrawer(false)} id="drawer" />
         </SheetContent>
       </Dialog>

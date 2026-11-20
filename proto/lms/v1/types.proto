@@ -394,9 +394,65 @@ message Certificate {
   string verify_url = 11;
 }
 
+// CertificateField is one item drawn on a certificate template. Positions and sizes are millimetres
+// from the top-left of an A4 landscape page (297 x 210); text placeholders are filled in per certificate.
+message CertificateField {
+  string id = 1 [(buf.validate.field).string = {min_len: 1, max_len: 40}];
+  string kind = 2 [(buf.validate.field).string = {in: ["text", "qr", "image"]}];
+  // Name shown in the template editor
+  string label = 3 [(buf.validate.field).string = {max_len: 60}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  // Text with {student} {course} {course_text} {year} {date} {code} {verify_url}; **bold** marks bold words
+  string text = 4 [(buf.validate.field).string = {max_len: 2000}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  // Image URL (image fields)
+  string src = 5 [(buf.validate.field).string = {max_len: 600}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  double x = 6 [(buf.validate.field).double = {gte: -50, lte: 297}];
+  double y = 7 [(buf.validate.field).double = {gte: -50, lte: 210}];
+  // Box width; the QR code size
+  double w = 8 [(buf.validate.field).double = {gte: 1, lte: 297}];
+  string font = 9 [(buf.validate.field).string = {in: ["sans", "sans-light", "sans-medium", "sans-semibold", "sans-bold", "sans-extrabold", "script"]}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  // Font size in points
+  double size = 10 [(buf.validate.field).double = {gte: 0, lte: 200}];
+  string color = 11 [(buf.validate.field).string = {pattern: "^#[0-9a-fA-F]{6}$"}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  string align = 12 [(buf.validate.field).string = {in: ["left", "center", "right"]}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  // Letter spacing in mm
+  double spacing = 13 [(buf.validate.field).double = {gte: -5, lte: 20}];
+  // Line height as a multiple of the font size
+  double line_height = 14 [(buf.validate.field).double = {gte: 0, lte: 5}];
+  bool uppercase = 15;
+  // Shrink the text so it stays on one line
+  bool fit = 16;
+}
+
 message CertificateInput {
   string student_id = 1 [(buf.validate.field).string.uuid = true];
   string course_id = 2 [(buf.validate.field).string.uuid = true];
+}
+
+// CertificateTemplate is a reusable certificate design: a background image plus fields.
+message CertificateTemplate {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string background_url = 3;
+  repeated CertificateField fields = 4;
+  bool is_default = 5;
+  // Courses that use this template
+  int32 course_count = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message CertificateTemplateInput {
+  string name = 1 [(buf.validate.field).string = {min_len: 1, max_len: 120}];
+  string background_url = 2 [(buf.validate.field).string = {max_len: 600}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
+  repeated CertificateField fields = 3 [(buf.validate.field).repeated = {max_items: 40}];
+  // Make this the default template
+  bool is_default = 4;
+}
+
+message CertificateTemplateOption {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  bool is_default = 3;
 }
 
 message CertificateVerification {
@@ -610,11 +666,16 @@ message Course {
   // GST rate in basis points (1800 = 18%)
   int32 gst_bp = 14;
   repeated string what_you_learn = 15;
-  int32 video_count = 16;
-  int32 student_count = 17;
-  repeated Person mentors = 18;
-  google.protobuf.Timestamp created_at = 19;
-  google.protobuf.Timestamp updated_at = 20;
+  // Certificate settings: off, a chosen template, or the default template (nil).
+  bool certificate_enabled = 16;
+  optional string certificate_template_id = 17 [(buf.validate.field).string.pattern = "^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"];
+  // Course sentence printed on the certificate ({course_text})
+  string certificate_text = 18;
+  int32 video_count = 19;
+  int32 student_count = 20;
+  repeated Person mentors = 21;
+  google.protobuf.Timestamp created_at = 22;
+  google.protobuf.Timestamp updated_at = 23;
 }
 
 message CourseInput {
@@ -636,6 +697,12 @@ message CourseInput {
   optional int32 gst_bp = 13 [(buf.validate.field).int32 = {gte: 0, lte: 10000}];
   repeated string what_you_learn = 14 [(buf.validate.field).repeated = {max_items: 20}];
   repeated string mentor_ids = 15 [(buf.validate.field).repeated = {items: {string: {uuid: true}}}];
+  // Issue a certificate when the course is completed (default on)
+  optional bool certificate_enabled = 16;
+  // Certificate template; empty = the default template
+  optional string certificate_template_id = 17 [(buf.validate.field).string.pattern = "^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"];
+  // Course sentence printed on the certificate ({course_text})
+  string certificate_text = 18 [(buf.validate.field).string = {max_len: 1000}, (buf.validate.field).ignore = IGNORE_IF_ZERO_VALUE];
 }
 
 message CourseOption {
@@ -1437,7 +1504,7 @@ message PlaylistItem {
 }
 
 message PresignInput {
-  string purpose = 1 [(buf.validate.field).string = {in: ["submission", "comment", "avatar", "thumbnail", "cms", "blog"]}];
+  string purpose = 1 [(buf.validate.field).string = {in: ["submission", "comment", "avatar", "thumbnail", "cms", "blog", "certificate"]}];
   string file_name = 2 [(buf.validate.field).string = {min_len: 1, max_len: 200}];
   string mime = 3 [(buf.validate.field).string = {min_len: 3, max_len: 120}];
   int32 size = 4 [(buf.validate.field).int32 = {gte: 1}];

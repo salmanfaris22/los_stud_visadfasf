@@ -3,7 +3,7 @@ import * as React from "react";
 import { Plus, X } from "lucide-react";
 import type { Course, CourseInput as CourseInputMessage, Draft } from "@lms/api-client";
 import { Button, Field, Input, MultiSelect, Select, Switch, Textarea } from "@lms/ui";
-import { useStaffOptions } from "@/features/common/options";
+import { useCertificateTemplateOptions, useStaffOptions } from "@/features/common/options";
 import { ImageUpload } from "@lms/shared";
 import { useSession } from "@/lib/session";
 
@@ -15,12 +15,15 @@ export function emptyCourse(c?: Course): CourseInput {
     level: (c?.level as CourseInput["level"]) ?? "beginner", language: c?.language ?? "English", category: c?.category ?? "",
     status: (c?.status as CourseInput["status"]) ?? "draft", isPublic: c?.isPublic ?? true, priceLabel: c?.priceLabel ?? "",
     whatYouLearn: c?.whatYouLearn ?? [], mentorIds: c?.mentors.map((m) => m.id) ?? [], feePaise: c?.feePaise ?? 0n,
+    certificateEnabled: c?.certificateEnabled ?? true, certificateTemplateId: c?.certificateTemplateId ?? "", certificateText: c?.certificateText ?? "",
   };
 }
 
 /** All course fields; used on the course page and in the "new course" dialog. */
 export function CourseForm({ value, onChange, compact }: { value: CourseInput; onChange: (v: CourseInput) => void; compact?: boolean }) {
   const staff = useStaffOptions();
+  const templates = useCertificateTemplateOptions();
+  const defaultTemplate = templates.data?.find((t) => t.isDefault);
   const { me } = useSession();
   const set = <K extends keyof CourseInput>(k: K, v: CourseInput[K]) => onChange({ ...value, [k]: v });
   const learn = value.whatYouLearn ?? [];
@@ -50,6 +53,25 @@ export function CourseForm({ value, onChange, compact }: { value: CourseInput; o
               <Button type="button" variant="outline" size="sm" className="w-fit" onClick={() => set("whatYouLearn", [...learn, ""])}><Plus /> Add point</Button>
             </div>
           </Field>
+          <div className="grid gap-4 rounded-lg border p-3 sm:grid-cols-[minmax(0,280px)_1fr]">
+            <Field label="Certificate" hint="Given automatically when every task is approved">
+              <Select
+                value={value.certificateEnabled === false ? "off" : value.certificateTemplateId || ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  onChange({ ...value, certificateEnabled: v !== "off", certificateTemplateId: v === "off" ? value.certificateTemplateId : v });
+                }}
+              >
+                <option value="">Default template{defaultTemplate ? ` (${defaultTemplate.name})` : ""}</option>
+                {templates.data?.filter((t) => !t.isDefault).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                <option value="off">No certificate</option>
+              </Select>
+            </Field>
+            <Field label="Certificate text" hint="Printed after the course name, e.g. what the course covered">
+              <Textarea rows={2} maxLength={1000} disabled={value.certificateEnabled === false} value={value.certificateText ?? ""} onChange={(e) => set("certificateText", e.target.value)}
+                placeholder="The course covered AI-assisted scriptwriting, AI image and video generation…" />
+            </Field>
+          </div>
         </>
       )}
       <div className="grid gap-4 sm:grid-cols-3">

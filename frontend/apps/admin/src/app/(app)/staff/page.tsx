@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { type StaffInput, StaffService, useRpcMutation, useRpcQuery, type Draft } from "@lms/api-client";
 import {
   Avatar, Badge, Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, EmptyState, Field, Input, MultiSelect, PageHeader,
-  Pagination, SearchInput, Select, Skeleton, StatusBadge, Switch, TBody, TD, TH, THead, TR, Table, timeAgo, useConfirm,
+  Pagination, PasswordInput, SearchInput, Select, Skeleton, StatusBadge, Switch, TBody, TD, TH, THead, TR, Table, timeAgo, useConfirm,
 } from "@lms/ui";
 
 import { feedback } from "@/lib/feedback";
@@ -35,7 +35,7 @@ function StaffDialog({ open, onOpenChange, staffId }: { open: boolean; onOpenCha
             <Field label="Full name" required><Input required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></Field>
             <Field label="Email" required><Input type="email" required value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></Field>
             <Field label="Phone"><Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} /></Field>
-            <Field label="Password" hint={staffId ? "Leave empty to keep" : "Leave empty to email an invite"}><Input type="password" minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} autoComplete="new-password" /></Field>
+            <Field label="Password" hint={staffId ? "Leave empty to keep" : "Leave empty to email an invite"}><PasswordInput minLength={8} value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} autoComplete="new-password" /></Field>
           </div>
           <Field label="Roles" hint="Permissions come from roles. A 'scoped' role limits the user to assigned courses and batches.">
             <MultiSelect value={f.roleIds} onChange={(v) => setF({ ...f, roleIds: v })} options={(roles.data ?? []).map((r) => ({ value: r.id, label: r.name, hint: r.scoped ? "scoped" : "" }))} placeholder="Choose roles" />

@@ -1,13 +1,15 @@
 "use client";
 import * as React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Award, Ban, Download, ExternalLink, Plus } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, EmptyState, Field, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table, formatDate, useConfirm } from "@lms/ui";
+import { Button, Card, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, EmptyState, Field, PageHeader, Pagination, SearchInput, Select, Skeleton, StatusBadge, TBody, TD, TH, THead, TR, Table, Tabs, TabsContent, TabsList, TabsTrigger, formatDate, useConfirm } from "@lms/ui";
 
 import { rpc } from "@/lib/api";
 import { download, feedback } from "@/lib/feedback";
 import { Can } from "@/lib/session";
 import { useCourseOptions } from "@/features/common/options";
+import { TemplatesTab } from "@/features/certificates/templates-tab";
 import { CertificateService, StudentService, useRpcMutation, useRpcQuery } from "@lms/api-client";
 
 function IssueDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
@@ -30,8 +32,10 @@ function IssueDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: 
   );
 }
 
-export default function CertificatesPage() {
+function Certificates() {
   const qc = useQueryClient();
+  const router = useRouter();
+  const tab = useSearchParams().get("tab") === "templates" ? "templates" : "issued";
   const confirm = useConfirm();
   const courses = useCourseOptions();
   const [q, setQ] = React.useState("");
@@ -42,7 +46,14 @@ export default function CertificatesPage() {
   const revoke = useRpcMutation(CertificateService.method.revokeCertificate, feedback(qc, "Certificate revoked", [CertificateService]));
   return (
     <>
-      <PageHeader title="Certificates" description="Every certificate has a QR code and a public verification page." actions={<Can module="certificates" action="create"><Button onClick={() => setIssuing(true)}><Plus /> Issue</Button></Can>} />
+      <PageHeader title="Certificates" description="Every certificate has a QR code and a public verification page." actions={tab === "issued" && <Can module="certificates" action="create"><Button onClick={() => setIssuing(true)}><Plus /> Issue</Button></Can>} />
+      <Tabs value={tab} onValueChange={(v) => router.replace(v === "templates" ? "/certificates?tab=templates" : "/certificates")}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="issued">Issued</TabsTrigger>
+          <TabsTrigger value="templates">Templates</TabsTrigger>
+        </TabsList>
+        <TabsContent value="templates"><TemplatesTab /></TabsContent>
+        <TabsContent value="issued">
       <Card className="p-4">
         <div className="mb-4 grid gap-3 sm:grid-cols-3">
           <SearchInput value={q} onChange={(v) => { setQ(v); setPage(1); }} placeholder="Student or code…" />
@@ -71,7 +82,13 @@ export default function CertificatesPage() {
         )}
         {list.data && <Pagination page={page} perPage={list.data.perPage} total={list.data.total} onPage={setPage} />}
       </Card>
+        </TabsContent>
+      </Tabs>
       <IssueDialog open={issuing} onOpenChange={setIssuing} />
     </>
   );
+}
+
+export default function CertificatesPage() {
+  return <React.Suspense><Certificates /></React.Suspense>;
 }

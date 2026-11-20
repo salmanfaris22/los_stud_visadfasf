@@ -3,7 +3,7 @@ import * as React from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { type Student, type StudentDetail, StudentService, useRpcMutation } from "@lms/api-client";
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, Select } from "@lms/ui";
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Field, Input, PasswordInput, Select } from "@lms/ui";
 
 import { feedback } from "@/lib/feedback";
 import { useBatchOptions, useCourseOptions } from "@/features/common/options";
@@ -61,7 +61,7 @@ export function StudentFormDialog({ open, onOpenChange, student, onSaved }: { op
             <Field label="Email" required><Input type="email" required value={form.email} onChange={set("email")} /></Field>
             <Field label="Phone"><Input value={form.phone} onChange={set("phone")} placeholder="+91…" /></Field>
             <Field label="Password" hint={student ? "Leave empty to keep the current password" : "Leave empty to email an invite link"}>
-              <Input type="password" minLength={8} value={form.password} onChange={set("password")} autoComplete="new-password" />
+              <PasswordInput minLength={8} value={form.password} onChange={set("password")} autoComplete="new-password" />
             </Field>
             {student && (
               <Field label="Status"><Select value={form.status} onChange={set("status")}><option value="active">Active</option><option value="disabled">Disabled (cannot sign in)</option></Select></Field>

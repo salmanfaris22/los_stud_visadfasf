@@ -22,11 +22,15 @@ type Course struct {
 	FeePaise     int64     `json:"fee_paise" doc:"Course fee incl. GST, in paise"`
 	GSTBP        int32     `json:"gst_bp" doc:"GST rate in basis points (1800 = 18%)"`
 	WhatYouLearn []string  `json:"what_you_learn"`
-	VideoCount   int32     `json:"video_count"`
-	StudentCount int32     `json:"student_count"`
-	Mentors      []Person  `json:"mentors"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	// Certificate settings: off, a chosen template, or the default template (nil).
+	CertificateEnabled    bool       `json:"certificate_enabled"`
+	CertificateTemplateID *uuid.UUID `json:"certificate_template_id"`
+	CertificateText       string     `json:"certificate_text" doc:"Course sentence printed on the certificate ({course_text})"`
+	VideoCount            int32      `json:"video_count"`
+	StudentCount          int32      `json:"student_count"`
+	Mentors               []Person   `json:"mentors"`
+	CreatedAt             time.Time  `json:"created_at"`
+	UpdatedAt             time.Time  `json:"updated_at"`
 }
 
 type CourseInput struct {
@@ -45,6 +49,10 @@ type CourseInput struct {
 	GSTBP        *int32      `json:"gst_bp,omitempty" minimum:"0" maximum:"10000" doc:"GST rate in basis points; empty = default rate"`
 	WhatYouLearn []string    `json:"what_you_learn,omitempty" maxItems:"20"`
 	MentorIDs    []uuid.UUID `json:"mentor_ids,omitempty"`
+	// nil keeps certificates on (the default).
+	CertificateEnabled    *bool      `json:"certificate_enabled,omitempty" doc:"Issue a certificate when the course is completed (default on)"`
+	CertificateTemplateID *uuid.UUID `json:"certificate_template_id,omitempty" doc:"Certificate template; empty = the default template"`
+	CertificateText       string     `json:"certificate_text,omitempty" maxLength:"1000" doc:"Course sentence printed on the certificate ({course_text})"`
 }
 
 type CourseFilter struct {

@@ -12,7 +12,7 @@ type Upload struct {
 }
 
 type PresignInput struct {
-	Purpose  string `json:"purpose" enum:"submission,comment,avatar,thumbnail,cms,blog"`
+	Purpose  string `json:"purpose" enum:"submission,comment,avatar,thumbnail,cms,blog,certificate"`
 	FileName string `json:"file_name" minLength:"1" maxLength:"200"`
 	Mime     string `json:"mime" minLength:"3" maxLength:"120"`
 	Size     int64  `json:"size" minimum:"1"`

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { Award, BookOpen, ClipboardCheck, Mail, Pencil, Phone, ShieldCheck, Users } from "lucide-react";
 import {
-  Avatar, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Field, Input, Separator, Skeleton, Textarea, cn, timeAgo,
+  Avatar, Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Field, Input, PasswordInput, Separator, Skeleton, Textarea, cn, timeAgo,
 } from "@lms/ui";
 import { AuthService, useRpcMutation, AdminService, StaffService, useRpcQuery } from "@lms/api-client";
 import { ImageUpload } from "@lms/shared";
@@ -42,8 +42,8 @@ function EditProfile({ open, onOpenChange }: { open: boolean; onOpenChange: (v: 
         </form>
         <Separator className="my-2" />
         <form className="grid gap-4 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); change.mutate(pw); }}>
-          <Field label="Current password"><Input type="password" value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} autoComplete="current-password" /></Field>
-          <Field label="New password" hint="At least 8 characters"><Input type="password" minLength={8} required value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} autoComplete="new-password" /></Field>
+          <Field label="Current password"><PasswordInput value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} autoComplete="current-password" /></Field>
+          <Field label="New password" hint="At least 8 characters"><PasswordInput minLength={8} required value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} autoComplete="new-password" /></Field>
           <Button type="submit" variant="outline" className="w-fit" loading={change.isPending}>Update password</Button>
         </form>
       </DialogContent>

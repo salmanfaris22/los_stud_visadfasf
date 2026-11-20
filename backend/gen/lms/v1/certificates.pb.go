@@ -672,6 +672,694 @@ func (x *VerifyCertificateResponse) GetVerification() *CertificateVerification {
 	return nil
 }
 
+type ListCertificateTemplatesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCertificateTemplatesRequest) Reset() {
+	*x = ListCertificateTemplatesRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCertificateTemplatesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCertificateTemplatesRequest) ProtoMessage() {}
+
+func (x *ListCertificateTemplatesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCertificateTemplatesRequest.ProtoReflect.Descriptor instead.
+func (*ListCertificateTemplatesRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{14}
+}
+
+type ListCertificateTemplatesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*CertificateTemplate `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCertificateTemplatesResponse) Reset() {
+	*x = ListCertificateTemplatesResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCertificateTemplatesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCertificateTemplatesResponse) ProtoMessage() {}
+
+func (x *ListCertificateTemplatesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCertificateTemplatesResponse.ProtoReflect.Descriptor instead.
+func (*ListCertificateTemplatesResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ListCertificateTemplatesResponse) GetItems() []*CertificateTemplate {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+type ListCertificateTemplateOptionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCertificateTemplateOptionsRequest) Reset() {
+	*x = ListCertificateTemplateOptionsRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCertificateTemplateOptionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCertificateTemplateOptionsRequest) ProtoMessage() {}
+
+func (x *ListCertificateTemplateOptionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCertificateTemplateOptionsRequest.ProtoReflect.Descriptor instead.
+func (*ListCertificateTemplateOptionsRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{16}
+}
+
+type ListCertificateTemplateOptionsResponse struct {
+	state         protoimpl.MessageState       `protogen:"open.v1"`
+	Items         []*CertificateTemplateOption `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCertificateTemplateOptionsResponse) Reset() {
+	*x = ListCertificateTemplateOptionsResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCertificateTemplateOptionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCertificateTemplateOptionsResponse) ProtoMessage() {}
+
+func (x *ListCertificateTemplateOptionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCertificateTemplateOptionsResponse.ProtoReflect.Descriptor instead.
+func (*ListCertificateTemplateOptionsResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ListCertificateTemplateOptionsResponse) GetItems() []*CertificateTemplateOption {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+type GetCertificateTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCertificateTemplateRequest) Reset() {
+	*x = GetCertificateTemplateRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCertificateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCertificateTemplateRequest) ProtoMessage() {}
+
+func (x *GetCertificateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCertificateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*GetCertificateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GetCertificateTemplateRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GetCertificateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Template      *CertificateTemplate   `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCertificateTemplateResponse) Reset() {
+	*x = GetCertificateTemplateResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCertificateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCertificateTemplateResponse) ProtoMessage() {}
+
+func (x *GetCertificateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCertificateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*GetCertificateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *GetCertificateTemplateResponse) GetTemplate() *CertificateTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type CreateCertificateTemplateRequest struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Input         *CertificateTemplateInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCertificateTemplateRequest) Reset() {
+	*x = CreateCertificateTemplateRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCertificateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCertificateTemplateRequest) ProtoMessage() {}
+
+func (x *CreateCertificateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCertificateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*CreateCertificateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *CreateCertificateTemplateRequest) GetInput() *CertificateTemplateInput {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+type CreateCertificateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Template      *CertificateTemplate   `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCertificateTemplateResponse) Reset() {
+	*x = CreateCertificateTemplateResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCertificateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCertificateTemplateResponse) ProtoMessage() {}
+
+func (x *CreateCertificateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCertificateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*CreateCertificateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *CreateCertificateTemplateResponse) GetTemplate() *CertificateTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type UpdateCertificateTemplateRequest struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Id            string                    `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Input         *CertificateTemplateInput `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCertificateTemplateRequest) Reset() {
+	*x = UpdateCertificateTemplateRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCertificateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCertificateTemplateRequest) ProtoMessage() {}
+
+func (x *UpdateCertificateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCertificateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCertificateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *UpdateCertificateTemplateRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UpdateCertificateTemplateRequest) GetInput() *CertificateTemplateInput {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+type UpdateCertificateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Template      *CertificateTemplate   `protobuf:"bytes,1,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCertificateTemplateResponse) Reset() {
+	*x = UpdateCertificateTemplateResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCertificateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCertificateTemplateResponse) ProtoMessage() {}
+
+func (x *UpdateCertificateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCertificateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*UpdateCertificateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *UpdateCertificateTemplateResponse) GetTemplate() *CertificateTemplate {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type SetDefaultCertificateTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetDefaultCertificateTemplateRequest) Reset() {
+	*x = SetDefaultCertificateTemplateRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetDefaultCertificateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetDefaultCertificateTemplateRequest) ProtoMessage() {}
+
+func (x *SetDefaultCertificateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetDefaultCertificateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*SetDefaultCertificateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *SetDefaultCertificateTemplateRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type SetDefaultCertificateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetDefaultCertificateTemplateResponse) Reset() {
+	*x = SetDefaultCertificateTemplateResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetDefaultCertificateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetDefaultCertificateTemplateResponse) ProtoMessage() {}
+
+func (x *SetDefaultCertificateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetDefaultCertificateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*SetDefaultCertificateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{25}
+}
+
+type DeleteCertificateTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCertificateTemplateRequest) Reset() {
+	*x = DeleteCertificateTemplateRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCertificateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCertificateTemplateRequest) ProtoMessage() {}
+
+func (x *DeleteCertificateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCertificateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*DeleteCertificateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *DeleteCertificateTemplateRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteCertificateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteCertificateTemplateResponse) Reset() {
+	*x = DeleteCertificateTemplateResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteCertificateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteCertificateTemplateResponse) ProtoMessage() {}
+
+func (x *DeleteCertificateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteCertificateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*DeleteCertificateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{27}
+}
+
+type PreviewCertificateTemplateRequest struct {
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Input         *CertificateTemplateInput `protobuf:"bytes,1,opt,name=input,proto3" json:"input,omitempty"`
+	CourseId      string                    `protobuf:"bytes,2,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PreviewCertificateTemplateRequest) Reset() {
+	*x = PreviewCertificateTemplateRequest{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PreviewCertificateTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PreviewCertificateTemplateRequest) ProtoMessage() {}
+
+func (x *PreviewCertificateTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PreviewCertificateTemplateRequest.ProtoReflect.Descriptor instead.
+func (*PreviewCertificateTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *PreviewCertificateTemplateRequest) GetInput() *CertificateTemplateInput {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+func (x *PreviewCertificateTemplateRequest) GetCourseId() string {
+	if x != nil {
+		return x.CourseId
+	}
+	return ""
+}
+
+type PreviewCertificateTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	File          *File                  `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PreviewCertificateTemplateResponse) Reset() {
+	*x = PreviewCertificateTemplateResponse{}
+	mi := &file_lms_v1_certificates_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PreviewCertificateTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PreviewCertificateTemplateResponse) ProtoMessage() {}
+
+func (x *PreviewCertificateTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_certificates_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PreviewCertificateTemplateResponse.ProtoReflect.Descriptor instead.
+func (*PreviewCertificateTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_lms_v1_certificates_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *PreviewCertificateTemplateResponse) GetFile() *File {
+	if x != nil {
+		return x.File
+	}
+	return nil
+}
+
 var File_lms_v1_certificates_proto protoreflect.FileDescriptor
 
 const file_lms_v1_certificates_proto_rawDesc = "" +
@@ -710,7 +1398,37 @@ const file_lms_v1_certificates_proto_rawDesc = "" +
 	"\x18VerifyCertificateRequest\x12\x1d\n" +
 	"\x04code\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18(R\x04code\"`\n" +
 	"\x19VerifyCertificateResponse\x12C\n" +
-	"\fverification\x18\x01 \x01(\v2\x1f.lms.v1.CertificateVerificationR\fverification2\xb6\x06\n" +
+	"\fverification\x18\x01 \x01(\v2\x1f.lms.v1.CertificateVerificationR\fverification\"!\n" +
+	"\x1fListCertificateTemplatesRequest\"U\n" +
+	" ListCertificateTemplatesResponse\x121\n" +
+	"\x05items\x18\x01 \x03(\v2\x1b.lms.v1.CertificateTemplateR\x05items\"'\n" +
+	"%ListCertificateTemplateOptionsRequest\"a\n" +
+	"&ListCertificateTemplateOptionsResponse\x127\n" +
+	"\x05items\x18\x01 \x03(\v2!.lms.v1.CertificateTemplateOptionR\x05items\"9\n" +
+	"\x1dGetCertificateTemplateRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\"Y\n" +
+	"\x1eGetCertificateTemplateResponse\x127\n" +
+	"\btemplate\x18\x01 \x01(\v2\x1b.lms.v1.CertificateTemplateR\btemplate\"b\n" +
+	" CreateCertificateTemplateRequest\x12>\n" +
+	"\x05input\x18\x01 \x01(\v2 .lms.v1.CertificateTemplateInputB\x06\xbaH\x03\xc8\x01\x01R\x05input\"\\\n" +
+	"!CreateCertificateTemplateResponse\x127\n" +
+	"\btemplate\x18\x01 \x01(\v2\x1b.lms.v1.CertificateTemplateR\btemplate\"|\n" +
+	" UpdateCertificateTemplateRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12>\n" +
+	"\x05input\x18\x02 \x01(\v2 .lms.v1.CertificateTemplateInputB\x06\xbaH\x03\xc8\x01\x01R\x05input\"\\\n" +
+	"!UpdateCertificateTemplateResponse\x127\n" +
+	"\btemplate\x18\x01 \x01(\v2\x1b.lms.v1.CertificateTemplateR\btemplate\"@\n" +
+	"$SetDefaultCertificateTemplateRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\"'\n" +
+	"%SetDefaultCertificateTemplateResponse\"<\n" +
+	" DeleteCertificateTemplateRequest\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\"#\n" +
+	"!DeleteCertificateTemplateResponse\"\xd9\x01\n" +
+	"!PreviewCertificateTemplateRequest\x12>\n" +
+	"\x05input\x18\x01 \x01(\v2 .lms.v1.CertificateTemplateInputB\x06\xbaH\x03\xc8\x01\x01R\x05input\x12t\n" +
+	"\tcourse_id\x18\x02 \x01(\tBW\xbaHTrR2P^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$R\bcourseId\"F\n" +
+	"\"PreviewCertificateTemplateResponse\x12 \n" +
+	"\x04file\x18\x01 \x01(\v2\f.lms.v1.FileR\x04file2\xcc\x0f\n" +
 	"\x12CertificateService\x12t\n" +
 	"\x10ListCertificates\x12\x1f.lms.v1.ListCertificatesRequest\x1a .lms.v1.ListCertificatesResponse\"\x1d\xaa\xbb\x18\x16*\x14\n" +
 	"\fcertificates\x12\x04view\x90\x02\x01\x12s\n" +
@@ -723,7 +1441,23 @@ const file_lms_v1_certificates_proto_rawDesc = "" +
 	"\x12ListMyCertificates\x12!.lms.v1.ListMyCertificatesRequest\x1a\".lms.v1.ListMyCertificatesResponse\"\t\xaa\xbb\x18\x02\x18\x01\x90\x02\x01\x12i\n" +
 	"\x13GetMyCertificatePdf\x12\".lms.v1.GetMyCertificatePdfRequest\x1a#.lms.v1.GetMyCertificatePdfResponse\"\t\xaa\xbb\x18\x02\x18\x01\x90\x02\x01\x12q\n" +
 	"\x11VerifyCertificate\x12 .lms.v1.VerifyCertificateRequest\x1a!.lms.v1.VerifyCertificateResponse\"\x17\xaa\xbb\x18\x102\f\n" +
-	"\x06verify\x10<\x18<\b\x01\x90\x02\x01B\x81\x01\n" +
+	"\x06verify\x10<\x18<\b\x01\x90\x02\x01\x12\x8c\x01\n" +
+	"\x18ListCertificateTemplates\x12'.lms.v1.ListCertificateTemplatesRequest\x1a(.lms.v1.ListCertificateTemplatesResponse\"\x1d\xaa\xbb\x18\x16*\x14\n" +
+	"\fcertificates\x12\x04view\x90\x02\x01\x12\x8a\x01\n" +
+	"\x1eListCertificateTemplateOptions\x12-.lms.v1.ListCertificateTemplateOptionsRequest\x1a..lms.v1.ListCertificateTemplateOptionsResponse\"\t\xaa\xbb\x18\x02 \x01\x90\x02\x01\x12\x86\x01\n" +
+	"\x16GetCertificateTemplate\x12%.lms.v1.GetCertificateTemplateRequest\x1a&.lms.v1.GetCertificateTemplateResponse\"\x1d\xaa\xbb\x18\x16*\x14\n" +
+	"\fcertificates\x12\x04view\x90\x02\x01\x12\x8e\x01\n" +
+	"\x19CreateCertificateTemplate\x12(.lms.v1.CreateCertificateTemplateRequest\x1a).lms.v1.CreateCertificateTemplateResponse\"\x1c\xaa\xbb\x18\x18*\x16\n" +
+	"\fcertificates\x12\x06create\x12\x8c\x01\n" +
+	"\x19UpdateCertificateTemplate\x12(.lms.v1.UpdateCertificateTemplateRequest\x1a).lms.v1.UpdateCertificateTemplateResponse\"\x1a\xaa\xbb\x18\x16*\x14\n" +
+	"\fcertificates\x12\x04edit\x12\x98\x01\n" +
+	"\x1dSetDefaultCertificateTemplate\x12,.lms.v1.SetDefaultCertificateTemplateRequest\x1a-.lms.v1.SetDefaultCertificateTemplateResponse\"\x1a\xaa\xbb\x18\x16*\x14\n" +
+	"\fcertificates\x12\x04edit\x12\x8e\x01\n" +
+	"\x19DeleteCertificateTemplate\x12(.lms.v1.DeleteCertificateTemplateRequest\x1a).lms.v1.DeleteCertificateTemplateResponse\"\x1c\xaa\xbb\x18\x18*\x16\n" +
+	"\fcertificates\x12\x06delete\x12\xa2\x01\n" +
+	"\x1aPreviewCertificateTemplate\x12).lms.v1.PreviewCertificateTemplateRequest\x1a*.lms.v1.PreviewCertificateTemplateResponse\"-\xaa\xbb\x18)2\x11\n" +
+	"\vcertpreview\x10\x1e\x18<*\x14\n" +
+	"\fcertificates\x12\x04viewB\x81\x01\n" +
 	"\n" +
 	"com.lms.v1B\x11CertificatesProtoP\x01Z'github.com/lms/backend/gen/lms/v1;lmsv1\xa2\x02\x03LXX\xaa\x02\x06Lms.V1\xca\x02\x06Lms\\V1\xe2\x02\x12Lms\\V1\\GPBMetadata\xea\x02\aLms::V1b\x06proto3"
 
@@ -739,54 +1473,98 @@ func file_lms_v1_certificates_proto_rawDescGZIP() []byte {
 	return file_lms_v1_certificates_proto_rawDescData
 }
 
-var file_lms_v1_certificates_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_lms_v1_certificates_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_lms_v1_certificates_proto_goTypes = []any{
-	(*ListCertificatesRequest)(nil),     // 0: lms.v1.ListCertificatesRequest
-	(*ListCertificatesResponse)(nil),    // 1: lms.v1.ListCertificatesResponse
-	(*IssueCertificateRequest)(nil),     // 2: lms.v1.IssueCertificateRequest
-	(*IssueCertificateResponse)(nil),    // 3: lms.v1.IssueCertificateResponse
-	(*RevokeCertificateRequest)(nil),    // 4: lms.v1.RevokeCertificateRequest
-	(*RevokeCertificateResponse)(nil),   // 5: lms.v1.RevokeCertificateResponse
-	(*GetCertificatePdfRequest)(nil),    // 6: lms.v1.GetCertificatePdfRequest
-	(*GetCertificatePdfResponse)(nil),   // 7: lms.v1.GetCertificatePdfResponse
-	(*ListMyCertificatesRequest)(nil),   // 8: lms.v1.ListMyCertificatesRequest
-	(*ListMyCertificatesResponse)(nil),  // 9: lms.v1.ListMyCertificatesResponse
-	(*GetMyCertificatePdfRequest)(nil),  // 10: lms.v1.GetMyCertificatePdfRequest
-	(*GetMyCertificatePdfResponse)(nil), // 11: lms.v1.GetMyCertificatePdfResponse
-	(*VerifyCertificateRequest)(nil),    // 12: lms.v1.VerifyCertificateRequest
-	(*VerifyCertificateResponse)(nil),   // 13: lms.v1.VerifyCertificateResponse
-	(*Certificate)(nil),                 // 14: lms.v1.Certificate
-	(*CertificateInput)(nil),            // 15: lms.v1.CertificateInput
-	(*File)(nil),                        // 16: lms.v1.File
-	(*CertificateVerification)(nil),     // 17: lms.v1.CertificateVerification
+	(*ListCertificatesRequest)(nil),                // 0: lms.v1.ListCertificatesRequest
+	(*ListCertificatesResponse)(nil),               // 1: lms.v1.ListCertificatesResponse
+	(*IssueCertificateRequest)(nil),                // 2: lms.v1.IssueCertificateRequest
+	(*IssueCertificateResponse)(nil),               // 3: lms.v1.IssueCertificateResponse
+	(*RevokeCertificateRequest)(nil),               // 4: lms.v1.RevokeCertificateRequest
+	(*RevokeCertificateResponse)(nil),              // 5: lms.v1.RevokeCertificateResponse
+	(*GetCertificatePdfRequest)(nil),               // 6: lms.v1.GetCertificatePdfRequest
+	(*GetCertificatePdfResponse)(nil),              // 7: lms.v1.GetCertificatePdfResponse
+	(*ListMyCertificatesRequest)(nil),              // 8: lms.v1.ListMyCertificatesRequest
+	(*ListMyCertificatesResponse)(nil),             // 9: lms.v1.ListMyCertificatesResponse
+	(*GetMyCertificatePdfRequest)(nil),             // 10: lms.v1.GetMyCertificatePdfRequest
+	(*GetMyCertificatePdfResponse)(nil),            // 11: lms.v1.GetMyCertificatePdfResponse
+	(*VerifyCertificateRequest)(nil),               // 12: lms.v1.VerifyCertificateRequest
+	(*VerifyCertificateResponse)(nil),              // 13: lms.v1.VerifyCertificateResponse
+	(*ListCertificateTemplatesRequest)(nil),        // 14: lms.v1.ListCertificateTemplatesRequest
+	(*ListCertificateTemplatesResponse)(nil),       // 15: lms.v1.ListCertificateTemplatesResponse
+	(*ListCertificateTemplateOptionsRequest)(nil),  // 16: lms.v1.ListCertificateTemplateOptionsRequest
+	(*ListCertificateTemplateOptionsResponse)(nil), // 17: lms.v1.ListCertificateTemplateOptionsResponse
+	(*GetCertificateTemplateRequest)(nil),          // 18: lms.v1.GetCertificateTemplateRequest
+	(*GetCertificateTemplateResponse)(nil),         // 19: lms.v1.GetCertificateTemplateResponse
+	(*CreateCertificateTemplateRequest)(nil),       // 20: lms.v1.CreateCertificateTemplateRequest
+	(*CreateCertificateTemplateResponse)(nil),      // 21: lms.v1.CreateCertificateTemplateResponse
+	(*UpdateCertificateTemplateRequest)(nil),       // 22: lms.v1.UpdateCertificateTemplateRequest
+	(*UpdateCertificateTemplateResponse)(nil),      // 23: lms.v1.UpdateCertificateTemplateResponse
+	(*SetDefaultCertificateTemplateRequest)(nil),   // 24: lms.v1.SetDefaultCertificateTemplateRequest
+	(*SetDefaultCertificateTemplateResponse)(nil),  // 25: lms.v1.SetDefaultCertificateTemplateResponse
+	(*DeleteCertificateTemplateRequest)(nil),       // 26: lms.v1.DeleteCertificateTemplateRequest
+	(*DeleteCertificateTemplateResponse)(nil),      // 27: lms.v1.DeleteCertificateTemplateResponse
+	(*PreviewCertificateTemplateRequest)(nil),      // 28: lms.v1.PreviewCertificateTemplateRequest
+	(*PreviewCertificateTemplateResponse)(nil),     // 29: lms.v1.PreviewCertificateTemplateResponse
+	(*Certificate)(nil),                            // 30: lms.v1.Certificate
+	(*CertificateInput)(nil),                       // 31: lms.v1.CertificateInput
+	(*File)(nil),                                   // 32: lms.v1.File
+	(*CertificateVerification)(nil),                // 33: lms.v1.CertificateVerification
+	(*CertificateTemplate)(nil),                    // 34: lms.v1.CertificateTemplate
+	(*CertificateTemplateOption)(nil),              // 35: lms.v1.CertificateTemplateOption
+	(*CertificateTemplateInput)(nil),               // 36: lms.v1.CertificateTemplateInput
 }
 var file_lms_v1_certificates_proto_depIdxs = []int32{
-	14, // 0: lms.v1.ListCertificatesResponse.items:type_name -> lms.v1.Certificate
-	15, // 1: lms.v1.IssueCertificateRequest.input:type_name -> lms.v1.CertificateInput
-	14, // 2: lms.v1.IssueCertificateResponse.certificate:type_name -> lms.v1.Certificate
-	16, // 3: lms.v1.GetCertificatePdfResponse.file:type_name -> lms.v1.File
-	14, // 4: lms.v1.ListMyCertificatesResponse.items:type_name -> lms.v1.Certificate
-	16, // 5: lms.v1.GetMyCertificatePdfResponse.file:type_name -> lms.v1.File
-	17, // 6: lms.v1.VerifyCertificateResponse.verification:type_name -> lms.v1.CertificateVerification
-	0,  // 7: lms.v1.CertificateService.ListCertificates:input_type -> lms.v1.ListCertificatesRequest
-	2,  // 8: lms.v1.CertificateService.IssueCertificate:input_type -> lms.v1.IssueCertificateRequest
-	4,  // 9: lms.v1.CertificateService.RevokeCertificate:input_type -> lms.v1.RevokeCertificateRequest
-	6,  // 10: lms.v1.CertificateService.GetCertificatePdf:input_type -> lms.v1.GetCertificatePdfRequest
-	8,  // 11: lms.v1.CertificateService.ListMyCertificates:input_type -> lms.v1.ListMyCertificatesRequest
-	10, // 12: lms.v1.CertificateService.GetMyCertificatePdf:input_type -> lms.v1.GetMyCertificatePdfRequest
-	12, // 13: lms.v1.CertificateService.VerifyCertificate:input_type -> lms.v1.VerifyCertificateRequest
-	1,  // 14: lms.v1.CertificateService.ListCertificates:output_type -> lms.v1.ListCertificatesResponse
-	3,  // 15: lms.v1.CertificateService.IssueCertificate:output_type -> lms.v1.IssueCertificateResponse
-	5,  // 16: lms.v1.CertificateService.RevokeCertificate:output_type -> lms.v1.RevokeCertificateResponse
-	7,  // 17: lms.v1.CertificateService.GetCertificatePdf:output_type -> lms.v1.GetCertificatePdfResponse
-	9,  // 18: lms.v1.CertificateService.ListMyCertificates:output_type -> lms.v1.ListMyCertificatesResponse
-	11, // 19: lms.v1.CertificateService.GetMyCertificatePdf:output_type -> lms.v1.GetMyCertificatePdfResponse
-	13, // 20: lms.v1.CertificateService.VerifyCertificate:output_type -> lms.v1.VerifyCertificateResponse
-	14, // [14:21] is the sub-list for method output_type
-	7,  // [7:14] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	30, // 0: lms.v1.ListCertificatesResponse.items:type_name -> lms.v1.Certificate
+	31, // 1: lms.v1.IssueCertificateRequest.input:type_name -> lms.v1.CertificateInput
+	30, // 2: lms.v1.IssueCertificateResponse.certificate:type_name -> lms.v1.Certificate
+	32, // 3: lms.v1.GetCertificatePdfResponse.file:type_name -> lms.v1.File
+	30, // 4: lms.v1.ListMyCertificatesResponse.items:type_name -> lms.v1.Certificate
+	32, // 5: lms.v1.GetMyCertificatePdfResponse.file:type_name -> lms.v1.File
+	33, // 6: lms.v1.VerifyCertificateResponse.verification:type_name -> lms.v1.CertificateVerification
+	34, // 7: lms.v1.ListCertificateTemplatesResponse.items:type_name -> lms.v1.CertificateTemplate
+	35, // 8: lms.v1.ListCertificateTemplateOptionsResponse.items:type_name -> lms.v1.CertificateTemplateOption
+	34, // 9: lms.v1.GetCertificateTemplateResponse.template:type_name -> lms.v1.CertificateTemplate
+	36, // 10: lms.v1.CreateCertificateTemplateRequest.input:type_name -> lms.v1.CertificateTemplateInput
+	34, // 11: lms.v1.CreateCertificateTemplateResponse.template:type_name -> lms.v1.CertificateTemplate
+	36, // 12: lms.v1.UpdateCertificateTemplateRequest.input:type_name -> lms.v1.CertificateTemplateInput
+	34, // 13: lms.v1.UpdateCertificateTemplateResponse.template:type_name -> lms.v1.CertificateTemplate
+	36, // 14: lms.v1.PreviewCertificateTemplateRequest.input:type_name -> lms.v1.CertificateTemplateInput
+	32, // 15: lms.v1.PreviewCertificateTemplateResponse.file:type_name -> lms.v1.File
+	0,  // 16: lms.v1.CertificateService.ListCertificates:input_type -> lms.v1.ListCertificatesRequest
+	2,  // 17: lms.v1.CertificateService.IssueCertificate:input_type -> lms.v1.IssueCertificateRequest
+	4,  // 18: lms.v1.CertificateService.RevokeCertificate:input_type -> lms.v1.RevokeCertificateRequest
+	6,  // 19: lms.v1.CertificateService.GetCertificatePdf:input_type -> lms.v1.GetCertificatePdfRequest
+	8,  // 20: lms.v1.CertificateService.ListMyCertificates:input_type -> lms.v1.ListMyCertificatesRequest
+	10, // 21: lms.v1.CertificateService.GetMyCertificatePdf:input_type -> lms.v1.GetMyCertificatePdfRequest
+	12, // 22: lms.v1.CertificateService.VerifyCertificate:input_type -> lms.v1.VerifyCertificateRequest
+	14, // 23: lms.v1.CertificateService.ListCertificateTemplates:input_type -> lms.v1.ListCertificateTemplatesRequest
+	16, // 24: lms.v1.CertificateService.ListCertificateTemplateOptions:input_type -> lms.v1.ListCertificateTemplateOptionsRequest
+	18, // 25: lms.v1.CertificateService.GetCertificateTemplate:input_type -> lms.v1.GetCertificateTemplateRequest
+	20, // 26: lms.v1.CertificateService.CreateCertificateTemplate:input_type -> lms.v1.CreateCertificateTemplateRequest
+	22, // 27: lms.v1.CertificateService.UpdateCertificateTemplate:input_type -> lms.v1.UpdateCertificateTemplateRequest
+	24, // 28: lms.v1.CertificateService.SetDefaultCertificateTemplate:input_type -> lms.v1.SetDefaultCertificateTemplateRequest
+	26, // 29: lms.v1.CertificateService.DeleteCertificateTemplate:input_type -> lms.v1.DeleteCertificateTemplateRequest
+	28, // 30: lms.v1.CertificateService.PreviewCertificateTemplate:input_type -> lms.v1.PreviewCertificateTemplateRequest
+	1,  // 31: lms.v1.CertificateService.ListCertificates:output_type -> lms.v1.ListCertificatesResponse
+	3,  // 32: lms.v1.CertificateService.IssueCertificate:output_type -> lms.v1.IssueCertificateResponse
+	5,  // 33: lms.v1.CertificateService.RevokeCertificate:output_type -> lms.v1.RevokeCertificateResponse
+	7,  // 34: lms.v1.CertificateService.GetCertificatePdf:output_type -> lms.v1.GetCertificatePdfResponse
+	9,  // 35: lms.v1.CertificateService.ListMyCertificates:output_type -> lms.v1.ListMyCertificatesResponse
+	11, // 36: lms.v1.CertificateService.GetMyCertificatePdf:output_type -> lms.v1.GetMyCertificatePdfResponse
+	13, // 37: lms.v1.CertificateService.VerifyCertificate:output_type -> lms.v1.VerifyCertificateResponse
+	15, // 38: lms.v1.CertificateService.ListCertificateTemplates:output_type -> lms.v1.ListCertificateTemplatesResponse
+	17, // 39: lms.v1.CertificateService.ListCertificateTemplateOptions:output_type -> lms.v1.ListCertificateTemplateOptionsResponse
+	19, // 40: lms.v1.CertificateService.GetCertificateTemplate:output_type -> lms.v1.GetCertificateTemplateResponse
+	21, // 41: lms.v1.CertificateService.CreateCertificateTemplate:output_type -> lms.v1.CreateCertificateTemplateResponse
+	23, // 42: lms.v1.CertificateService.UpdateCertificateTemplate:output_type -> lms.v1.UpdateCertificateTemplateResponse
+	25, // 43: lms.v1.CertificateService.SetDefaultCertificateTemplate:output_type -> lms.v1.SetDefaultCertificateTemplateResponse
+	27, // 44: lms.v1.CertificateService.DeleteCertificateTemplate:output_type -> lms.v1.DeleteCertificateTemplateResponse
+	29, // 45: lms.v1.CertificateService.PreviewCertificateTemplate:output_type -> lms.v1.PreviewCertificateTemplateResponse
+	31, // [31:46] is the sub-list for method output_type
+	16, // [16:31] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_lms_v1_certificates_proto_init() }
@@ -803,7 +1581,7 @@ func file_lms_v1_certificates_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_certificates_proto_rawDesc), len(file_lms_v1_certificates_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

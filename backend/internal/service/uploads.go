@@ -32,12 +32,13 @@ var fileMimes = map[string]bool{
 type uploadRule struct{ public, staffOnly, imagesOnly bool }
 
 var uploadRules = map[string]uploadRule{
-	"submission": {},
-	"comment":    {},
-	"avatar":     {public: true, imagesOnly: true},
-	"thumbnail":  {public: true, staffOnly: true, imagesOnly: true},
-	"cms":        {public: true, staffOnly: true, imagesOnly: true},
-	"blog":       {public: true, staffOnly: true, imagesOnly: true},
+	"submission":  {},
+	"comment":     {},
+	"avatar":      {public: true, imagesOnly: true},
+	"thumbnail":   {public: true, staffOnly: true, imagesOnly: true},
+	"cms":         {public: true, staffOnly: true, imagesOnly: true},
+	"blog":        {public: true, staffOnly: true, imagesOnly: true},
+	"certificate": {public: true, staffOnly: true, imagesOnly: true},
 }
 
 // IsImage reports whether a mime type is an accepted image.

@@ -1,13 +1,26 @@
 "use client";
-import { Award, Copy, Download, ExternalLink } from "lucide-react";
-import { Button, Card, EmptyState, Skeleton, formatDate, lineColor, toast } from "@lms/ui";
+import * as React from "react";
+import { Award, Copy, Download, ExternalLink, Eye } from "lucide-react";
+import { Button, Card, Dialog, DialogContent, DialogHeader, DialogTitle, EmptyState, Skeleton, formatDate, lineColor, toast } from "@lms/ui";
 
 import { rpc } from "@/lib/api";
 import { download } from "@/lib/download";
-import { CertificateService, useRpcQuery } from "@lms/api-client";
+import { CertificateService, errorMessage, useRpcQuery } from "@lms/api-client";
 
 export default function CertificatesPage() {
   const q = useRpcQuery(CertificateService.method.listMyCertificates, {});
+  const [view, setView] = React.useState<{ id: string; title: string; url?: string } | null>(null);
+  const open = async (id: string, title: string) => {
+    setView({ id, title });
+    try {
+      const r = await rpc(CertificateService).getMyCertificatePdf({ id });
+      setView({ id, title, url: URL.createObjectURL(new Blob([r.file!.data as BlobPart], { type: "application/pdf" })) });
+    } catch (e) {
+      setView(null);
+      toast.error(errorMessage(e));
+    }
+  };
+  React.useEffect(() => () => { if (view?.url) URL.revokeObjectURL(view.url); }, [view?.url]);
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="font-display text-[26px] leading-tight font-extrabold sm:text-[32px]">Certificates</h1>
@@ -29,7 +42,8 @@ export default function CertificatesPage() {
               </div>
               <div aria-hidden className="relative h-0 border-t-2 border-dashed"><span className="absolute -top-3 -left-3 size-6 rounded-full bg-background" /><span className="absolute -top-3 -right-3 size-6 rounded-full bg-background" /></div>
               <div className="flex flex-wrap gap-2 p-5">
-                <Button onClick={() => download(() => rpc(CertificateService).getMyCertificatePdf({ id: c.id }), `certificate-${c.code}.pdf`)}><Download /> Download PDF</Button>
+                <Button onClick={() => open(c.id, c.courseTitle)} loading={view?.id === c.id && !view.url}><Eye /> View</Button>
+                <Button variant="outline" onClick={() => download(() => rpc(CertificateService).getMyCertificatePdf({ id: c.id }), `certificate-${c.code}.pdf`)}><Download /> Download PDF</Button>
                 <Button variant="outline" onClick={() => { void navigator.clipboard.writeText(c.verifyUrl); toast.success("Verification link copied"); }}><Copy /> Copy link</Button>
                 <Button variant="ghost" size="icon" asChild><a href={c.verifyUrl} target="_blank" rel="noreferrer" aria-label="Open verification page"><ExternalLink /></a></Button>
               </div>
@@ -37,6 +51,12 @@ export default function CertificatesPage() {
           ))}
         </div>
       )}
+      <Dialog open={!!view?.url} onOpenChange={(o) => !o && setView(null)}>
+        <DialogContent className="max-w-5xl">
+          <DialogHeader><DialogTitle>{view?.title}</DialogTitle></DialogHeader>
+          {view?.url && <iframe src={view.url} title="Your certificate" className="aspect-[297/210] w-full rounded-lg border bg-white" />}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

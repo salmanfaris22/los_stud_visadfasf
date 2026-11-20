@@ -56,6 +56,30 @@ const (
 	// CertificateServiceVerifyCertificateProcedure is the fully-qualified name of the
 	// CertificateService's VerifyCertificate RPC.
 	CertificateServiceVerifyCertificateProcedure = "/lms.v1.CertificateService/VerifyCertificate"
+	// CertificateServiceListCertificateTemplatesProcedure is the fully-qualified name of the
+	// CertificateService's ListCertificateTemplates RPC.
+	CertificateServiceListCertificateTemplatesProcedure = "/lms.v1.CertificateService/ListCertificateTemplates"
+	// CertificateServiceListCertificateTemplateOptionsProcedure is the fully-qualified name of the
+	// CertificateService's ListCertificateTemplateOptions RPC.
+	CertificateServiceListCertificateTemplateOptionsProcedure = "/lms.v1.CertificateService/ListCertificateTemplateOptions"
+	// CertificateServiceGetCertificateTemplateProcedure is the fully-qualified name of the
+	// CertificateService's GetCertificateTemplate RPC.
+	CertificateServiceGetCertificateTemplateProcedure = "/lms.v1.CertificateService/GetCertificateTemplate"
+	// CertificateServiceCreateCertificateTemplateProcedure is the fully-qualified name of the
+	// CertificateService's CreateCertificateTemplate RPC.
+	CertificateServiceCreateCertificateTemplateProcedure = "/lms.v1.CertificateService/CreateCertificateTemplate"
+	// CertificateServiceUpdateCertificateTemplateProcedure is the fully-qualified name of the
+	// CertificateService's UpdateCertificateTemplate RPC.
+	CertificateServiceUpdateCertificateTemplateProcedure = "/lms.v1.CertificateService/UpdateCertificateTemplate"
+	// CertificateServiceSetDefaultCertificateTemplateProcedure is the fully-qualified name of the
+	// CertificateService's SetDefaultCertificateTemplate RPC.
+	CertificateServiceSetDefaultCertificateTemplateProcedure = "/lms.v1.CertificateService/SetDefaultCertificateTemplate"
+	// CertificateServiceDeleteCertificateTemplateProcedure is the fully-qualified name of the
+	// CertificateService's DeleteCertificateTemplate RPC.
+	CertificateServiceDeleteCertificateTemplateProcedure = "/lms.v1.CertificateService/DeleteCertificateTemplate"
+	// CertificateServicePreviewCertificateTemplateProcedure is the fully-qualified name of the
+	// CertificateService's PreviewCertificateTemplate RPC.
+	CertificateServicePreviewCertificateTemplateProcedure = "/lms.v1.CertificateService/PreviewCertificateTemplate"
 )
 
 // CertificateServiceClient is a client for the lms.v1.CertificateService service.
@@ -74,6 +98,22 @@ type CertificateServiceClient interface {
 	GetMyCertificatePdf(context.Context, *connect.Request[v1.GetMyCertificatePdfRequest]) (*connect.Response[v1.GetMyCertificatePdfResponse], error)
 	// Verify a certificate code
 	VerifyCertificate(context.Context, *connect.Request[v1.VerifyCertificateRequest]) (*connect.Response[v1.VerifyCertificateResponse], error)
+	// Certificate templates
+	ListCertificateTemplates(context.Context, *connect.Request[v1.ListCertificateTemplatesRequest]) (*connect.Response[v1.ListCertificateTemplatesResponse], error)
+	// Certificate templates for pickers
+	ListCertificateTemplateOptions(context.Context, *connect.Request[v1.ListCertificateTemplateOptionsRequest]) (*connect.Response[v1.ListCertificateTemplateOptionsResponse], error)
+	// Get a certificate template
+	GetCertificateTemplate(context.Context, *connect.Request[v1.GetCertificateTemplateRequest]) (*connect.Response[v1.GetCertificateTemplateResponse], error)
+	// Create a certificate template
+	CreateCertificateTemplate(context.Context, *connect.Request[v1.CreateCertificateTemplateRequest]) (*connect.Response[v1.CreateCertificateTemplateResponse], error)
+	// Update a certificate template
+	UpdateCertificateTemplate(context.Context, *connect.Request[v1.UpdateCertificateTemplateRequest]) (*connect.Response[v1.UpdateCertificateTemplateResponse], error)
+	// Make a template the default
+	SetDefaultCertificateTemplate(context.Context, *connect.Request[v1.SetDefaultCertificateTemplateRequest]) (*connect.Response[v1.SetDefaultCertificateTemplateResponse], error)
+	// Delete a certificate template (not the default)
+	DeleteCertificateTemplate(context.Context, *connect.Request[v1.DeleteCertificateTemplateRequest]) (*connect.Response[v1.DeleteCertificateTemplateResponse], error)
+	// Render a template as a sample PDF
+	PreviewCertificateTemplate(context.Context, *connect.Request[v1.PreviewCertificateTemplateRequest]) (*connect.Response[v1.PreviewCertificateTemplateResponse], error)
 }
 
 // NewCertificateServiceClient constructs a client for the lms.v1.CertificateService service. By
@@ -134,18 +174,77 @@ func NewCertificateServiceClient(httpClient connect.HTTPClient, baseURL string, 
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
+		listCertificateTemplates: connect.NewClient[v1.ListCertificateTemplatesRequest, v1.ListCertificateTemplatesResponse](
+			httpClient,
+			baseURL+CertificateServiceListCertificateTemplatesProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("ListCertificateTemplates")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
+		listCertificateTemplateOptions: connect.NewClient[v1.ListCertificateTemplateOptionsRequest, v1.ListCertificateTemplateOptionsResponse](
+			httpClient,
+			baseURL+CertificateServiceListCertificateTemplateOptionsProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("ListCertificateTemplateOptions")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
+		getCertificateTemplate: connect.NewClient[v1.GetCertificateTemplateRequest, v1.GetCertificateTemplateResponse](
+			httpClient,
+			baseURL+CertificateServiceGetCertificateTemplateProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("GetCertificateTemplate")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
+		createCertificateTemplate: connect.NewClient[v1.CreateCertificateTemplateRequest, v1.CreateCertificateTemplateResponse](
+			httpClient,
+			baseURL+CertificateServiceCreateCertificateTemplateProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("CreateCertificateTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		updateCertificateTemplate: connect.NewClient[v1.UpdateCertificateTemplateRequest, v1.UpdateCertificateTemplateResponse](
+			httpClient,
+			baseURL+CertificateServiceUpdateCertificateTemplateProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("UpdateCertificateTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		setDefaultCertificateTemplate: connect.NewClient[v1.SetDefaultCertificateTemplateRequest, v1.SetDefaultCertificateTemplateResponse](
+			httpClient,
+			baseURL+CertificateServiceSetDefaultCertificateTemplateProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("SetDefaultCertificateTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteCertificateTemplate: connect.NewClient[v1.DeleteCertificateTemplateRequest, v1.DeleteCertificateTemplateResponse](
+			httpClient,
+			baseURL+CertificateServiceDeleteCertificateTemplateProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("DeleteCertificateTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		previewCertificateTemplate: connect.NewClient[v1.PreviewCertificateTemplateRequest, v1.PreviewCertificateTemplateResponse](
+			httpClient,
+			baseURL+CertificateServicePreviewCertificateTemplateProcedure,
+			connect.WithSchema(certificateServiceMethods.ByName("PreviewCertificateTemplate")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // certificateServiceClient implements CertificateServiceClient.
 type certificateServiceClient struct {
-	listCertificates    *connect.Client[v1.ListCertificatesRequest, v1.ListCertificatesResponse]
-	issueCertificate    *connect.Client[v1.IssueCertificateRequest, v1.IssueCertificateResponse]
-	revokeCertificate   *connect.Client[v1.RevokeCertificateRequest, v1.RevokeCertificateResponse]
-	getCertificatePdf   *connect.Client[v1.GetCertificatePdfRequest, v1.GetCertificatePdfResponse]
-	listMyCertificates  *connect.Client[v1.ListMyCertificatesRequest, v1.ListMyCertificatesResponse]
-	getMyCertificatePdf *connect.Client[v1.GetMyCertificatePdfRequest, v1.GetMyCertificatePdfResponse]
-	verifyCertificate   *connect.Client[v1.VerifyCertificateRequest, v1.VerifyCertificateResponse]
+	listCertificates               *connect.Client[v1.ListCertificatesRequest, v1.ListCertificatesResponse]
+	issueCertificate               *connect.Client[v1.IssueCertificateRequest, v1.IssueCertificateResponse]
+	revokeCertificate              *connect.Client[v1.RevokeCertificateRequest, v1.RevokeCertificateResponse]
+	getCertificatePdf              *connect.Client[v1.GetCertificatePdfRequest, v1.GetCertificatePdfResponse]
+	listMyCertificates             *connect.Client[v1.ListMyCertificatesRequest, v1.ListMyCertificatesResponse]
+	getMyCertificatePdf            *connect.Client[v1.GetMyCertificatePdfRequest, v1.GetMyCertificatePdfResponse]
+	verifyCertificate              *connect.Client[v1.VerifyCertificateRequest, v1.VerifyCertificateResponse]
+	listCertificateTemplates       *connect.Client[v1.ListCertificateTemplatesRequest, v1.ListCertificateTemplatesResponse]
+	listCertificateTemplateOptions *connect.Client[v1.ListCertificateTemplateOptionsRequest, v1.ListCertificateTemplateOptionsResponse]
+	getCertificateTemplate         *connect.Client[v1.GetCertificateTemplateRequest, v1.GetCertificateTemplateResponse]
+	createCertificateTemplate      *connect.Client[v1.CreateCertificateTemplateRequest, v1.CreateCertificateTemplateResponse]
+	updateCertificateTemplate      *connect.Client[v1.UpdateCertificateTemplateRequest, v1.UpdateCertificateTemplateResponse]
+	setDefaultCertificateTemplate  *connect.Client[v1.SetDefaultCertificateTemplateRequest, v1.SetDefaultCertificateTemplateResponse]
+	deleteCertificateTemplate      *connect.Client[v1.DeleteCertificateTemplateRequest, v1.DeleteCertificateTemplateResponse]
+	previewCertificateTemplate     *connect.Client[v1.PreviewCertificateTemplateRequest, v1.PreviewCertificateTemplateResponse]
 }
 
 // ListCertificates calls lms.v1.CertificateService.ListCertificates.
@@ -183,6 +282,46 @@ func (c *certificateServiceClient) VerifyCertificate(ctx context.Context, req *c
 	return c.verifyCertificate.CallUnary(ctx, req)
 }
 
+// ListCertificateTemplates calls lms.v1.CertificateService.ListCertificateTemplates.
+func (c *certificateServiceClient) ListCertificateTemplates(ctx context.Context, req *connect.Request[v1.ListCertificateTemplatesRequest]) (*connect.Response[v1.ListCertificateTemplatesResponse], error) {
+	return c.listCertificateTemplates.CallUnary(ctx, req)
+}
+
+// ListCertificateTemplateOptions calls lms.v1.CertificateService.ListCertificateTemplateOptions.
+func (c *certificateServiceClient) ListCertificateTemplateOptions(ctx context.Context, req *connect.Request[v1.ListCertificateTemplateOptionsRequest]) (*connect.Response[v1.ListCertificateTemplateOptionsResponse], error) {
+	return c.listCertificateTemplateOptions.CallUnary(ctx, req)
+}
+
+// GetCertificateTemplate calls lms.v1.CertificateService.GetCertificateTemplate.
+func (c *certificateServiceClient) GetCertificateTemplate(ctx context.Context, req *connect.Request[v1.GetCertificateTemplateRequest]) (*connect.Response[v1.GetCertificateTemplateResponse], error) {
+	return c.getCertificateTemplate.CallUnary(ctx, req)
+}
+
+// CreateCertificateTemplate calls lms.v1.CertificateService.CreateCertificateTemplate.
+func (c *certificateServiceClient) CreateCertificateTemplate(ctx context.Context, req *connect.Request[v1.CreateCertificateTemplateRequest]) (*connect.Response[v1.CreateCertificateTemplateResponse], error) {
+	return c.createCertificateTemplate.CallUnary(ctx, req)
+}
+
+// UpdateCertificateTemplate calls lms.v1.CertificateService.UpdateCertificateTemplate.
+func (c *certificateServiceClient) UpdateCertificateTemplate(ctx context.Context, req *connect.Request[v1.UpdateCertificateTemplateRequest]) (*connect.Response[v1.UpdateCertificateTemplateResponse], error) {
+	return c.updateCertificateTemplate.CallUnary(ctx, req)
+}
+
+// SetDefaultCertificateTemplate calls lms.v1.CertificateService.SetDefaultCertificateTemplate.
+func (c *certificateServiceClient) SetDefaultCertificateTemplate(ctx context.Context, req *connect.Request[v1.SetDefaultCertificateTemplateRequest]) (*connect.Response[v1.SetDefaultCertificateTemplateResponse], error) {
+	return c.setDefaultCertificateTemplate.CallUnary(ctx, req)
+}
+
+// DeleteCertificateTemplate calls lms.v1.CertificateService.DeleteCertificateTemplate.
+func (c *certificateServiceClient) DeleteCertificateTemplate(ctx context.Context, req *connect.Request[v1.DeleteCertificateTemplateRequest]) (*connect.Response[v1.DeleteCertificateTemplateResponse], error) {
+	return c.deleteCertificateTemplate.CallUnary(ctx, req)
+}
+
+// PreviewCertificateTemplate calls lms.v1.CertificateService.PreviewCertificateTemplate.
+func (c *certificateServiceClient) PreviewCertificateTemplate(ctx context.Context, req *connect.Request[v1.PreviewCertificateTemplateRequest]) (*connect.Response[v1.PreviewCertificateTemplateResponse], error) {
+	return c.previewCertificateTemplate.CallUnary(ctx, req)
+}
+
 // CertificateServiceHandler is an implementation of the lms.v1.CertificateService service.
 type CertificateServiceHandler interface {
 	// List issued certificates
@@ -199,6 +338,22 @@ type CertificateServiceHandler interface {
 	GetMyCertificatePdf(context.Context, *connect.Request[v1.GetMyCertificatePdfRequest]) (*connect.Response[v1.GetMyCertificatePdfResponse], error)
 	// Verify a certificate code
 	VerifyCertificate(context.Context, *connect.Request[v1.VerifyCertificateRequest]) (*connect.Response[v1.VerifyCertificateResponse], error)
+	// Certificate templates
+	ListCertificateTemplates(context.Context, *connect.Request[v1.ListCertificateTemplatesRequest]) (*connect.Response[v1.ListCertificateTemplatesResponse], error)
+	// Certificate templates for pickers
+	ListCertificateTemplateOptions(context.Context, *connect.Request[v1.ListCertificateTemplateOptionsRequest]) (*connect.Response[v1.ListCertificateTemplateOptionsResponse], error)
+	// Get a certificate template
+	GetCertificateTemplate(context.Context, *connect.Request[v1.GetCertificateTemplateRequest]) (*connect.Response[v1.GetCertificateTemplateResponse], error)
+	// Create a certificate template
+	CreateCertificateTemplate(context.Context, *connect.Request[v1.CreateCertificateTemplateRequest]) (*connect.Response[v1.CreateCertificateTemplateResponse], error)
+	// Update a certificate template
+	UpdateCertificateTemplate(context.Context, *connect.Request[v1.UpdateCertificateTemplateRequest]) (*connect.Response[v1.UpdateCertificateTemplateResponse], error)
+	// Make a template the default
+	SetDefaultCertificateTemplate(context.Context, *connect.Request[v1.SetDefaultCertificateTemplateRequest]) (*connect.Response[v1.SetDefaultCertificateTemplateResponse], error)
+	// Delete a certificate template (not the default)
+	DeleteCertificateTemplate(context.Context, *connect.Request[v1.DeleteCertificateTemplateRequest]) (*connect.Response[v1.DeleteCertificateTemplateResponse], error)
+	// Render a template as a sample PDF
+	PreviewCertificateTemplate(context.Context, *connect.Request[v1.PreviewCertificateTemplateRequest]) (*connect.Response[v1.PreviewCertificateTemplateResponse], error)
 }
 
 // NewCertificateServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -255,6 +410,57 @@ func NewCertificateServiceHandler(svc CertificateServiceHandler, opts ...connect
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
+	certificateServiceListCertificateTemplatesHandler := connect.NewUnaryHandler(
+		CertificateServiceListCertificateTemplatesProcedure,
+		svc.ListCertificateTemplates,
+		connect.WithSchema(certificateServiceMethods.ByName("ListCertificateTemplates")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServiceListCertificateTemplateOptionsHandler := connect.NewUnaryHandler(
+		CertificateServiceListCertificateTemplateOptionsProcedure,
+		svc.ListCertificateTemplateOptions,
+		connect.WithSchema(certificateServiceMethods.ByName("ListCertificateTemplateOptions")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServiceGetCertificateTemplateHandler := connect.NewUnaryHandler(
+		CertificateServiceGetCertificateTemplateProcedure,
+		svc.GetCertificateTemplate,
+		connect.WithSchema(certificateServiceMethods.ByName("GetCertificateTemplate")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServiceCreateCertificateTemplateHandler := connect.NewUnaryHandler(
+		CertificateServiceCreateCertificateTemplateProcedure,
+		svc.CreateCertificateTemplate,
+		connect.WithSchema(certificateServiceMethods.ByName("CreateCertificateTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServiceUpdateCertificateTemplateHandler := connect.NewUnaryHandler(
+		CertificateServiceUpdateCertificateTemplateProcedure,
+		svc.UpdateCertificateTemplate,
+		connect.WithSchema(certificateServiceMethods.ByName("UpdateCertificateTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServiceSetDefaultCertificateTemplateHandler := connect.NewUnaryHandler(
+		CertificateServiceSetDefaultCertificateTemplateProcedure,
+		svc.SetDefaultCertificateTemplate,
+		connect.WithSchema(certificateServiceMethods.ByName("SetDefaultCertificateTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServiceDeleteCertificateTemplateHandler := connect.NewUnaryHandler(
+		CertificateServiceDeleteCertificateTemplateProcedure,
+		svc.DeleteCertificateTemplate,
+		connect.WithSchema(certificateServiceMethods.ByName("DeleteCertificateTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	certificateServicePreviewCertificateTemplateHandler := connect.NewUnaryHandler(
+		CertificateServicePreviewCertificateTemplateProcedure,
+		svc.PreviewCertificateTemplate,
+		connect.WithSchema(certificateServiceMethods.ByName("PreviewCertificateTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/lms.v1.CertificateService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CertificateServiceListCertificatesProcedure:
@@ -271,6 +477,22 @@ func NewCertificateServiceHandler(svc CertificateServiceHandler, opts ...connect
 			certificateServiceGetMyCertificatePdfHandler.ServeHTTP(w, r)
 		case CertificateServiceVerifyCertificateProcedure:
 			certificateServiceVerifyCertificateHandler.ServeHTTP(w, r)
+		case CertificateServiceListCertificateTemplatesProcedure:
+			certificateServiceListCertificateTemplatesHandler.ServeHTTP(w, r)
+		case CertificateServiceListCertificateTemplateOptionsProcedure:
+			certificateServiceListCertificateTemplateOptionsHandler.ServeHTTP(w, r)
+		case CertificateServiceGetCertificateTemplateProcedure:
+			certificateServiceGetCertificateTemplateHandler.ServeHTTP(w, r)
+		case CertificateServiceCreateCertificateTemplateProcedure:
+			certificateServiceCreateCertificateTemplateHandler.ServeHTTP(w, r)
+		case CertificateServiceUpdateCertificateTemplateProcedure:
+			certificateServiceUpdateCertificateTemplateHandler.ServeHTTP(w, r)
+		case CertificateServiceSetDefaultCertificateTemplateProcedure:
+			certificateServiceSetDefaultCertificateTemplateHandler.ServeHTTP(w, r)
+		case CertificateServiceDeleteCertificateTemplateProcedure:
+			certificateServiceDeleteCertificateTemplateHandler.ServeHTTP(w, r)
+		case CertificateServicePreviewCertificateTemplateProcedure:
+			certificateServicePreviewCertificateTemplateHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -306,4 +528,36 @@ func (UnimplementedCertificateServiceHandler) GetMyCertificatePdf(context.Contex
 
 func (UnimplementedCertificateServiceHandler) VerifyCertificate(context.Context, *connect.Request[v1.VerifyCertificateRequest]) (*connect.Response[v1.VerifyCertificateResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.VerifyCertificate is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) ListCertificateTemplates(context.Context, *connect.Request[v1.ListCertificateTemplatesRequest]) (*connect.Response[v1.ListCertificateTemplatesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.ListCertificateTemplates is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) ListCertificateTemplateOptions(context.Context, *connect.Request[v1.ListCertificateTemplateOptionsRequest]) (*connect.Response[v1.ListCertificateTemplateOptionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.ListCertificateTemplateOptions is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) GetCertificateTemplate(context.Context, *connect.Request[v1.GetCertificateTemplateRequest]) (*connect.Response[v1.GetCertificateTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.GetCertificateTemplate is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) CreateCertificateTemplate(context.Context, *connect.Request[v1.CreateCertificateTemplateRequest]) (*connect.Response[v1.CreateCertificateTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.CreateCertificateTemplate is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) UpdateCertificateTemplate(context.Context, *connect.Request[v1.UpdateCertificateTemplateRequest]) (*connect.Response[v1.UpdateCertificateTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.UpdateCertificateTemplate is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) SetDefaultCertificateTemplate(context.Context, *connect.Request[v1.SetDefaultCertificateTemplateRequest]) (*connect.Response[v1.SetDefaultCertificateTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.SetDefaultCertificateTemplate is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) DeleteCertificateTemplate(context.Context, *connect.Request[v1.DeleteCertificateTemplateRequest]) (*connect.Response[v1.DeleteCertificateTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.DeleteCertificateTemplate is not implemented"))
+}
+
+func (UnimplementedCertificateServiceHandler) PreviewCertificateTemplate(context.Context, *connect.Request[v1.PreviewCertificateTemplateRequest]) (*connect.Response[v1.PreviewCertificateTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("lms.v1.CertificateService.PreviewCertificateTemplate is not implemented"))
 }

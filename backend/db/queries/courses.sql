@@ -23,16 +23,20 @@ SELECT * FROM courses WHERE slug = $1;
 
 -- name: CreateCourse :one
 INSERT INTO courses (slug, title, subtitle, description, thumbnail_url, level, language, category, status, is_public,
-                     price_label, what_you_learn, fee_paise, gst_bp, created_by)
+                     price_label, what_you_learn, fee_paise, gst_bp, created_by,
+                     certificate_enabled, certificate_template_id, certificate_text)
 VALUES (@slug, @title, @subtitle, @description, @thumbnail_url, @level, @language, @category, @status, @is_public,
-        @price_label, @what_you_learn, @fee_paise, @gst_bp, sqlc.narg('created_by'))
+        @price_label, @what_you_learn, @fee_paise, @gst_bp, sqlc.narg('created_by'),
+        @certificate_enabled, sqlc.narg('certificate_template_id'), @certificate_text)
 RETURNING *;
 
 -- name: UpdateCourse :one
 UPDATE courses
 SET slug = @slug, title = @title, subtitle = @subtitle, description = @description, thumbnail_url = @thumbnail_url,
     level = @level, language = @language, category = @category, status = @status, is_public = @is_public,
-    price_label = @price_label, what_you_learn = @what_you_learn, fee_paise = @fee_paise, gst_bp = @gst_bp, updated_at = now()
+    price_label = @price_label, what_you_learn = @what_you_learn, fee_paise = @fee_paise, gst_bp = @gst_bp,
+    certificate_enabled = @certificate_enabled, certificate_template_id = sqlc.narg('certificate_template_id'),
+    certificate_text = @certificate_text, updated_at = now()
 WHERE id = @id
 RETURNING *;
 

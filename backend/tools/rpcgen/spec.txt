@@ -59,6 +59,14 @@ GetCertificatePdf perm:certificates.view get | id | file | Certificates.PDF(ctx,
 ListMyCertificates student get | - | items:Certificate | Certificates.Mine(ctx, actor(ctx)) | My certificates
 GetMyCertificatePdf student get | id | file | Certificates.PDF(ctx, actor(ctx), idOf(m)) | Download my certificate
 VerifyCertificate public get rl=verify/60/60 | code:str![min=1,max=40] | item:verification:CertificateVerification | Certificates.Verify(ctx, m.GetCode()) | Verify a certificate code
+ListCertificateTemplates perm:certificates.view get | - | items:CertificateTemplate | Certificates.Templates(ctx) | Certificate templates
+ListCertificateTemplateOptions staff get | - | items:CertificateTemplateOption | Certificates.TemplateOptions(ctx) | Certificate templates for pickers
+GetCertificateTemplate perm:certificates.view get | id | item:template:CertificateTemplate | Certificates.Template(ctx, idOf(m)) | Get a certificate template
+CreateCertificateTemplate perm:certificates.create | input:CertificateTemplateInput | item:template:CertificateTemplate | Certificates.CreateTemplate(ctx, actor(ctx), certificateTemplateInputFromPB(m.GetInput())) | Create a certificate template
+UpdateCertificateTemplate perm:certificates.edit | id input:CertificateTemplateInput | item:template:CertificateTemplate | Certificates.UpdateTemplate(ctx, actor(ctx), idOf(m), certificateTemplateInputFromPB(m.GetInput())) | Update a certificate template
+SetDefaultCertificateTemplate perm:certificates.edit | id | - | Certificates.SetDefaultTemplate(ctx, actor(ctx), idOf(m)) | Make a template the default
+DeleteCertificateTemplate perm:certificates.delete | id | - | Certificates.DeleteTemplate(ctx, actor(ctx), idOf(m)) | Delete a certificate template (not the default)
+PreviewCertificateTemplate perm:certificates.view rl=certpreview/30/60 | input:CertificateTemplateInput course_id:uuid? | file | Certificates.PreviewTemplate(ctx, actor(ctx), certificateTemplateInputFromPB(m.GetInput()), optUUID(m.GetCourseId())) | Render a template as a sample PDF
 
 service QuizService quizzes "Quizzes under videos: authoring, attempts, and the student quiz player."
 ListVideoQuizzes perm:quizzes.view get | video_id:uuid | items:Quiz | Quizzes.ListForVideo(ctx, actor(ctx), uuidFromPB(m.GetVideoId())) | Quizzes under a video

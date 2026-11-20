@@ -18,7 +18,7 @@ export function PageHeader({ title, description, actions, back, className }: { t
 export function EmptyState({ icon, title, description, action, className }: { icon?: React.ReactNode; title: string; description?: string; action?: React.ReactNode; className?: string }) {
   return (
     <div className={cn("flex flex-col items-center justify-center rounded-[20px] border border-dashed bg-card/50 px-6 py-14 text-center", className)}>
-      {icon && <div className="relative mb-4 flex size-14 items-center justify-center rounded-full bg-signal/25 text-foreground ring-4 ring-signal/10 [&_svg]:size-6 dark:text-signal">{icon}</div>}
+      {icon && <div className="relative mb-4 flex size-14 items-center justify-center rounded-full bg-signal/25 text-foreground ring-4 ring-signal/10 [&_svg]:size-6 dark:text-[var(--signal-text,var(--signal))]">{icon}</div>}
       <h3 className="font-semibold">{title}</h3>
       {description && <p className="mt-1 max-w-sm text-sm text-muted-foreground">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
@@ -27,7 +27,7 @@ export function EmptyState({ icon, title, description, action, className }: { ic
 }
 
 export function StatCard({ label, value, icon, hint, tone = "primary", className }: { label: string; value: React.ReactNode; icon?: React.ReactNode; hint?: React.ReactNode; tone?: "primary" | "success" | "warning" | "info" | "destructive"; className?: string }) {
-  const tones = { primary: "bg-signal/25 text-foreground dark:text-signal", success: "bg-success/12 text-success", warning: "bg-warning/15 text-warning", info: "bg-info/12 text-info", destructive: "bg-destructive/12 text-destructive" };
+  const tones = { primary: "bg-signal/25 text-foreground dark:text-[var(--signal-text,var(--signal))]", success: "bg-success/12 text-success", warning: "bg-warning/15 text-warning", info: "bg-info/12 text-info", destructive: "bg-destructive/12 text-destructive" };
   return (
     <div className={cn("rounded-[20px] border bg-card p-5 shadow-sm dark:shadow-none", className)}>
       <div className="flex items-center justify-between gap-3">

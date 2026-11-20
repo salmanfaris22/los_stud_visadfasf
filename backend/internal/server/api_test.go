@@ -443,6 +443,105 @@ func TestAPI(t *testing.T) {
 		}
 	})
 
+	t.Run("certificate templates", func(t *testing.T) {
+		type pdfFile struct {
+			File struct {
+				Data []byte `json:"data"`
+			} `json:"file"`
+		}
+		tpls := arr(admin.rpc("CertificateService/ListCertificateTemplates", nil, 200, nil), "items")
+		if len(tpls) != 1 || !flag(tpls[0], "isDefault") || len(arr(tpls[0], "fields")) < 8 {
+			t.Fatalf("templates = %v", tpls)
+		}
+		builtin := str(tpls[0], "id")
+		cert := arr(student.rpc("CertificateService/ListMyCertificates", nil, 200, nil), "items")[0]
+		if !strings.HasPrefix(str(cert, "code"), "MS-") {
+			t.Errorf("code = %v, want MS- prefix", str(cert, "code"))
+		}
+		code, art, _ := admin.raw("GET", "/api/v1/certificate-art/ms-navy-gold.jpg", nil, false)
+		if code != 200 || !bytes.HasPrefix(art, []byte{0xFF, 0xD8}) {
+			t.Fatalf("built-in art = %d", code)
+		}
+		if code, _, _ := admin.raw("GET", "/api/v1/certificate-art/nope.jpg", nil, false); code != 404 {
+			t.Errorf("unknown art = %d", code)
+		}
+
+		fields := []M{
+			{"id": "n", "kind": "text", "text": "{student} · **{course}**", "x": 20, "y": 90, "w": 250, "font": "script", "size": 40, "color": "#e3c06c", "align": "center", "fit": true},
+			{"id": "q", "kind": "qr", "x": 10, "y": 180, "w": 15},
+		}
+		in := M{"name": "Plain", "background_url": "/api/v1/certificate-art/ms-navy-gold.jpg", "fields": fields}
+		admin.rpc("CertificateService/CreateCertificateTemplate", M{"input": M{"name": "Outside", "background_url": "https://example.com/x.jpg"}}, 400, nil)
+		admin.rpc("CertificateService/CreateCertificateTemplate", M{"input": M{"name": "Dup", "fields": []M{fields[1], fields[1]}}}, 400, nil)
+		admin.rpc("CertificateService/CreateCertificateTemplate", M{"input": M{"name": "Bad font", "fields": []M{{"id": "x", "kind": "text", "x": 1, "y": 1, "w": 10, "font": "comic"}}}}, 400, nil)
+		id := str(obj(admin.rpc("CertificateService/CreateCertificateTemplate", M{"input": in}, 200, nil), "template"), "id")
+
+		var pdf pdfFile
+		admin.rpc("CertificateService/PreviewCertificateTemplate", M{"input": in, "course_id": courseID}, 200, &pdf)
+		if !bytes.HasPrefix(pdf.File.Data, []byte("%PDF")) {
+			t.Fatalf("preview: %d bytes", len(pdf.File.Data))
+		}
+
+		// The default cannot be deleted; making another one the default moves the flag.
+		admin.rpc("CertificateService/DeleteCertificateTemplate", M{"id": builtin}, 400, nil)
+		admin.rpc("CertificateService/SetDefaultCertificateTemplate", M{"id": id}, 200, nil)
+		tpls = arr(admin.rpc("CertificateService/ListCertificateTemplates", nil, 200, nil), "items")
+		if str(tpls[0], "id") != id || flag(tpls[1], "isDefault") {
+			t.Fatalf("default did not move: %v", tpls)
+		}
+		if opts := arr(admin.rpc("CertificateService/ListCertificateTemplateOptions", nil, 200, nil), "items"); len(opts) != 2 {
+			t.Fatalf("options = %v", opts)
+		}
+
+		// A course picks a template and its certificate sentence.
+		c := obj(admin.rpc("CourseService/UpdateCourse", M{"id": courseID, "input": M{"title": "Integration Course", "status": "published", "is_public": true,
+			"certificate_template_id": builtin, "certificate_text": "It covered tests."}}, 200, nil), "course")
+		if str(c, "certificateTemplateId") != builtin || !flag(c, "certificateEnabled") || str(c, "certificateText") != "It covered tests." {
+			t.Fatalf("course = %v", c)
+		}
+		if n := num(obj(admin.rpc("CertificateService/GetCertificateTemplate", M{"id": builtin}, 200, nil), "template"), "courseCount"); n != 1 {
+			t.Errorf("courseCount = %v", n)
+		}
+		// The issued certificate keeps its template and still renders.
+		student.rpc("CertificateService/GetMyCertificatePdf", M{"id": str(cert, "id")}, 200, &pdf)
+		if !bytes.HasPrefix(pdf.File.Data, []byte("%PDF")) {
+			t.Fatalf("certificate pdf: %d bytes", len(pdf.File.Data))
+		}
+
+		// Students and mentors without the permission cannot manage templates.
+		student.rpc("CertificateService/ListCertificateTemplates", nil, 403, nil)
+		student.rpc("CertificateService/CreateCertificateTemplate", M{"input": in}, 403, nil)
+
+		admin.rpc("CertificateService/SetDefaultCertificateTemplate", M{"id": builtin}, 200, nil)
+		admin.rpc("CertificateService/DeleteCertificateTemplate", M{"id": id}, 200, nil)
+		admin.rpc("CertificateService/GetCertificateTemplate", M{"id": id}, 404, nil)
+	})
+
+	t.Run("course with certificates off issues none", func(t *testing.T) {
+		c := obj(admin.rpc("CourseService/CreateCourse", M{"input": M{"title": "No Certificate Course", "status": "published", "certificate_enabled": false}}, 200, nil), "course")
+		cid := str(c, "id")
+		if flag(c, "certificateEnabled") {
+			t.Fatalf("course = %v", c)
+		}
+		v := obj(admin.rpc("CourseService/CreateVideo", M{"course_id": cid, "input": M{"title": "Only lesson", "provider": "vimeo", "url": "https://vimeo.com/1084537"}}, 200, nil), "video")
+		tk := obj(admin.rpc("CourseService/CreateTask", M{"video_id": str(v, "id"), "input": M{"title": "Done?", "allowed_types": []string{"text"}, "max_marks": 10, "pass_marks": 5}}, 200, nil), "task")
+		admin.rpc("StudentService/EnrollStudent", M{"student_id": studentID, "input": M{"course_id": cid}}, 200, nil)
+		student.rpc("PortalService/SubmitTask", M{"task_id": str(tk, "id"), "input": M{"items": []M{{"kind": "text", "content": "Yes"}}}}, 200, nil)
+		var sub string
+		for _, it := range arr(admin.rpc("SubmissionService/ListSubmissions", M{"status": "pending"}, 200, nil), "items") {
+			if str(it, "courseId") == cid || str(it, "taskId") == str(tk, "id") {
+				sub = str(it, "id")
+			}
+		}
+		if sub == "" {
+			t.Fatal("submission not in the queue")
+		}
+		admin.rpc("SubmissionService/ReviewSubmission", M{"id": sub, "input": M{"status": "approved", "marks": 8}}, 200, nil)
+		if certs := arr(student.rpc("CertificateService/ListMyCertificates", nil, 200, nil), "items"); len(certs) != 1 {
+			t.Fatalf("certificates = %d, want only the first course's", len(certs))
+		}
+	})
+
 	t.Run("scoped mentor role", func(t *testing.T) {
 		role := obj(admin.rpc("StaffService/CreateRole", M{"input": M{"name": "Tutor", "scoped": true, "permissions": M{"courses": M{"values": []string{"view"}}, "students": M{"values": []string{"view"}}}}}, 200, nil), "role")
 		admin.rpc("StaffService/CreateRole", M{"input": M{"name": "Bad", "permissions": M{"nope": M{"values": []string{"view"}}}}}, 400, nil)

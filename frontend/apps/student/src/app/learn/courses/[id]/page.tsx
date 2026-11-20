@@ -64,8 +64,8 @@ export default function MyCoursePage() {
       <div className="-mx-4 -mt-7 bg-rail text-rail-foreground sm:-mx-6 lg:-mx-8">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_340px] lg:px-8 lg:py-10">
           <div className="min-w-0 lg:py-2">
-            <nav className="flex flex-wrap items-center gap-1 text-sm font-bold text-violet-300" aria-label="Breadcrumb">
-              <Link href="/learn/courses" className="hover:text-violet-200">My learning</Link>
+            <nav className="flex flex-wrap items-center gap-1 text-sm font-bold text-blue-300" aria-label="Breadcrumb">
+              <Link href="/learn/courses" className="hover:text-blue-200">My learning</Link>
               {c.category && <><ChevronRight className="size-4 text-rail-muted" /><span>{c.category}</span></>}
             </nav>
             <h1 className="mt-3 font-display text-[28px] leading-tight font-extrabold sm:text-[36px]">{c.title}</h1>
@@ -76,7 +76,7 @@ export default function MyCoursePage() {
               <span className="text-rail-muted">{playlist.length} lectures · {formatHours(totalSec)} total</span>
             </div>
             {mentors.length > 0 && (
-              <p className="mt-3 text-sm">Mentors {mentors.map((m, i) => <React.Fragment key={m.id}>{i > 0 && ", "}<b className="text-violet-300">{m.name}</b></React.Fragment>)}</p>
+              <p className="mt-3 text-sm">Mentors {mentors.map((m, i) => <React.Fragment key={m.id}>{i > 0 && ", "}<b className="text-blue-300">{m.name}</b></React.Fragment>)}</p>
             )}
             <div className="mt-6 max-w-md">
               <div className="mb-1.5 flex justify-between text-xs text-rail-muted">
@@ -115,7 +115,7 @@ export default function MyCoursePage() {
                   return (
                     <li key={v.id}>
                       <Link href={`/learn/watch/${v.id}`} className="group block rounded-xl outline-offset-4">
-                        <div className={cn("relative aspect-video overflow-hidden rounded-xl bg-muted ring-2 ring-transparent transition", isNext && "ring-violet-500")}>
+                        <div className={cn("relative aspect-video overflow-hidden rounded-xl bg-muted ring-2 ring-transparent transition", isNext && "ring-blue-500")}>
                           <CourseCover id={id} title={v.title} label={`Lecture ${i + 1}`} src={v.thumbnailUrl} className="transition duration-300 group-hover:scale-105" />
                           <span className="absolute inset-0 grid place-items-center bg-black/30 opacity-0 transition group-hover:opacity-100">
                             <Play className="size-9 fill-white text-white drop-shadow" />

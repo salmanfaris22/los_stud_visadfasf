@@ -51,8 +51,8 @@ function SidebarNav({ onNavigate, id }: { onNavigate?: () => void; id: string })
 function Brand() {
   return (
     <Link href="/dashboard" className="flex items-center gap-2.5 px-2 font-display text-lg font-extrabold text-rail-foreground">
-      <BrandMark className="bg-rail-foreground [&>span]:shadow-[0_0_0_2.5px_var(--rail)]" />
-      LMS <span className="rounded-full bg-signal px-2 py-0.5 font-sans text-[10px] font-bold text-signal-foreground">Admin</span>
+      <BrandMark />
+      Ai school <span className="rounded-full bg-signal px-2 py-0.5 font-sans text-[10px] font-bold text-signal-foreground">Admin</span>
     </Link>
   );
 }
@@ -143,11 +143,11 @@ function Rail({ open, onToggle, onSearch, onLogout }: { open: boolean; onToggle:
     <>
       <aside className={cn("dark fixed top-4 bottom-4 left-4 z-40 hidden flex-col overflow-hidden rounded-[34px] bg-rail py-5 shadow-[0_18px_40px_-18px_rgb(20_19_24/0.55)] transition-[width] duration-300 ease-out lg:flex",
         open ? "w-[240px]" : "w-[68px]")}>
-        <Link href="/dashboard" aria-label="Dashboard" className="mx-3 mb-5 flex h-11 shrink-0 items-center gap-1 whitespace-nowrap" {...navTip("LMS Admin")}>
-          <span className="flex size-11 shrink-0 items-center justify-center"><BrandMark className="bg-rail-foreground [&>span]:shadow-[0_0_0_2.5px_var(--rail)]" /></span>
+        <Link href="/dashboard" aria-label="Dashboard" className="mx-3 mb-5 flex h-11 shrink-0 items-center gap-1 whitespace-nowrap" {...navTip("Ai school Admin")}>
+          <span className="flex size-11 shrink-0 items-center justify-center"><BrandMark /></span>
           {open && (
             <span className="flex animate-fade-in items-center gap-2 font-display text-lg font-extrabold text-rail-foreground">
-              LMS <span className="rounded-full bg-signal px-2 py-0.5 font-sans text-[10px] font-bold text-signal-foreground">Admin</span>
+              Ai school <span className="rounded-full bg-signal px-2 py-0.5 font-sans text-[10px] font-bold text-signal-foreground">Admin</span>
             </span>
           )}
         </Link>
@@ -288,7 +288,7 @@ function Shell({ children }: { children: React.ReactNode }) {
       {/* Phones and tablets: a slim top bar opens the full menu. */}
       <header className="sticky top-0 z-30 flex h-16 items-center gap-2 border-b bg-background/85 px-4 backdrop-blur-xl lg:hidden">
         <Button variant="ghost" size="icon" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
-        <Link href="/dashboard" className="flex items-center gap-2 font-display text-lg font-extrabold"><BrandMark />LMS</Link>
+        <Link href="/dashboard" className="flex items-center gap-2 font-display text-lg font-extrabold"><BrandMark />Ai school</Link>
         <div className="flex-1" />
         <Button variant="ghost" size="icon" onClick={() => setCmd(true)} aria-label="Search"><Search /></Button>
         <ThemeToggle />

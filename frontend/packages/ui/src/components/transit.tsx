@@ -206,11 +206,3 @@ export function TransitArt({ className, here = true }: { className?: string; her
   );
 }
 
-/** Brand mark: the "you are here" stop. */
-export function BrandMark({ className }: { className?: string }) {
-  return (
-    <span aria-hidden className={cn("relative inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-foreground", className)}>
-      <span className="size-[42%] rounded-full bg-signal shadow-[0_0_0_2.5px_var(--foreground)]" />
-    </span>
-  );
-}

@@ -1,15 +1,15 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { ClipboardCheck, MonitorPlay, Play } from "lucide-react";
-import type { MyCourse } from "@lms/api-client";
+import { ClipboardCheck, Lock, MonitorPlay, Play } from "lucide-react";
+import type { MyCourse, PublicCourse } from "@lms/api-client";
 import { cn, lineColor } from "@lms/ui";
 
-/** Udemy-style violet accent, used for progress and the main buttons on the course pages. */
+/** Brand blue accent (the signal colour), used for progress and the main buttons on the course pages. */
 export const accent = {
-  bar: "bg-violet-700 dark:bg-violet-400",
-  text: "text-violet-700 dark:text-violet-300",
-  button: "bg-violet-700 text-white shadow-none hover:bg-violet-800 dark:bg-violet-500 dark:hover:bg-violet-400",
+  bar: "bg-signal",
+  text: "text-signal dark:text-[var(--signal-text,var(--signal))]",
+  button: "bg-signal text-signal-foreground shadow-none hover:bg-signal-strong",
 };
 
 /** Thin progress bar like Udemy's "x% complete". */
@@ -86,7 +86,7 @@ export function CourseCard({ c }: { c: MyCourse }) {
       </div>
       <Link
         href={`/learn/courses/${c.courseId}`}
-        className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition duration-300 group-hover:border-foreground/15 focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:outline-none dark:shadow-none"
+        className="flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition duration-300 group-hover:border-foreground/15 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none dark:shadow-none"
       >
         <div className="relative aspect-video overflow-hidden bg-muted">
           {/* Extra bottom space on generated covers so the progress pill doesn't sit on the cover title. */}
@@ -150,6 +150,27 @@ export function CourseCard({ c }: { c: MyCourse }) {
   );
 }
 
+/** A course the student is not enrolled in: only the thumbnail, dimmed, with a lock. Opens the public course page. */
+export function LockedCourseCard({ c }: { c: PublicCourse }) {
+  return (
+    <Link
+      href={`/courses/${c.slug}`}
+      aria-label={`${c.title} (locked)`}
+      className="group block overflow-hidden rounded-2xl border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:border-foreground/15 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none dark:shadow-none"
+    >
+      <div className="relative aspect-video overflow-hidden bg-muted">
+        <CourseCover id={c.id} title={c.title} label={c.category} src={c.thumbnailUrl} className="grayscale-[35%]" />
+        <span aria-hidden className="absolute inset-0 bg-black/40 transition duration-300 group-hover:bg-black/30" />
+        <span className="absolute inset-0 flex items-center justify-center">
+          <span className="flex size-12 items-center justify-center rounded-full bg-white/95 text-zinc-900 shadow-lg">
+            <Lock className="size-5" />
+          </span>
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 /** Starts the hover preview after a short pause (like YouTube), only on devices with a mouse. */
 function useHoverPreview(enabled: boolean) {
   const [on, setOn] = React.useState(false);
@@ -183,8 +204,8 @@ function courseStatus(pct: number) {
     return {
       label: "In progress",
       cta: "Continue",
-      cls: "bg-violet-100 text-violet-800 dark:bg-violet-500/15 dark:text-violet-300",
-      chip: "bg-violet-600 text-white",
+      cls: "bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300",
+      chip: "bg-signal text-signal-foreground",
     };
   return {
     label: "Not started",
@@ -233,7 +254,7 @@ export function ProgressRing({
             strokeDashoffset={len * (1 - v / 100)}
             className={cn(
               "transition-[stroke-dashoffset] duration-700",
-              v >= 100 ? "stroke-emerald-500" : "stroke-violet-700 dark:stroke-violet-400",
+              v >= 100 ? "stroke-emerald-500" : "stroke-signal",
             )}
           />
         )}

@@ -10,7 +10,7 @@ import { file_buf_validate_validate } from "../../buf/validate/validate_pb";
 import type { File } from "./common_pb";
 import { file_lms_v1_common } from "./common_pb";
 import { file_lms_v1_options } from "./options_pb";
-import type { Certificate, CertificateInput, CertificateVerification } from "./types_pb";
+import type { Certificate, CertificateInput, CertificateTemplate, CertificateTemplateInput, CertificateTemplateOption, CertificateVerification } from "./types_pb";
 import { file_lms_v1_types } from "./types_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -18,7 +18,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file lms/v1/certificates.proto.
  */
 export const file_lms_v1_certificates: GenFile = /*@__PURE__*/
-  fileDesc("ChlsbXMvdjEvY2VydGlmaWNhdGVzLnByb3RvEgZsbXMudjEi0QEKF0xpc3RDZXJ0aWZpY2F0ZXNSZXF1ZXN0EhUKBHBhZ2UYASABKAVCB7pIBBoCKAASHAoIcGVyX3BhZ2UYAiABKAVCCrpIBxoFGMgBKAASagoJY291cnNlX2lkGAMgASgJQle6SFRyUjJQXih8WzAtOWEtZkEtRl17OH0tWzAtOWEtZkEtRl17NH0tWzAtOWEtZkEtRl17NH0tWzAtOWEtZkEtRl17NH0tWzAtOWEtZkEtRl17MTJ9KSQSFQoBcRgEIAEoCUIKukgH2AEBcgIYZCJtChhMaXN0Q2VydGlmaWNhdGVzUmVzcG9uc2USIgoFaXRlbXMYASADKAsyEy5sbXMudjEuQ2VydGlmaWNhdGUSDQoFdG90YWwYAiABKAUSDAoEcGFnZRgDIAEoBRIQCghwZXJfcGFnZRgEIAEoBSJKChdJc3N1ZUNlcnRpZmljYXRlUmVxdWVzdBIvCgVpbnB1dBgBIAEoCzIYLmxtcy52MS5DZXJ0aWZpY2F0ZUlucHV0Qga6SAPIAQEiRAoYSXNzdWVDZXJ0aWZpY2F0ZVJlc3BvbnNlEigKC2NlcnRpZmljYXRlGAEgASgLMhMubG1zLnYxLkNlcnRpZmljYXRlIjAKGFJldm9rZUNlcnRpZmljYXRlUmVxdWVzdBIUCgJpZBgBIAEoCUIIukgFcgOwAQEiGwoZUmV2b2tlQ2VydGlmaWNhdGVSZXNwb25zZSIwChhHZXRDZXJ0aWZpY2F0ZVBkZlJlcXVlc3QSFAoCaWQYASABKAlCCLpIBXIDsAEBIjcKGUdldENlcnRpZmljYXRlUGRmUmVzcG9uc2USGgoEZmlsZRgBIAEoCzIMLmxtcy52MS5GaWxlIhsKGUxpc3RNeUNlcnRpZmljYXRlc1JlcXVlc3QiQAoaTGlzdE15Q2VydGlmaWNhdGVzUmVzcG9uc2USIgoFaXRlbXMYASADKAsyEy5sbXMudjEuQ2VydGlmaWNhdGUiMgoaR2V0TXlDZXJ0aWZpY2F0ZVBkZlJlcXVlc3QSFAoCaWQYASABKAlCCLpIBXIDsAEBIjkKG0dldE15Q2VydGlmaWNhdGVQZGZSZXNwb25zZRIaCgRmaWxlGAEgASgLMgwubG1zLnYxLkZpbGUiMwoYVmVyaWZ5Q2VydGlmaWNhdGVSZXF1ZXN0EhcKBGNvZGUYASABKAlCCbpIBnIEEAEYKCJSChlWZXJpZnlDZXJ0aWZpY2F0ZVJlc3BvbnNlEjUKDHZlcmlmaWNhdGlvbhgBIAEoCzIfLmxtcy52MS5DZXJ0aWZpY2F0ZVZlcmlmaWNhdGlvbjK2BgoSQ2VydGlmaWNhdGVTZXJ2aWNlEnQKEExpc3RDZXJ0aWZpY2F0ZXMSHy5sbXMudjEuTGlzdENlcnRpZmljYXRlc1JlcXVlc3QaIC5sbXMudjEuTGlzdENlcnRpZmljYXRlc1Jlc3BvbnNlIh2QAgGquxgWKhQKDGNlcnRpZmljYXRlcxIEdmlldxJzChBJc3N1ZUNlcnRpZmljYXRlEh8ubG1zLnYxLklzc3VlQ2VydGlmaWNhdGVSZXF1ZXN0GiAubG1zLnYxLklzc3VlQ2VydGlmaWNhdGVSZXNwb25zZSIcqrsYGCoWCgxjZXJ0aWZpY2F0ZXMSBmNyZWF0ZRJ2ChFSZXZva2VDZXJ0aWZpY2F0ZRIgLmxtcy52MS5SZXZva2VDZXJ0aWZpY2F0ZVJlcXVlc3QaIS5sbXMudjEuUmV2b2tlQ2VydGlmaWNhdGVSZXNwb25zZSIcqrsYGCoWCgxjZXJ0aWZpY2F0ZXMSBmRlbGV0ZRJ3ChFHZXRDZXJ0aWZpY2F0ZVBkZhIgLmxtcy52MS5HZXRDZXJ0aWZpY2F0ZVBkZlJlcXVlc3QaIS5sbXMudjEuR2V0Q2VydGlmaWNhdGVQZGZSZXNwb25zZSIdkAIBqrsYFioUCgxjZXJ0aWZpY2F0ZXMSBHZpZXcSZgoSTGlzdE15Q2VydGlmaWNhdGVzEiEubG1zLnYxLkxpc3RNeUNlcnRpZmljYXRlc1JlcXVlc3QaIi5sbXMudjEuTGlzdE15Q2VydGlmaWNhdGVzUmVzcG9uc2UiCZACAaq7GAIYARJpChNHZXRNeUNlcnRpZmljYXRlUGRmEiIubG1zLnYxLkdldE15Q2VydGlmaWNhdGVQZGZSZXF1ZXN0GiMubG1zLnYxLkdldE15Q2VydGlmaWNhdGVQZGZSZXNwb25zZSIJkAIBqrsYAhgBEnEKEVZlcmlmeUNlcnRpZmljYXRlEiAubG1zLnYxLlZlcmlmeUNlcnRpZmljYXRlUmVxdWVzdBohLmxtcy52MS5WZXJpZnlDZXJ0aWZpY2F0ZVJlc3BvbnNlIheQAgGquxgQMgwKBnZlcmlmeRA8GDwIAUKBAQoKY29tLmxtcy52MUIRQ2VydGlmaWNhdGVzUHJvdG9QAVonZ2l0aHViLmNvbS9sbXMvYmFja2VuZC9nZW4vbG1zL3YxO2xtc3YxogIDTFhYqgIGTG1zLlYxygIGTG1zXFYx4gISTG1zXFYxXEdQQk1ldGFkYXRh6gIHTG1zOjpWMWIGcHJvdG8z", [file_buf_validate_validate, file_lms_v1_common, file_lms_v1_options, file_lms_v1_types]);
+  fileDesc("ChlsbXMvdjEvY2VydGlmaWNhdGVzLnByb3RvEgZsbXMudjEi0QEKF0xpc3RDZXJ0aWZpY2F0ZXNSZXF1ZXN0EhUKBHBhZ2UYASABKAVCB7pIBBoCKAASHAoIcGVyX3BhZ2UYAiABKAVCCrpIBxoFGMgBKAASagoJY291cnNlX2lkGAMgASgJQle6SFRyUjJQXih8WzAtOWEtZkEtRl17OH0tWzAtOWEtZkEtRl17NH0tWzAtOWEtZkEtRl17NH0tWzAtOWEtZkEtRl17NH0tWzAtOWEtZkEtRl17MTJ9KSQSFQoBcRgEIAEoCUIKukgH2AEBcgIYZCJtChhMaXN0Q2VydGlmaWNhdGVzUmVzcG9uc2USIgoFaXRlbXMYASADKAsyEy5sbXMudjEuQ2VydGlmaWNhdGUSDQoFdG90YWwYAiABKAUSDAoEcGFnZRgDIAEoBRIQCghwZXJfcGFnZRgEIAEoBSJKChdJc3N1ZUNlcnRpZmljYXRlUmVxdWVzdBIvCgVpbnB1dBgBIAEoCzIYLmxtcy52MS5DZXJ0aWZpY2F0ZUlucHV0Qga6SAPIAQEiRAoYSXNzdWVDZXJ0aWZpY2F0ZVJlc3BvbnNlEigKC2NlcnRpZmljYXRlGAEgASgLMhMubG1zLnYxLkNlcnRpZmljYXRlIjAKGFJldm9rZUNlcnRpZmljYXRlUmVxdWVzdBIUCgJpZBgBIAEoCUIIukgFcgOwAQEiGwoZUmV2b2tlQ2VydGlmaWNhdGVSZXNwb25zZSIwChhHZXRDZXJ0aWZpY2F0ZVBkZlJlcXVlc3QSFAoCaWQYASABKAlCCLpIBXIDsAEBIjcKGUdldENlcnRpZmljYXRlUGRmUmVzcG9uc2USGgoEZmlsZRgBIAEoCzIMLmxtcy52MS5GaWxlIhsKGUxpc3RNeUNlcnRpZmljYXRlc1JlcXVlc3QiQAoaTGlzdE15Q2VydGlmaWNhdGVzUmVzcG9uc2USIgoFaXRlbXMYASADKAsyEy5sbXMudjEuQ2VydGlmaWNhdGUiMgoaR2V0TXlDZXJ0aWZpY2F0ZVBkZlJlcXVlc3QSFAoCaWQYASABKAlCCLpIBXIDsAEBIjkKG0dldE15Q2VydGlmaWNhdGVQZGZSZXNwb25zZRIaCgRmaWxlGAEgASgLMgwubG1zLnYxLkZpbGUiMwoYVmVyaWZ5Q2VydGlmaWNhdGVSZXF1ZXN0EhcKBGNvZGUYASABKAlCCbpIBnIEEAEYKCJSChlWZXJpZnlDZXJ0aWZpY2F0ZVJlc3BvbnNlEjUKDHZlcmlmaWNhdGlvbhgBIAEoCzIfLmxtcy52MS5DZXJ0aWZpY2F0ZVZlcmlmaWNhdGlvbiIhCh9MaXN0Q2VydGlmaWNhdGVUZW1wbGF0ZXNSZXF1ZXN0Ik4KIExpc3RDZXJ0aWZpY2F0ZVRlbXBsYXRlc1Jlc3BvbnNlEioKBWl0ZW1zGAEgAygLMhsubG1zLnYxLkNlcnRpZmljYXRlVGVtcGxhdGUiJwolTGlzdENlcnRpZmljYXRlVGVtcGxhdGVPcHRpb25zUmVxdWVzdCJaCiZMaXN0Q2VydGlmaWNhdGVUZW1wbGF0ZU9wdGlvbnNSZXNwb25zZRIwCgVpdGVtcxgBIAMoCzIhLmxtcy52MS5DZXJ0aWZpY2F0ZVRlbXBsYXRlT3B0aW9uIjUKHUdldENlcnRpZmljYXRlVGVtcGxhdGVSZXF1ZXN0EhQKAmlkGAEgASgJQgi6SAVyA7ABASJPCh5HZXRDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVzcG9uc2USLQoIdGVtcGxhdGUYASABKAsyGy5sbXMudjEuQ2VydGlmaWNhdGVUZW1wbGF0ZSJbCiBDcmVhdGVDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVxdWVzdBI3CgVpbnB1dBgBIAEoCzIgLmxtcy52MS5DZXJ0aWZpY2F0ZVRlbXBsYXRlSW5wdXRCBrpIA8gBASJSCiFDcmVhdGVDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVzcG9uc2USLQoIdGVtcGxhdGUYASABKAsyGy5sbXMudjEuQ2VydGlmaWNhdGVUZW1wbGF0ZSJxCiBVcGRhdGVDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVxdWVzdBIUCgJpZBgBIAEoCUIIukgFcgOwAQESNwoFaW5wdXQYAiABKAsyIC5sbXMudjEuQ2VydGlmaWNhdGVUZW1wbGF0ZUlucHV0Qga6SAPIAQEiUgohVXBkYXRlQ2VydGlmaWNhdGVUZW1wbGF0ZVJlc3BvbnNlEi0KCHRlbXBsYXRlGAEgASgLMhsubG1zLnYxLkNlcnRpZmljYXRlVGVtcGxhdGUiPAokU2V0RGVmYXVsdENlcnRpZmljYXRlVGVtcGxhdGVSZXF1ZXN0EhQKAmlkGAEgASgJQgi6SAVyA7ABASInCiVTZXREZWZhdWx0Q2VydGlmaWNhdGVUZW1wbGF0ZVJlc3BvbnNlIjgKIERlbGV0ZUNlcnRpZmljYXRlVGVtcGxhdGVSZXF1ZXN0EhQKAmlkGAEgASgJQgi6SAVyA7ABASIjCiFEZWxldGVDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVzcG9uc2UiyAEKIVByZXZpZXdDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVxdWVzdBI3CgVpbnB1dBgBIAEoCzIgLmxtcy52MS5DZXJ0aWZpY2F0ZVRlbXBsYXRlSW5wdXRCBrpIA8gBARJqCgljb3Vyc2VfaWQYAiABKAlCV7pIVHJSMlBeKHxbMC05YS1mQS1GXXs4fS1bMC05YS1mQS1GXXs0fS1bMC05YS1mQS1GXXs0fS1bMC05YS1mQS1GXXs0fS1bMC05YS1mQS1GXXsxMn0pJCJACiJQcmV2aWV3Q2VydGlmaWNhdGVUZW1wbGF0ZVJlc3BvbnNlEhoKBGZpbGUYASABKAsyDC5sbXMudjEuRmlsZTLMDwoSQ2VydGlmaWNhdGVTZXJ2aWNlEnQKEExpc3RDZXJ0aWZpY2F0ZXMSHy5sbXMudjEuTGlzdENlcnRpZmljYXRlc1JlcXVlc3QaIC5sbXMudjEuTGlzdENlcnRpZmljYXRlc1Jlc3BvbnNlIh2QAgGquxgWKhQKDGNlcnRpZmljYXRlcxIEdmlldxJzChBJc3N1ZUNlcnRpZmljYXRlEh8ubG1zLnYxLklzc3VlQ2VydGlmaWNhdGVSZXF1ZXN0GiAubG1zLnYxLklzc3VlQ2VydGlmaWNhdGVSZXNwb25zZSIcqrsYGCoWCgxjZXJ0aWZpY2F0ZXMSBmNyZWF0ZRJ2ChFSZXZva2VDZXJ0aWZpY2F0ZRIgLmxtcy52MS5SZXZva2VDZXJ0aWZpY2F0ZVJlcXVlc3QaIS5sbXMudjEuUmV2b2tlQ2VydGlmaWNhdGVSZXNwb25zZSIcqrsYGCoWCgxjZXJ0aWZpY2F0ZXMSBmRlbGV0ZRJ3ChFHZXRDZXJ0aWZpY2F0ZVBkZhIgLmxtcy52MS5HZXRDZXJ0aWZpY2F0ZVBkZlJlcXVlc3QaIS5sbXMudjEuR2V0Q2VydGlmaWNhdGVQZGZSZXNwb25zZSIdkAIBqrsYFioUCgxjZXJ0aWZpY2F0ZXMSBHZpZXcSZgoSTGlzdE15Q2VydGlmaWNhdGVzEiEubG1zLnYxLkxpc3RNeUNlcnRpZmljYXRlc1JlcXVlc3QaIi5sbXMudjEuTGlzdE15Q2VydGlmaWNhdGVzUmVzcG9uc2UiCZACAaq7GAIYARJpChNHZXRNeUNlcnRpZmljYXRlUGRmEiIubG1zLnYxLkdldE15Q2VydGlmaWNhdGVQZGZSZXF1ZXN0GiMubG1zLnYxLkdldE15Q2VydGlmaWNhdGVQZGZSZXNwb25zZSIJkAIBqrsYAhgBEnEKEVZlcmlmeUNlcnRpZmljYXRlEiAubG1zLnYxLlZlcmlmeUNlcnRpZmljYXRlUmVxdWVzdBohLmxtcy52MS5WZXJpZnlDZXJ0aWZpY2F0ZVJlc3BvbnNlIheQAgGquxgQMgwKBnZlcmlmeRA8GDwIARKMAQoYTGlzdENlcnRpZmljYXRlVGVtcGxhdGVzEicubG1zLnYxLkxpc3RDZXJ0aWZpY2F0ZVRlbXBsYXRlc1JlcXVlc3QaKC5sbXMudjEuTGlzdENlcnRpZmljYXRlVGVtcGxhdGVzUmVzcG9uc2UiHZACAaq7GBYqFAoMY2VydGlmaWNhdGVzEgR2aWV3EooBCh5MaXN0Q2VydGlmaWNhdGVUZW1wbGF0ZU9wdGlvbnMSLS5sbXMudjEuTGlzdENlcnRpZmljYXRlVGVtcGxhdGVPcHRpb25zUmVxdWVzdBouLmxtcy52MS5MaXN0Q2VydGlmaWNhdGVUZW1wbGF0ZU9wdGlvbnNSZXNwb25zZSIJkAIBqrsYAiABEoYBChZHZXRDZXJ0aWZpY2F0ZVRlbXBsYXRlEiUubG1zLnYxLkdldENlcnRpZmljYXRlVGVtcGxhdGVSZXF1ZXN0GiYubG1zLnYxLkdldENlcnRpZmljYXRlVGVtcGxhdGVSZXNwb25zZSIdkAIBqrsYFioUCgxjZXJ0aWZpY2F0ZXMSBHZpZXcSjgEKGUNyZWF0ZUNlcnRpZmljYXRlVGVtcGxhdGUSKC5sbXMudjEuQ3JlYXRlQ2VydGlmaWNhdGVUZW1wbGF0ZVJlcXVlc3QaKS5sbXMudjEuQ3JlYXRlQ2VydGlmaWNhdGVUZW1wbGF0ZVJlc3BvbnNlIhyquxgYKhYKDGNlcnRpZmljYXRlcxIGY3JlYXRlEowBChlVcGRhdGVDZXJ0aWZpY2F0ZVRlbXBsYXRlEigubG1zLnYxLlVwZGF0ZUNlcnRpZmljYXRlVGVtcGxhdGVSZXF1ZXN0GikubG1zLnYxLlVwZGF0ZUNlcnRpZmljYXRlVGVtcGxhdGVSZXNwb25zZSIaqrsYFioUCgxjZXJ0aWZpY2F0ZXMSBGVkaXQSmAEKHVNldERlZmF1bHRDZXJ0aWZpY2F0ZVRlbXBsYXRlEiwubG1zLnYxLlNldERlZmF1bHRDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVxdWVzdBotLmxtcy52MS5TZXREZWZhdWx0Q2VydGlmaWNhdGVUZW1wbGF0ZVJlc3BvbnNlIhqquxgWKhQKDGNlcnRpZmljYXRlcxIEZWRpdBKOAQoZRGVsZXRlQ2VydGlmaWNhdGVUZW1wbGF0ZRIoLmxtcy52MS5EZWxldGVDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVxdWVzdBopLmxtcy52MS5EZWxldGVDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVzcG9uc2UiHKq7GBgqFgoMY2VydGlmaWNhdGVzEgZkZWxldGUSogEKGlByZXZpZXdDZXJ0aWZpY2F0ZVRlbXBsYXRlEikubG1zLnYxLlByZXZpZXdDZXJ0aWZpY2F0ZVRlbXBsYXRlUmVxdWVzdBoqLmxtcy52MS5QcmV2aWV3Q2VydGlmaWNhdGVUZW1wbGF0ZVJlc3BvbnNlIi2quxgpMhEKC2NlcnRwcmV2aWV3EB4YPCoUCgxjZXJ0aWZpY2F0ZXMSBHZpZXdCgQEKCmNvbS5sbXMudjFCEUNlcnRpZmljYXRlc1Byb3RvUAFaJ2dpdGh1Yi5jb20vbG1zL2JhY2tlbmQvZ2VuL2xtcy92MTtsbXN2MaICA0xYWKoCBkxtcy5WMcoCBkxtc1xWMeICEkxtc1xWMVxHUEJNZXRhZGF0YeoCB0xtczo6VjFiBnByb3RvMw", [file_buf_validate_validate, file_lms_v1_common, file_lms_v1_options, file_lms_v1_types]);
 
 /**
  * @generated from message lms.v1.ListCertificatesRequest
@@ -281,6 +281,272 @@ export const VerifyCertificateResponseSchema: GenMessage<VerifyCertificateRespon
   messageDesc(file_lms_v1_certificates, 13);
 
 /**
+ * @generated from message lms.v1.ListCertificateTemplatesRequest
+ */
+export type ListCertificateTemplatesRequest = Message<"lms.v1.ListCertificateTemplatesRequest"> & {
+};
+
+/**
+ * Describes the message lms.v1.ListCertificateTemplatesRequest.
+ * Use `create(ListCertificateTemplatesRequestSchema)` to create a new message.
+ */
+export const ListCertificateTemplatesRequestSchema: GenMessage<ListCertificateTemplatesRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 14);
+
+/**
+ * @generated from message lms.v1.ListCertificateTemplatesResponse
+ */
+export type ListCertificateTemplatesResponse = Message<"lms.v1.ListCertificateTemplatesResponse"> & {
+  /**
+   * @generated from field: repeated lms.v1.CertificateTemplate items = 1;
+   */
+  items: CertificateTemplate[];
+};
+
+/**
+ * Describes the message lms.v1.ListCertificateTemplatesResponse.
+ * Use `create(ListCertificateTemplatesResponseSchema)` to create a new message.
+ */
+export const ListCertificateTemplatesResponseSchema: GenMessage<ListCertificateTemplatesResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 15);
+
+/**
+ * @generated from message lms.v1.ListCertificateTemplateOptionsRequest
+ */
+export type ListCertificateTemplateOptionsRequest = Message<"lms.v1.ListCertificateTemplateOptionsRequest"> & {
+};
+
+/**
+ * Describes the message lms.v1.ListCertificateTemplateOptionsRequest.
+ * Use `create(ListCertificateTemplateOptionsRequestSchema)` to create a new message.
+ */
+export const ListCertificateTemplateOptionsRequestSchema: GenMessage<ListCertificateTemplateOptionsRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 16);
+
+/**
+ * @generated from message lms.v1.ListCertificateTemplateOptionsResponse
+ */
+export type ListCertificateTemplateOptionsResponse = Message<"lms.v1.ListCertificateTemplateOptionsResponse"> & {
+  /**
+   * @generated from field: repeated lms.v1.CertificateTemplateOption items = 1;
+   */
+  items: CertificateTemplateOption[];
+};
+
+/**
+ * Describes the message lms.v1.ListCertificateTemplateOptionsResponse.
+ * Use `create(ListCertificateTemplateOptionsResponseSchema)` to create a new message.
+ */
+export const ListCertificateTemplateOptionsResponseSchema: GenMessage<ListCertificateTemplateOptionsResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 17);
+
+/**
+ * @generated from message lms.v1.GetCertificateTemplateRequest
+ */
+export type GetCertificateTemplateRequest = Message<"lms.v1.GetCertificateTemplateRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message lms.v1.GetCertificateTemplateRequest.
+ * Use `create(GetCertificateTemplateRequestSchema)` to create a new message.
+ */
+export const GetCertificateTemplateRequestSchema: GenMessage<GetCertificateTemplateRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 18);
+
+/**
+ * @generated from message lms.v1.GetCertificateTemplateResponse
+ */
+export type GetCertificateTemplateResponse = Message<"lms.v1.GetCertificateTemplateResponse"> & {
+  /**
+   * @generated from field: lms.v1.CertificateTemplate template = 1;
+   */
+  template?: CertificateTemplate | undefined;
+};
+
+/**
+ * Describes the message lms.v1.GetCertificateTemplateResponse.
+ * Use `create(GetCertificateTemplateResponseSchema)` to create a new message.
+ */
+export const GetCertificateTemplateResponseSchema: GenMessage<GetCertificateTemplateResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 19);
+
+/**
+ * @generated from message lms.v1.CreateCertificateTemplateRequest
+ */
+export type CreateCertificateTemplateRequest = Message<"lms.v1.CreateCertificateTemplateRequest"> & {
+  /**
+   * @generated from field: lms.v1.CertificateTemplateInput input = 1;
+   */
+  input?: CertificateTemplateInput | undefined;
+};
+
+/**
+ * Describes the message lms.v1.CreateCertificateTemplateRequest.
+ * Use `create(CreateCertificateTemplateRequestSchema)` to create a new message.
+ */
+export const CreateCertificateTemplateRequestSchema: GenMessage<CreateCertificateTemplateRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 20);
+
+/**
+ * @generated from message lms.v1.CreateCertificateTemplateResponse
+ */
+export type CreateCertificateTemplateResponse = Message<"lms.v1.CreateCertificateTemplateResponse"> & {
+  /**
+   * @generated from field: lms.v1.CertificateTemplate template = 1;
+   */
+  template?: CertificateTemplate | undefined;
+};
+
+/**
+ * Describes the message lms.v1.CreateCertificateTemplateResponse.
+ * Use `create(CreateCertificateTemplateResponseSchema)` to create a new message.
+ */
+export const CreateCertificateTemplateResponseSchema: GenMessage<CreateCertificateTemplateResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 21);
+
+/**
+ * @generated from message lms.v1.UpdateCertificateTemplateRequest
+ */
+export type UpdateCertificateTemplateRequest = Message<"lms.v1.UpdateCertificateTemplateRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: lms.v1.CertificateTemplateInput input = 2;
+   */
+  input?: CertificateTemplateInput | undefined;
+};
+
+/**
+ * Describes the message lms.v1.UpdateCertificateTemplateRequest.
+ * Use `create(UpdateCertificateTemplateRequestSchema)` to create a new message.
+ */
+export const UpdateCertificateTemplateRequestSchema: GenMessage<UpdateCertificateTemplateRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 22);
+
+/**
+ * @generated from message lms.v1.UpdateCertificateTemplateResponse
+ */
+export type UpdateCertificateTemplateResponse = Message<"lms.v1.UpdateCertificateTemplateResponse"> & {
+  /**
+   * @generated from field: lms.v1.CertificateTemplate template = 1;
+   */
+  template?: CertificateTemplate | undefined;
+};
+
+/**
+ * Describes the message lms.v1.UpdateCertificateTemplateResponse.
+ * Use `create(UpdateCertificateTemplateResponseSchema)` to create a new message.
+ */
+export const UpdateCertificateTemplateResponseSchema: GenMessage<UpdateCertificateTemplateResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 23);
+
+/**
+ * @generated from message lms.v1.SetDefaultCertificateTemplateRequest
+ */
+export type SetDefaultCertificateTemplateRequest = Message<"lms.v1.SetDefaultCertificateTemplateRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message lms.v1.SetDefaultCertificateTemplateRequest.
+ * Use `create(SetDefaultCertificateTemplateRequestSchema)` to create a new message.
+ */
+export const SetDefaultCertificateTemplateRequestSchema: GenMessage<SetDefaultCertificateTemplateRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 24);
+
+/**
+ * @generated from message lms.v1.SetDefaultCertificateTemplateResponse
+ */
+export type SetDefaultCertificateTemplateResponse = Message<"lms.v1.SetDefaultCertificateTemplateResponse"> & {
+};
+
+/**
+ * Describes the message lms.v1.SetDefaultCertificateTemplateResponse.
+ * Use `create(SetDefaultCertificateTemplateResponseSchema)` to create a new message.
+ */
+export const SetDefaultCertificateTemplateResponseSchema: GenMessage<SetDefaultCertificateTemplateResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 25);
+
+/**
+ * @generated from message lms.v1.DeleteCertificateTemplateRequest
+ */
+export type DeleteCertificateTemplateRequest = Message<"lms.v1.DeleteCertificateTemplateRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message lms.v1.DeleteCertificateTemplateRequest.
+ * Use `create(DeleteCertificateTemplateRequestSchema)` to create a new message.
+ */
+export const DeleteCertificateTemplateRequestSchema: GenMessage<DeleteCertificateTemplateRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 26);
+
+/**
+ * @generated from message lms.v1.DeleteCertificateTemplateResponse
+ */
+export type DeleteCertificateTemplateResponse = Message<"lms.v1.DeleteCertificateTemplateResponse"> & {
+};
+
+/**
+ * Describes the message lms.v1.DeleteCertificateTemplateResponse.
+ * Use `create(DeleteCertificateTemplateResponseSchema)` to create a new message.
+ */
+export const DeleteCertificateTemplateResponseSchema: GenMessage<DeleteCertificateTemplateResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 27);
+
+/**
+ * @generated from message lms.v1.PreviewCertificateTemplateRequest
+ */
+export type PreviewCertificateTemplateRequest = Message<"lms.v1.PreviewCertificateTemplateRequest"> & {
+  /**
+   * @generated from field: lms.v1.CertificateTemplateInput input = 1;
+   */
+  input?: CertificateTemplateInput | undefined;
+
+  /**
+   * @generated from field: string course_id = 2;
+   */
+  courseId: string;
+};
+
+/**
+ * Describes the message lms.v1.PreviewCertificateTemplateRequest.
+ * Use `create(PreviewCertificateTemplateRequestSchema)` to create a new message.
+ */
+export const PreviewCertificateTemplateRequestSchema: GenMessage<PreviewCertificateTemplateRequest> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 28);
+
+/**
+ * @generated from message lms.v1.PreviewCertificateTemplateResponse
+ */
+export type PreviewCertificateTemplateResponse = Message<"lms.v1.PreviewCertificateTemplateResponse"> & {
+  /**
+   * @generated from field: lms.v1.File file = 1;
+   */
+  file?: File | undefined;
+};
+
+/**
+ * Describes the message lms.v1.PreviewCertificateTemplateResponse.
+ * Use `create(PreviewCertificateTemplateResponseSchema)` to create a new message.
+ */
+export const PreviewCertificateTemplateResponseSchema: GenMessage<PreviewCertificateTemplateResponse> = /*@__PURE__*/
+  messageDesc(file_lms_v1_certificates, 29);
+
+/**
  * Course certificates: issue, revoke, download as PDF and verify publicly.
  *
  * @generated from service lms.v1.CertificateService
@@ -355,6 +621,86 @@ export const CertificateService: GenService<{
     methodKind: "unary";
     input: typeof VerifyCertificateRequestSchema;
     output: typeof VerifyCertificateResponseSchema;
+  },
+  /**
+   * Certificate templates
+   *
+   * @generated from rpc lms.v1.CertificateService.ListCertificateTemplates
+   */
+  listCertificateTemplates: {
+    methodKind: "unary";
+    input: typeof ListCertificateTemplatesRequestSchema;
+    output: typeof ListCertificateTemplatesResponseSchema;
+  },
+  /**
+   * Certificate templates for pickers
+   *
+   * @generated from rpc lms.v1.CertificateService.ListCertificateTemplateOptions
+   */
+  listCertificateTemplateOptions: {
+    methodKind: "unary";
+    input: typeof ListCertificateTemplateOptionsRequestSchema;
+    output: typeof ListCertificateTemplateOptionsResponseSchema;
+  },
+  /**
+   * Get a certificate template
+   *
+   * @generated from rpc lms.v1.CertificateService.GetCertificateTemplate
+   */
+  getCertificateTemplate: {
+    methodKind: "unary";
+    input: typeof GetCertificateTemplateRequestSchema;
+    output: typeof GetCertificateTemplateResponseSchema;
+  },
+  /**
+   * Create a certificate template
+   *
+   * @generated from rpc lms.v1.CertificateService.CreateCertificateTemplate
+   */
+  createCertificateTemplate: {
+    methodKind: "unary";
+    input: typeof CreateCertificateTemplateRequestSchema;
+    output: typeof CreateCertificateTemplateResponseSchema;
+  },
+  /**
+   * Update a certificate template
+   *
+   * @generated from rpc lms.v1.CertificateService.UpdateCertificateTemplate
+   */
+  updateCertificateTemplate: {
+    methodKind: "unary";
+    input: typeof UpdateCertificateTemplateRequestSchema;
+    output: typeof UpdateCertificateTemplateResponseSchema;
+  },
+  /**
+   * Make a template the default
+   *
+   * @generated from rpc lms.v1.CertificateService.SetDefaultCertificateTemplate
+   */
+  setDefaultCertificateTemplate: {
+    methodKind: "unary";
+    input: typeof SetDefaultCertificateTemplateRequestSchema;
+    output: typeof SetDefaultCertificateTemplateResponseSchema;
+  },
+  /**
+   * Delete a certificate template (not the default)
+   *
+   * @generated from rpc lms.v1.CertificateService.DeleteCertificateTemplate
+   */
+  deleteCertificateTemplate: {
+    methodKind: "unary";
+    input: typeof DeleteCertificateTemplateRequestSchema;
+    output: typeof DeleteCertificateTemplateResponseSchema;
+  },
+  /**
+   * Render a template as a sample PDF
+   *
+   * @generated from rpc lms.v1.CertificateService.PreviewCertificateTemplate
+   */
+  previewCertificateTemplate: {
+    methodKind: "unary";
+    input: typeof PreviewCertificateTemplateRequestSchema;
+    output: typeof PreviewCertificateTemplateResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_lms_v1_certificates, 0);

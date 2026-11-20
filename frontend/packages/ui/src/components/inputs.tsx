@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { ChevronLeft, ChevronRight, ChevronsUpDown, Search, UploadCloud, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronsUpDown, Eye, EyeOff, Search, UploadCloud, X } from "lucide-react";
 import { cn, formatBytes } from "../lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -24,6 +24,28 @@ export function SearchInput({ value, onChange, placeholder = "Search…", classN
     </div>
   );
 }
+
+/** Password input with an eye button to show/hide the value. */
+export const PasswordInput = React.forwardRef<HTMLInputElement, Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">>(({ className, disabled, ...props }, ref) => {
+  const [show, setShow] = React.useState(false);
+  return (
+    <div className="relative">
+      <Input ref={ref} type={show ? "text" : "password"} disabled={disabled} className={cn("pr-10", className)} {...props} />
+      <button
+        type="button"
+        tabIndex={-1}
+        disabled={disabled}
+        aria-label={show ? "Hide password" : "Show password"}
+        aria-pressed={show}
+        onClick={() => setShow((s) => !s)}
+        className="absolute inset-y-0 right-0 flex size-10 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
+      >
+        {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+      </button>
+    </div>
+  );
+});
+PasswordInput.displayName = "PasswordInput";
 
 export function Pagination({ page, perPage, total, onPage }: { page: number; perPage: number; total: number; onPage: (p: number) => void }) {
   const pages = Math.max(1, Math.ceil(total / perPage));
@@ -112,7 +134,7 @@ export function FileDrop({ onFiles, accept, multiple = true, maxBytes, hint, dis
       onDrop={(e) => { e.preventDefault(); setOver(false); if (!disabled) take(e.dataTransfer.files); }}
       className={cn("flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[18px] border-2 border-dashed px-4 py-7 text-center transition", over ? "border-foreground bg-signal/10" : "hover:border-foreground/40 hover:bg-muted/40", disabled && "pointer-events-none opacity-50", className)}
     >
-      <span className="flex size-11 items-center justify-center rounded-full bg-signal/25 dark:text-signal"><UploadCloud className="size-5" /></span>
+      <span className="flex size-11 items-center justify-center rounded-full bg-signal/25 dark:text-[var(--signal-text,var(--signal))]"><UploadCloud className="size-5" /></span>
       <div className="text-sm font-medium">Drop files here or <span className="underline decoration-signal decoration-2 underline-offset-4">browse</span></div>
       {hint && <div className="text-xs text-muted-foreground">{hint}</div>}
       <input ref={ref} type="file" hidden accept={accept} multiple={multiple} onChange={(e) => { take(e.target.files); e.target.value = ""; }} />

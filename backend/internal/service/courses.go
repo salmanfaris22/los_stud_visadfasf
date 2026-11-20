@@ -24,7 +24,8 @@ func toCourse(c repository.Course, videos, students int32, mentors []dto.Person)
 	}
 	return dto.Course{ID: c.ID, Slug: c.Slug, Title: c.Title, Subtitle: c.Subtitle, Description: c.Description, ThumbnailURL: c.ThumbnailUrl,
 		Level: c.Level, Language: c.Language, Category: c.Category, Status: c.Status, IsPublic: c.IsPublic, PriceLabel: c.PriceLabel,
-		WhatYouLearn: c.WhatYouLearn, VideoCount: videos, StudentCount: students, Mentors: mentors, CreatedAt: c.CreatedAt, UpdatedAt: c.UpdatedAt}
+		WhatYouLearn: c.WhatYouLearn, VideoCount: videos, StudentCount: students, Mentors: mentors, CreatedAt: c.CreatedAt, UpdatedAt: c.UpdatedAt,
+		CertificateEnabled: c.CertificateEnabled, CertificateTemplateID: c.CertificateTemplateID, CertificateText: c.CertificateText}
 }
 
 func toTask(t repository.Task) dto.Task {
@@ -154,6 +155,7 @@ func normaliseCourse(in *dto.CourseInput) {
 	in.Level = orDefault(in.Level, "beginner")
 	in.Language = orDefault(in.Language, "English")
 	in.Status = orDefault(in.Status, "draft")
+	in.CertificateText = strings.TrimSpace(in.CertificateText)
 	cleaned := []string{}
 	for _, v := range in.WhatYouLearn {
 		if v = strings.TrimSpace(v); v != "" {
@@ -177,7 +179,9 @@ func (s *CourseService) Create(ctx context.Context, actor *auth.Principal, in dt
 	err = s.tx(ctx, func(q *repository.Queries) error {
 		if c, err = q.CreateCourse(ctx, repository.CreateCourseParams{Slug: slug, Title: in.Title, Subtitle: in.Subtitle, Description: in.Description,
 			ThumbnailUrl: in.ThumbnailURL, Level: in.Level, Language: in.Language, Category: in.Category, Status: in.Status, IsPublic: in.IsPublic,
-			PriceLabel: in.PriceLabel, WhatYouLearn: in.WhatYouLearn, CreatedBy: &actor.ID}); err != nil {
+			PriceLabel: in.PriceLabel, WhatYouLearn: in.WhatYouLearn, CreatedBy: &actor.ID,
+			CertificateEnabled: in.CertificateEnabled == nil || *in.CertificateEnabled, CertificateTemplateID: in.CertificateTemplateID,
+			CertificateText: in.CertificateText}); err != nil {
 			return err
 		}
 		if len(mentors) > 0 {
@@ -207,7 +211,9 @@ func (s *CourseService) Update(ctx context.Context, actor *auth.Principal, id uu
 	err = s.tx(ctx, func(q *repository.Queries) error {
 		if c, err = q.UpdateCourse(ctx, repository.UpdateCourseParams{ID: id, Slug: slug, Title: in.Title, Subtitle: in.Subtitle, Description: in.Description,
 			ThumbnailUrl: in.ThumbnailURL, Level: in.Level, Language: in.Language, Category: in.Category, Status: in.Status, IsPublic: in.IsPublic,
-			PriceLabel: in.PriceLabel, WhatYouLearn: in.WhatYouLearn}); err != nil {
+			PriceLabel: in.PriceLabel, WhatYouLearn: in.WhatYouLearn,
+			CertificateEnabled: in.CertificateEnabled == nil || *in.CertificateEnabled, CertificateTemplateID: in.CertificateTemplateID,
+			CertificateText: in.CertificateText}); err != nil {
 			return err
 		}
 		if actor.MentorScope() == nil && in.MentorIDs != nil {

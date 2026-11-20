@@ -3,7 +3,7 @@ import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { AuthService, errorMessage, useRpcMutation } from "@lms/api-client";
 import { ImageUpload } from "@lms/shared";
-import { Button, Card, CardContent, CardHeader, CardTitle, Field, Input, Textarea, toast } from "@lms/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, Field, Input, PasswordInput, Textarea, toast } from "@lms/ui";
 import { invalidate } from "@/lib/api";
 import { useSession } from "@/lib/session";
 
@@ -37,8 +37,8 @@ export default function ProfilePage() {
           <CardHeader><CardTitle>Change password</CardTitle></CardHeader>
           <CardContent>
             <form className="grid gap-4" onSubmit={(e) => { e.preventDefault(); change.mutate(pw); }}>
-              <Field label="Current password"><Input type="password" value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} autoComplete="current-password" /></Field>
-              <Field label="New password" hint="At least 8 characters"><Input type="password" minLength={8} required value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} autoComplete="new-password" /></Field>
+              <Field label="Current password"><PasswordInput value={pw.currentPassword} onChange={(e) => setPw({ ...pw, currentPassword: e.target.value })} autoComplete="current-password" /></Field>
+              <Field label="New password" hint="At least 8 characters"><PasswordInput minLength={8} required value={pw.newPassword} onChange={(e) => setPw({ ...pw, newPassword: e.target.value })} autoComplete="new-password" /></Field>
               <Button type="submit" className="w-fit" loading={change.isPending}>Update password</Button>
             </form>
           </CardContent>

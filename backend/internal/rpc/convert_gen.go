@@ -1218,6 +1218,51 @@ func certificateFromPB(m *lmsv1.Certificate) dto.Certificate {
 	return v
 }
 
+func certificateFieldToPB(v dto.CertificateField) *lmsv1.CertificateField {
+	m := &lmsv1.CertificateField{}
+	m.Id = v.ID
+	m.Kind = v.Kind
+	m.Label = v.Label
+	m.Text = v.Text
+	m.Src = v.Src
+	m.X = v.X
+	m.Y = v.Y
+	m.W = v.W
+	m.Font = v.Font
+	m.Size = v.Size
+	m.Color = v.Color
+	m.Align = v.Align
+	m.Spacing = v.Spacing
+	m.LineHeight = v.LineHeight
+	m.Uppercase = v.Uppercase
+	m.Fit = v.Fit
+	return m
+}
+
+func certificateFieldFromPB(m *lmsv1.CertificateField) dto.CertificateField {
+	var v dto.CertificateField
+	if m == nil {
+		return v
+	}
+	v.ID = m.GetId()
+	v.Kind = m.GetKind()
+	v.Label = m.GetLabel()
+	v.Text = m.GetText()
+	v.Src = m.GetSrc()
+	v.X = m.GetX()
+	v.Y = m.GetY()
+	v.W = m.GetW()
+	v.Font = m.GetFont()
+	v.Size = m.GetSize()
+	v.Color = m.GetColor()
+	v.Align = m.GetAlign()
+	v.Spacing = m.GetSpacing()
+	v.LineHeight = m.GetLineHeight()
+	v.Uppercase = m.GetUppercase()
+	v.Fit = m.GetFit()
+	return v
+}
+
 func certificateInputToPB(v dto.CertificateInput) *lmsv1.CertificateInput {
 	m := &lmsv1.CertificateInput{}
 	m.StudentId = uuidToPB(v.StudentID)
@@ -1232,6 +1277,89 @@ func certificateInputFromPB(m *lmsv1.CertificateInput) dto.CertificateInput {
 	}
 	v.StudentID = uuidFromPB(m.GetStudentId())
 	v.CourseID = uuidFromPB(m.GetCourseId())
+	return v
+}
+
+func certificateTemplateToPB(v dto.CertificateTemplate) *lmsv1.CertificateTemplate {
+	m := &lmsv1.CertificateTemplate{}
+	m.Id = uuidToPB(v.ID)
+	m.Name = v.Name
+	m.BackgroundUrl = v.BackgroundURL
+	for _, x := range v.Fields {
+		m.Fields = append(m.Fields, certificateFieldToPB(x))
+	}
+	m.IsDefault = v.IsDefault
+	m.CourseCount = v.CourseCount
+	m.CreatedAt = tsToPB(v.CreatedAt)
+	m.UpdatedAt = tsToPB(v.UpdatedAt)
+	return m
+}
+
+func certificateTemplateFromPB(m *lmsv1.CertificateTemplate) dto.CertificateTemplate {
+	var v dto.CertificateTemplate
+	if m == nil {
+		return v
+	}
+	v.ID = uuidFromPB(m.GetId())
+	v.Name = m.GetName()
+	v.BackgroundURL = m.GetBackgroundUrl()
+	for _, x := range m.GetFields() {
+		v.Fields = append(v.Fields, certificateFieldFromPB(x))
+	}
+	if v.Fields == nil {
+		v.Fields = []dto.CertificateField{}
+	}
+	v.IsDefault = m.GetIsDefault()
+	v.CourseCount = m.GetCourseCount()
+	v.CreatedAt = tsFromPB(m.GetCreatedAt())
+	v.UpdatedAt = tsFromPB(m.GetUpdatedAt())
+	return v
+}
+
+func certificateTemplateInputToPB(v dto.CertificateTemplateInput) *lmsv1.CertificateTemplateInput {
+	m := &lmsv1.CertificateTemplateInput{}
+	m.Name = v.Name
+	m.BackgroundUrl = v.BackgroundURL
+	for _, x := range v.Fields {
+		m.Fields = append(m.Fields, certificateFieldToPB(x))
+	}
+	m.IsDefault = v.IsDefault
+	return m
+}
+
+func certificateTemplateInputFromPB(m *lmsv1.CertificateTemplateInput) dto.CertificateTemplateInput {
+	var v dto.CertificateTemplateInput
+	if m == nil {
+		return v
+	}
+	v.Name = m.GetName()
+	v.BackgroundURL = m.GetBackgroundUrl()
+	for _, x := range m.GetFields() {
+		v.Fields = append(v.Fields, certificateFieldFromPB(x))
+	}
+	if v.Fields == nil {
+		v.Fields = []dto.CertificateField{}
+	}
+	v.IsDefault = m.GetIsDefault()
+	return v
+}
+
+func certificateTemplateOptionToPB(v dto.CertificateTemplateOption) *lmsv1.CertificateTemplateOption {
+	m := &lmsv1.CertificateTemplateOption{}
+	m.Id = uuidToPB(v.ID)
+	m.Name = v.Name
+	m.IsDefault = v.IsDefault
+	return m
+}
+
+func certificateTemplateOptionFromPB(m *lmsv1.CertificateTemplateOption) dto.CertificateTemplateOption {
+	var v dto.CertificateTemplateOption
+	if m == nil {
+		return v
+	}
+	v.ID = uuidFromPB(m.GetId())
+	v.Name = m.GetName()
+	v.IsDefault = m.GetIsDefault()
 	return v
 }
 
@@ -1807,6 +1935,12 @@ func courseToPB(v dto.Course) *lmsv1.Course {
 	m.FeePaise = v.FeePaise
 	m.GstBp = v.GSTBP
 	m.WhatYouLearn = append(m.WhatYouLearn, v.WhatYouLearn...)
+	m.CertificateEnabled = v.CertificateEnabled
+	if v.CertificateTemplateID != nil {
+		x := v.CertificateTemplateID.String()
+		m.CertificateTemplateId = &x
+	}
+	m.CertificateText = v.CertificateText
 	m.VideoCount = v.VideoCount
 	m.StudentCount = v.StudentCount
 	for _, x := range v.Mentors {
@@ -1842,6 +1976,9 @@ func courseFromPB(m *lmsv1.Course) dto.Course {
 	if v.WhatYouLearn == nil {
 		v.WhatYouLearn = []string{}
 	}
+	v.CertificateEnabled = m.GetCertificateEnabled()
+	v.CertificateTemplateID = optUUIDFromPB(m.CertificateTemplateId)
+	v.CertificateText = m.GetCertificateText()
 	v.VideoCount = m.GetVideoCount()
 	v.StudentCount = m.GetStudentCount()
 	for _, x := range m.GetMentors() {
@@ -1874,6 +2011,12 @@ func courseInputToPB(v dto.CourseInput) *lmsv1.CourseInput {
 	for _, x := range v.MentorIDs {
 		m.MentorIds = append(m.MentorIds, uuidToPB(x))
 	}
+	m.CertificateEnabled = v.CertificateEnabled
+	if v.CertificateTemplateID != nil {
+		x := v.CertificateTemplateID.String()
+		m.CertificateTemplateId = &x
+	}
+	m.CertificateText = v.CertificateText
 	return m
 }
 
@@ -1907,6 +2050,9 @@ func courseInputFromPB(m *lmsv1.CourseInput) dto.CourseInput {
 	if v.MentorIDs == nil {
 		v.MentorIDs = []uuid.UUID{}
 	}
+	v.CertificateEnabled = m.CertificateEnabled
+	v.CertificateTemplateID = optUUIDFromPB(m.CertificateTemplateId)
+	v.CertificateText = m.GetCertificateText()
 	return v
 }
 

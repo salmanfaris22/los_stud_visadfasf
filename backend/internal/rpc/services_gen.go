@@ -565,6 +565,90 @@ func (c certificateServer) VerifyCertificate(ctx context.Context, req *connect.R
 	return connect.NewResponse(&lmsv1.VerifyCertificateResponse{Verification: certificateVerificationToPB(out)}), nil
 }
 
+// ListCertificateTemplates: Certificate templates
+func (c certificateServer) ListCertificateTemplates(ctx context.Context, req *connect.Request[lmsv1.ListCertificateTemplatesRequest]) (*connect.Response[lmsv1.ListCertificateTemplatesResponse], error) {
+	out, err := c.s.Certificates.Templates(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res := &lmsv1.ListCertificateTemplatesResponse{Items: make([]*lmsv1.CertificateTemplate, 0, len(out))}
+	for _, x := range out {
+		res.Items = append(res.Items, certificateTemplateToPB(x))
+	}
+	return connect.NewResponse(res), nil
+}
+
+// ListCertificateTemplateOptions: Certificate templates for pickers
+func (c certificateServer) ListCertificateTemplateOptions(ctx context.Context, req *connect.Request[lmsv1.ListCertificateTemplateOptionsRequest]) (*connect.Response[lmsv1.ListCertificateTemplateOptionsResponse], error) {
+	out, err := c.s.Certificates.TemplateOptions(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res := &lmsv1.ListCertificateTemplateOptionsResponse{Items: make([]*lmsv1.CertificateTemplateOption, 0, len(out))}
+	for _, x := range out {
+		res.Items = append(res.Items, certificateTemplateOptionToPB(x))
+	}
+	return connect.NewResponse(res), nil
+}
+
+// GetCertificateTemplate: Get a certificate template
+func (c certificateServer) GetCertificateTemplate(ctx context.Context, req *connect.Request[lmsv1.GetCertificateTemplateRequest]) (*connect.Response[lmsv1.GetCertificateTemplateResponse], error) {
+	m := req.Msg
+	out, err := c.s.Certificates.Template(ctx, idOf(m))
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.GetCertificateTemplateResponse{Template: certificateTemplateToPB(out)}), nil
+}
+
+// CreateCertificateTemplate: Create a certificate template
+func (c certificateServer) CreateCertificateTemplate(ctx context.Context, req *connect.Request[lmsv1.CreateCertificateTemplateRequest]) (*connect.Response[lmsv1.CreateCertificateTemplateResponse], error) {
+	m := req.Msg
+	out, err := c.s.Certificates.CreateTemplate(ctx, actor(ctx), certificateTemplateInputFromPB(m.GetInput()))
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.CreateCertificateTemplateResponse{Template: certificateTemplateToPB(out)}), nil
+}
+
+// UpdateCertificateTemplate: Update a certificate template
+func (c certificateServer) UpdateCertificateTemplate(ctx context.Context, req *connect.Request[lmsv1.UpdateCertificateTemplateRequest]) (*connect.Response[lmsv1.UpdateCertificateTemplateResponse], error) {
+	m := req.Msg
+	out, err := c.s.Certificates.UpdateTemplate(ctx, actor(ctx), idOf(m), certificateTemplateInputFromPB(m.GetInput()))
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.UpdateCertificateTemplateResponse{Template: certificateTemplateToPB(out)}), nil
+}
+
+// SetDefaultCertificateTemplate: Make a template the default
+func (c certificateServer) SetDefaultCertificateTemplate(ctx context.Context, req *connect.Request[lmsv1.SetDefaultCertificateTemplateRequest]) (*connect.Response[lmsv1.SetDefaultCertificateTemplateResponse], error) {
+	m := req.Msg
+	if err := c.s.Certificates.SetDefaultTemplate(ctx, actor(ctx), idOf(m)); err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.SetDefaultCertificateTemplateResponse{}), nil
+}
+
+// DeleteCertificateTemplate: Delete a certificate template (not the default)
+func (c certificateServer) DeleteCertificateTemplate(ctx context.Context, req *connect.Request[lmsv1.DeleteCertificateTemplateRequest]) (*connect.Response[lmsv1.DeleteCertificateTemplateResponse], error) {
+	m := req.Msg
+	if err := c.s.Certificates.DeleteTemplate(ctx, actor(ctx), idOf(m)); err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.DeleteCertificateTemplateResponse{}), nil
+}
+
+// PreviewCertificateTemplate: Render a template as a sample PDF
+func (c certificateServer) PreviewCertificateTemplate(ctx context.Context, req *connect.Request[lmsv1.PreviewCertificateTemplateRequest]) (*connect.Response[lmsv1.PreviewCertificateTemplateResponse], error) {
+	m := req.Msg
+	out, err := c.s.Certificates.PreviewTemplate(ctx, actor(ctx), certificateTemplateInputFromPB(m.GetInput()), optUUID(m.GetCourseId()))
+	if err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&lmsv1.PreviewCertificateTemplateResponse{File: &lmsv1.File{Name: out.Name, ContentType: out.ContentType, Data: out.Data}}), nil
+}
+
 // quizServer implements lms.v1.QuizService.
 type quizServer struct{ *server }
 

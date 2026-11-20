@@ -332,22 +332,26 @@ func (q *Queries) GetAnnouncement(ctx context.Context, id uuid.UUID) (Announceme
 }
 
 const getCertificate = `-- name: GetCertificate :one
-SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, u.name AS student_name, u.email AS student_email, c.title AS course_title
+SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, ce.template_id, u.name AS student_name, u.email AS student_email, c.title AS course_title,
+       c.certificate_text AS course_certificate_text, c.certificate_template_id AS course_template_id
 FROM certificates ce JOIN users u ON u.id = ce.student_id JOIN courses c ON c.id = ce.course_id
 WHERE ce.id = $1
 `
 
 type GetCertificateRow struct {
-	ID           uuid.UUID  `json:"id"`
-	Code         string     `json:"code"`
-	StudentID    uuid.UUID  `json:"student_id"`
-	CourseID     uuid.UUID  `json:"course_id"`
-	IssuedAt     time.Time  `json:"issued_at"`
-	IssuedBy     *uuid.UUID `json:"issued_by"`
-	RevokedAt    *time.Time `json:"revoked_at"`
-	StudentName  string     `json:"student_name"`
-	StudentEmail string     `json:"student_email"`
-	CourseTitle  string     `json:"course_title"`
+	ID                    uuid.UUID  `json:"id"`
+	Code                  string     `json:"code"`
+	StudentID             uuid.UUID  `json:"student_id"`
+	CourseID              uuid.UUID  `json:"course_id"`
+	IssuedAt              time.Time  `json:"issued_at"`
+	IssuedBy              *uuid.UUID `json:"issued_by"`
+	RevokedAt             *time.Time `json:"revoked_at"`
+	TemplateID            *uuid.UUID `json:"template_id"`
+	StudentName           string     `json:"student_name"`
+	StudentEmail          string     `json:"student_email"`
+	CourseTitle           string     `json:"course_title"`
+	CourseCertificateText string     `json:"course_certificate_text"`
+	CourseTemplateID      *uuid.UUID `json:"course_template_id"`
 }
 
 func (q *Queries) GetCertificate(ctx context.Context, id uuid.UUID) (GetCertificateRow, error) {
@@ -361,15 +365,18 @@ func (q *Queries) GetCertificate(ctx context.Context, id uuid.UUID) (GetCertific
 		&i.IssuedAt,
 		&i.IssuedBy,
 		&i.RevokedAt,
+		&i.TemplateID,
 		&i.StudentName,
 		&i.StudentEmail,
 		&i.CourseTitle,
+		&i.CourseCertificateText,
+		&i.CourseTemplateID,
 	)
 	return i, err
 }
 
 const getCertificateByCode = `-- name: GetCertificateByCode :one
-SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, u.name AS student_name, c.title AS course_title
+SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, ce.template_id, u.name AS student_name, c.title AS course_title
 FROM certificates ce JOIN users u ON u.id = ce.student_id JOIN courses c ON c.id = ce.course_id
 WHERE ce.code = $1
 `
@@ -382,6 +389,7 @@ type GetCertificateByCodeRow struct {
 	IssuedAt    time.Time  `json:"issued_at"`
 	IssuedBy    *uuid.UUID `json:"issued_by"`
 	RevokedAt   *time.Time `json:"revoked_at"`
+	TemplateID  *uuid.UUID `json:"template_id"`
 	StudentName string     `json:"student_name"`
 	CourseTitle string     `json:"course_title"`
 }
@@ -397,6 +405,7 @@ func (q *Queries) GetCertificateByCode(ctx context.Context, code string) (GetCer
 		&i.IssuedAt,
 		&i.IssuedBy,
 		&i.RevokedAt,
+		&i.TemplateID,
 		&i.StudentName,
 		&i.CourseTitle,
 	)
@@ -484,17 +493,18 @@ func (q *Queries) GetVideoComment(ctx context.Context, id uuid.UUID) (VideoComme
 }
 
 const issueCertificate = `-- name: IssueCertificate :one
-INSERT INTO certificates (code, student_id, course_id, issued_by)
-VALUES ($1, $2, $3, $4)
+INSERT INTO certificates (code, student_id, course_id, issued_by, template_id)
+VALUES ($1, $2, $3, $4, $5)
 ON CONFLICT (student_id, course_id) DO UPDATE SET revoked_at = NULL
-RETURNING id, code, student_id, course_id, issued_at, issued_by, revoked_at
+RETURNING id, code, student_id, course_id, issued_at, issued_by, revoked_at, template_id
 `
 
 type IssueCertificateParams struct {
-	Code      string     `json:"code"`
-	StudentID uuid.UUID  `json:"student_id"`
-	CourseID  uuid.UUID  `json:"course_id"`
-	IssuedBy  *uuid.UUID `json:"issued_by"`
+	Code       string     `json:"code"`
+	StudentID  uuid.UUID  `json:"student_id"`
+	CourseID   uuid.UUID  `json:"course_id"`
+	IssuedBy   *uuid.UUID `json:"issued_by"`
+	TemplateID *uuid.UUID `json:"template_id"`
 }
 
 func (q *Queries) IssueCertificate(ctx context.Context, arg IssueCertificateParams) (Certificate, error) {
@@ -503,6 +513,7 @@ func (q *Queries) IssueCertificate(ctx context.Context, arg IssueCertificatePara
 		arg.StudentID,
 		arg.CourseID,
 		arg.IssuedBy,
+		arg.TemplateID,
 	)
 	var i Certificate
 	err := row.Scan(
@@ -513,6 +524,7 @@ func (q *Queries) IssueCertificate(ctx context.Context, arg IssueCertificatePara
 		&i.IssuedAt,
 		&i.IssuedBy,
 		&i.RevokedAt,
+		&i.TemplateID,
 	)
 	return i, err
 }
@@ -583,7 +595,7 @@ func (q *Queries) ListAnnouncements(ctx context.Context, arg ListAnnouncementsPa
 }
 
 const listCertificates = `-- name: ListCertificates :many
-SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, u.name AS student_name, u.email AS student_email, c.title AS course_title, count(*) OVER () AS total_count
+SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, ce.template_id, u.name AS student_name, u.email AS student_email, c.title AS course_title, count(*) OVER () AS total_count
 FROM certificates ce JOIN users u ON u.id = ce.student_id JOIN courses c ON c.id = ce.course_id
 WHERE ($1::uuid IS NULL OR ce.course_id = $1)
   AND ($2::text IS NULL OR u.name ILIKE '%' || $2 || '%' OR ce.code ILIKE '%' || $2 || '%')
@@ -606,6 +618,7 @@ type ListCertificatesRow struct {
 	IssuedAt     time.Time  `json:"issued_at"`
 	IssuedBy     *uuid.UUID `json:"issued_by"`
 	RevokedAt    *time.Time `json:"revoked_at"`
+	TemplateID   *uuid.UUID `json:"template_id"`
 	StudentName  string     `json:"student_name"`
 	StudentEmail string     `json:"student_email"`
 	CourseTitle  string     `json:"course_title"`
@@ -634,6 +647,7 @@ func (q *Queries) ListCertificates(ctx context.Context, arg ListCertificatesPara
 			&i.IssuedAt,
 			&i.IssuedBy,
 			&i.RevokedAt,
+			&i.TemplateID,
 			&i.StudentName,
 			&i.StudentEmail,
 			&i.CourseTitle,
@@ -1049,7 +1063,7 @@ func (q *Queries) MyAnnouncements(ctx context.Context, arg MyAnnouncementsParams
 }
 
 const myCertificates = `-- name: MyCertificates :many
-SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, c.title AS course_title, c.thumbnail_url AS course_thumbnail
+SELECT ce.id, ce.code, ce.student_id, ce.course_id, ce.issued_at, ce.issued_by, ce.revoked_at, ce.template_id, c.title AS course_title, c.thumbnail_url AS course_thumbnail
 FROM certificates ce JOIN courses c ON c.id = ce.course_id
 WHERE ce.student_id = $1 AND ce.revoked_at IS NULL
 ORDER BY ce.issued_at DESC
@@ -1063,6 +1077,7 @@ type MyCertificatesRow struct {
 	IssuedAt        time.Time  `json:"issued_at"`
 	IssuedBy        *uuid.UUID `json:"issued_by"`
 	RevokedAt       *time.Time `json:"revoked_at"`
+	TemplateID      *uuid.UUID `json:"template_id"`
 	CourseTitle     string     `json:"course_title"`
 	CourseThumbnail string     `json:"course_thumbnail"`
 }
@@ -1084,6 +1099,7 @@ func (q *Queries) MyCertificates(ctx context.Context, studentID uuid.UUID) ([]My
 			&i.IssuedAt,
 			&i.IssuedBy,
 			&i.RevokedAt,
+			&i.TemplateID,
 			&i.CourseTitle,
 			&i.CourseThumbnail,
 		); err != nil {

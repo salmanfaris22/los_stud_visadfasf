@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthService, errorMessage, useRpcMutation, useRpcQuery } from "@lms/api-client";
-import { Button, Field, Input } from "@lms/ui";
+import { Button, Field, Input, PasswordInput } from "@lms/ui";
 import { GoogleButton } from "../google";
 
 function Form() {
@@ -21,7 +21,7 @@ function Form() {
       <form className="mt-8 grid gap-4" onSubmit={(e) => { e.preventDefault(); setError(null); login.mutate({ email, password }); }}>
         <Field label="Email"><Input type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
         <Field label={<span className="flex w-full justify-between">Password <Link href="/forgot-password" className="font-medium underline decoration-signal decoration-2 underline-offset-4 hover:decoration-foreground">Forgot?</Link></span>}>
-          <Input type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <PasswordInput autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
         {error && <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
         <Button type="submit" size="lg" loading={login.isPending}>Sign in</Button>

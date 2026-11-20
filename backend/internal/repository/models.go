@@ -140,13 +140,25 @@ type CallLog struct {
 }
 
 type Certificate struct {
-	ID        uuid.UUID  `json:"id"`
-	Code      string     `json:"code"`
-	StudentID uuid.UUID  `json:"student_id"`
-	CourseID  uuid.UUID  `json:"course_id"`
-	IssuedAt  time.Time  `json:"issued_at"`
-	IssuedBy  *uuid.UUID `json:"issued_by"`
-	RevokedAt *time.Time `json:"revoked_at"`
+	ID         uuid.UUID  `json:"id"`
+	Code       string     `json:"code"`
+	StudentID  uuid.UUID  `json:"student_id"`
+	CourseID   uuid.UUID  `json:"course_id"`
+	IssuedAt   time.Time  `json:"issued_at"`
+	IssuedBy   *uuid.UUID `json:"issued_by"`
+	RevokedAt  *time.Time `json:"revoked_at"`
+	TemplateID *uuid.UUID `json:"template_id"`
+}
+
+type CertificateTemplate struct {
+	ID            uuid.UUID       `json:"id"`
+	Name          string          `json:"name"`
+	BackgroundUrl string          `json:"background_url"`
+	Fields        json.RawMessage `json:"fields"`
+	IsDefault     bool            `json:"is_default"`
+	CreatedBy     *uuid.UUID      `json:"created_by"`
+	CreatedAt     time.Time       `json:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at"`
 }
 
 type ClassAttendance struct {
@@ -229,24 +241,27 @@ type CounsellorProfile struct {
 }
 
 type Course struct {
-	ID           uuid.UUID  `json:"id"`
-	Slug         string     `json:"slug"`
-	Title        string     `json:"title"`
-	Subtitle     string     `json:"subtitle"`
-	Description  string     `json:"description"`
-	ThumbnailUrl string     `json:"thumbnail_url"`
-	Level        string     `json:"level"`
-	Language     string     `json:"language"`
-	Category     string     `json:"category"`
-	Status       string     `json:"status"`
-	IsPublic     bool       `json:"is_public"`
-	PriceLabel   string     `json:"price_label"`
-	WhatYouLearn []string   `json:"what_you_learn"`
-	CreatedBy    *uuid.UUID `json:"created_by"`
-	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    time.Time  `json:"updated_at"`
-	FeePaise     int64      `json:"fee_paise"`
-	GstBp        int32      `json:"gst_bp"`
+	ID                    uuid.UUID  `json:"id"`
+	Slug                  string     `json:"slug"`
+	Title                 string     `json:"title"`
+	Subtitle              string     `json:"subtitle"`
+	Description           string     `json:"description"`
+	ThumbnailUrl          string     `json:"thumbnail_url"`
+	Level                 string     `json:"level"`
+	Language              string     `json:"language"`
+	Category              string     `json:"category"`
+	Status                string     `json:"status"`
+	IsPublic              bool       `json:"is_public"`
+	PriceLabel            string     `json:"price_label"`
+	WhatYouLearn          []string   `json:"what_you_learn"`
+	CreatedBy             *uuid.UUID `json:"created_by"`
+	CreatedAt             time.Time  `json:"created_at"`
+	UpdatedAt             time.Time  `json:"updated_at"`
+	FeePaise              int64      `json:"fee_paise"`
+	GstBp                 int32      `json:"gst_bp"`
+	CertificateEnabled    bool       `json:"certificate_enabled"`
+	CertificateTemplateID *uuid.UUID `json:"certificate_template_id"`
+	CertificateText       string     `json:"certificate_text"`
 }
 
 type CourseMentor struct {
@@ -530,6 +545,51 @@ type RolePermission struct {
 	RoleID uuid.UUID `json:"role_id"`
 	Module string    `json:"module"`
 	Action string    `json:"action"`
+}
+
+type ServerRequestStat struct {
+	ID        int64     `json:"id"`
+	Minute    time.Time `json:"minute"`
+	Procedure string    `json:"procedure"`
+	Count     int32     `json:"count"`
+	Err4xx    int32     `json:"err_4xx"`
+	Err5xx    int32     `json:"err_5xx"`
+	SumMs     float64   `json:"sum_ms"`
+	MaxMs     float64   `json:"max_ms"`
+	Buckets   []int32   `json:"buckets"`
+}
+
+type ServerSample struct {
+	At          time.Time `json:"at"`
+	Host        string    `json:"host"`
+	CpuPct      float32   `json:"cpu_pct"`
+	Load1       float32   `json:"load1"`
+	MemTotal    int64     `json:"mem_total"`
+	MemUsed     int64     `json:"mem_used"`
+	SwapTotal   int64     `json:"swap_total"`
+	SwapUsed    int64     `json:"swap_used"`
+	DiskTotal   int64     `json:"disk_total"`
+	DiskUsed    int64     `json:"disk_used"`
+	NetRx       int64     `json:"net_rx"`
+	NetTx       int64     `json:"net_tx"`
+	ProcRss     int64     `json:"proc_rss"`
+	GoHeap      int64     `json:"go_heap"`
+	Goroutines  int32     `json:"goroutines"`
+	OpenStreams int32     `json:"open_streams"`
+	OnlineUsers int32     `json:"online_users"`
+	DbSize      int64     `json:"db_size"`
+	DbConns     int32     `json:"db_conns"`
+}
+
+type ServerSlowRequest struct {
+	ID        int64      `json:"id"`
+	At        time.Time  `json:"at"`
+	Procedure string     `json:"procedure"`
+	Status    int32      `json:"status"`
+	Code      string     `json:"code"`
+	Ms        float64    `json:"ms"`
+	UserID    *uuid.UUID `json:"user_id"`
+	Ip        string     `json:"ip"`
 }
 
 type Setting struct {

@@ -43,6 +43,41 @@ service CertificateService {
     option (lms.v1.access) = {public: true, rate_limit: {bucket: "verify", limit: 60, window_seconds: 60}};
     option idempotency_level = NO_SIDE_EFFECTS;
   }
+  // Certificate templates
+  rpc ListCertificateTemplates(ListCertificateTemplatesRequest) returns (ListCertificateTemplatesResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "view"}};
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Certificate templates for pickers
+  rpc ListCertificateTemplateOptions(ListCertificateTemplateOptionsRequest) returns (ListCertificateTemplateOptionsResponse) {
+    option (lms.v1.access) = {staff: true};
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Get a certificate template
+  rpc GetCertificateTemplate(GetCertificateTemplateRequest) returns (GetCertificateTemplateResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "view"}};
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  // Create a certificate template
+  rpc CreateCertificateTemplate(CreateCertificateTemplateRequest) returns (CreateCertificateTemplateResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "create"}};
+  }
+  // Update a certificate template
+  rpc UpdateCertificateTemplate(UpdateCertificateTemplateRequest) returns (UpdateCertificateTemplateResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "edit"}};
+  }
+  // Make a template the default
+  rpc SetDefaultCertificateTemplate(SetDefaultCertificateTemplateRequest) returns (SetDefaultCertificateTemplateResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "edit"}};
+  }
+  // Delete a certificate template (not the default)
+  rpc DeleteCertificateTemplate(DeleteCertificateTemplateRequest) returns (DeleteCertificateTemplateResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "delete"}};
+  }
+  // Render a template as a sample PDF
+  rpc PreviewCertificateTemplate(PreviewCertificateTemplateRequest) returns (PreviewCertificateTemplateResponse) {
+    option (lms.v1.access) = {perm: {module: "certificates", action: "view"}, rate_limit: {bucket: "certpreview", limit: 30, window_seconds: 60}};
+  }
 }
 
 message ListCertificatesRequest {
@@ -101,4 +136,62 @@ message VerifyCertificateRequest {
 
 message VerifyCertificateResponse {
   CertificateVerification verification = 1;
+}
+
+message ListCertificateTemplatesRequest {}
+
+message ListCertificateTemplatesResponse {
+  repeated CertificateTemplate items = 1;
+}
+
+message ListCertificateTemplateOptionsRequest {}
+
+message ListCertificateTemplateOptionsResponse {
+  repeated CertificateTemplateOption items = 1;
+}
+
+message GetCertificateTemplateRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetCertificateTemplateResponse {
+  CertificateTemplate template = 1;
+}
+
+message CreateCertificateTemplateRequest {
+  CertificateTemplateInput input = 1 [(buf.validate.field).required = true];
+}
+
+message CreateCertificateTemplateResponse {
+  CertificateTemplate template = 1;
+}
+
+message UpdateCertificateTemplateRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  CertificateTemplateInput input = 2 [(buf.validate.field).required = true];
+}
+
+message UpdateCertificateTemplateResponse {
+  CertificateTemplate template = 1;
+}
+
+message SetDefaultCertificateTemplateRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message SetDefaultCertificateTemplateResponse {}
+
+message DeleteCertificateTemplateRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message DeleteCertificateTemplateResponse {}
+
+message PreviewCertificateTemplateRequest {
+  CertificateTemplateInput input = 1 [(buf.validate.field).required = true];
+  string course_id = 2 [(buf.validate.field).string.pattern = "^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"];
+}
+
+message PreviewCertificateTemplateResponse {
+  File file = 1;
 }

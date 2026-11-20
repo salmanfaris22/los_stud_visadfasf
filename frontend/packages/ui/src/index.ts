@@ -19,3 +19,4 @@ export { Toaster, toast } from "sonner";
 export * from "./components/submission";
 export * from "./components/calendar";
 export * from "./components/transit";
+export * from "./components/brand";

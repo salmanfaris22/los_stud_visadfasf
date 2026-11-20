@@ -13,9 +13,9 @@ import { cn, initials } from "../lib/utils";
 
 export function Avatar({ src, name, className }: { src?: string | null; name?: string | null; className?: string }) {
   return (
-    <AvatarPrimitive.Root className={cn("relative flex size-9 shrink-0 overflow-hidden rounded-full bg-foreground", className)}>
+    <AvatarPrimitive.Root className={cn("relative flex size-9 shrink-0 overflow-hidden rounded-full bg-[var(--avatar-bg,var(--foreground))]", className)}>
       {src ? <AvatarPrimitive.Image src={src} alt={name ?? ""} className="aspect-square size-full object-cover" /> : null}
-      <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-xs font-bold text-signal">{initials(name)}</AvatarPrimitive.Fallback>
+      <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-xs font-bold text-[var(--avatar-fg,var(--signal))]">{initials(name)}</AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
   );
 }

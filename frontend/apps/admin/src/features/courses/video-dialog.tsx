@@ -99,7 +99,7 @@ export function VideoDialog({ courseId, video, open, onOpenChange }: { courseId:
           </div>
           <div className="grid content-start gap-3">
             <span className="text-sm font-medium">Preview</span>
-            {parsed ? <VideoPlayer embedUrl={parsed.embedUrl} title={title || "Preview"} watermark="student@example.com" /> : (
+            {parsed ? <VideoPlayer embedUrl={parsed.embedUrl} title={title || "Preview"} /> : (
               <div className="flex aspect-video items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">Paste a valid link to preview</div>
             )}
             <p className="text-xs text-muted-foreground">Students see a moving watermark with their email. Restrict embedding to your domain in your video host settings.</p>

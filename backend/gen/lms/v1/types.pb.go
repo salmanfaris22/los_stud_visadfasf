@@ -3355,6 +3355,180 @@ func (x *Certificate) GetVerifyUrl() string {
 	return ""
 }
 
+// CertificateField is one item drawn on a certificate template. Positions and sizes are millimetres
+// from the top-left of an A4 landscape page (297 x 210); text placeholders are filled in per certificate.
+type CertificateField struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Kind  string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// Name shown in the template editor
+	Label string `protobuf:"bytes,3,opt,name=label,proto3" json:"label,omitempty"`
+	// Text with {student} {course} {course_text} {year} {date} {code} {verify_url}; **bold** marks bold words
+	Text string `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
+	// Image URL (image fields)
+	Src string  `protobuf:"bytes,5,opt,name=src,proto3" json:"src,omitempty"`
+	X   float64 `protobuf:"fixed64,6,opt,name=x,proto3" json:"x,omitempty"`
+	Y   float64 `protobuf:"fixed64,7,opt,name=y,proto3" json:"y,omitempty"`
+	// Box width; the QR code size
+	W    float64 `protobuf:"fixed64,8,opt,name=w,proto3" json:"w,omitempty"`
+	Font string  `protobuf:"bytes,9,opt,name=font,proto3" json:"font,omitempty"`
+	// Font size in points
+	Size  float64 `protobuf:"fixed64,10,opt,name=size,proto3" json:"size,omitempty"`
+	Color string  `protobuf:"bytes,11,opt,name=color,proto3" json:"color,omitempty"`
+	Align string  `protobuf:"bytes,12,opt,name=align,proto3" json:"align,omitempty"`
+	// Letter spacing in mm
+	Spacing float64 `protobuf:"fixed64,13,opt,name=spacing,proto3" json:"spacing,omitempty"`
+	// Line height as a multiple of the font size
+	LineHeight float64 `protobuf:"fixed64,14,opt,name=line_height,json=lineHeight,proto3" json:"line_height,omitempty"`
+	Uppercase  bool    `protobuf:"varint,15,opt,name=uppercase,proto3" json:"uppercase,omitempty"`
+	// Shrink the text so it stays on one line
+	Fit           bool `protobuf:"varint,16,opt,name=fit,proto3" json:"fit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CertificateField) Reset() {
+	*x = CertificateField{}
+	mi := &file_lms_v1_types_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CertificateField) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CertificateField) ProtoMessage() {}
+
+func (x *CertificateField) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_types_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CertificateField.ProtoReflect.Descriptor instead.
+func (*CertificateField) Descriptor() ([]byte, []int) {
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *CertificateField) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CertificateField) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *CertificateField) GetLabel() string {
+	if x != nil {
+		return x.Label
+	}
+	return ""
+}
+
+func (x *CertificateField) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *CertificateField) GetSrc() string {
+	if x != nil {
+		return x.Src
+	}
+	return ""
+}
+
+func (x *CertificateField) GetX() float64 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *CertificateField) GetY() float64 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+func (x *CertificateField) GetW() float64 {
+	if x != nil {
+		return x.W
+	}
+	return 0
+}
+
+func (x *CertificateField) GetFont() string {
+	if x != nil {
+		return x.Font
+	}
+	return ""
+}
+
+func (x *CertificateField) GetSize() float64 {
+	if x != nil {
+		return x.Size
+	}
+	return 0
+}
+
+func (x *CertificateField) GetColor() string {
+	if x != nil {
+		return x.Color
+	}
+	return ""
+}
+
+func (x *CertificateField) GetAlign() string {
+	if x != nil {
+		return x.Align
+	}
+	return ""
+}
+
+func (x *CertificateField) GetSpacing() float64 {
+	if x != nil {
+		return x.Spacing
+	}
+	return 0
+}
+
+func (x *CertificateField) GetLineHeight() float64 {
+	if x != nil {
+		return x.LineHeight
+	}
+	return 0
+}
+
+func (x *CertificateField) GetUppercase() bool {
+	if x != nil {
+		return x.Uppercase
+	}
+	return false
+}
+
+func (x *CertificateField) GetFit() bool {
+	if x != nil {
+		return x.Fit
+	}
+	return false
+}
+
 type CertificateInput struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StudentId     string                 `protobuf:"bytes,1,opt,name=student_id,json=studentId,proto3" json:"student_id,omitempty"`
@@ -3365,7 +3539,7 @@ type CertificateInput struct {
 
 func (x *CertificateInput) Reset() {
 	*x = CertificateInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[37]
+	mi := &file_lms_v1_types_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3377,7 +3551,7 @@ func (x *CertificateInput) String() string {
 func (*CertificateInput) ProtoMessage() {}
 
 func (x *CertificateInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[37]
+	mi := &file_lms_v1_types_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3390,7 +3564,7 @@ func (x *CertificateInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateInput.ProtoReflect.Descriptor instead.
 func (*CertificateInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{37}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *CertificateInput) GetStudentId() string {
@@ -3407,6 +3581,237 @@ func (x *CertificateInput) GetCourseId() string {
 	return ""
 }
 
+// CertificateTemplate is a reusable certificate design: a background image plus fields.
+type CertificateTemplate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	BackgroundUrl string                 `protobuf:"bytes,3,opt,name=background_url,json=backgroundUrl,proto3" json:"background_url,omitempty"`
+	Fields        []*CertificateField    `protobuf:"bytes,4,rep,name=fields,proto3" json:"fields,omitempty"`
+	IsDefault     bool                   `protobuf:"varint,5,opt,name=is_default,json=isDefault,proto3" json:"is_default,omitempty"`
+	// Courses that use this template
+	CourseCount   int32                  `protobuf:"varint,6,opt,name=course_count,json=courseCount,proto3" json:"course_count,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CertificateTemplate) Reset() {
+	*x = CertificateTemplate{}
+	mi := &file_lms_v1_types_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CertificateTemplate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CertificateTemplate) ProtoMessage() {}
+
+func (x *CertificateTemplate) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_types_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CertificateTemplate.ProtoReflect.Descriptor instead.
+func (*CertificateTemplate) Descriptor() ([]byte, []int) {
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *CertificateTemplate) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CertificateTemplate) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CertificateTemplate) GetBackgroundUrl() string {
+	if x != nil {
+		return x.BackgroundUrl
+	}
+	return ""
+}
+
+func (x *CertificateTemplate) GetFields() []*CertificateField {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+func (x *CertificateTemplate) GetIsDefault() bool {
+	if x != nil {
+		return x.IsDefault
+	}
+	return false
+}
+
+func (x *CertificateTemplate) GetCourseCount() int32 {
+	if x != nil {
+		return x.CourseCount
+	}
+	return 0
+}
+
+func (x *CertificateTemplate) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *CertificateTemplate) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type CertificateTemplateInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	BackgroundUrl string                 `protobuf:"bytes,2,opt,name=background_url,json=backgroundUrl,proto3" json:"background_url,omitempty"`
+	Fields        []*CertificateField    `protobuf:"bytes,3,rep,name=fields,proto3" json:"fields,omitempty"`
+	// Make this the default template
+	IsDefault     bool `protobuf:"varint,4,opt,name=is_default,json=isDefault,proto3" json:"is_default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CertificateTemplateInput) Reset() {
+	*x = CertificateTemplateInput{}
+	mi := &file_lms_v1_types_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CertificateTemplateInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CertificateTemplateInput) ProtoMessage() {}
+
+func (x *CertificateTemplateInput) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_types_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CertificateTemplateInput.ProtoReflect.Descriptor instead.
+func (*CertificateTemplateInput) Descriptor() ([]byte, []int) {
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *CertificateTemplateInput) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CertificateTemplateInput) GetBackgroundUrl() string {
+	if x != nil {
+		return x.BackgroundUrl
+	}
+	return ""
+}
+
+func (x *CertificateTemplateInput) GetFields() []*CertificateField {
+	if x != nil {
+		return x.Fields
+	}
+	return nil
+}
+
+func (x *CertificateTemplateInput) GetIsDefault() bool {
+	if x != nil {
+		return x.IsDefault
+	}
+	return false
+}
+
+type CertificateTemplateOption struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	IsDefault     bool                   `protobuf:"varint,3,opt,name=is_default,json=isDefault,proto3" json:"is_default,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CertificateTemplateOption) Reset() {
+	*x = CertificateTemplateOption{}
+	mi := &file_lms_v1_types_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CertificateTemplateOption) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CertificateTemplateOption) ProtoMessage() {}
+
+func (x *CertificateTemplateOption) ProtoReflect() protoreflect.Message {
+	mi := &file_lms_v1_types_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CertificateTemplateOption.ProtoReflect.Descriptor instead.
+func (*CertificateTemplateOption) Descriptor() ([]byte, []int) {
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *CertificateTemplateOption) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CertificateTemplateOption) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CertificateTemplateOption) GetIsDefault() bool {
+	if x != nil {
+		return x.IsDefault
+	}
+	return false
+}
+
 type CertificateVerification struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Valid         bool                   `protobuf:"varint,1,opt,name=valid,proto3" json:"valid,omitempty"`
@@ -3421,7 +3826,7 @@ type CertificateVerification struct {
 
 func (x *CertificateVerification) Reset() {
 	*x = CertificateVerification{}
-	mi := &file_lms_v1_types_proto_msgTypes[38]
+	mi := &file_lms_v1_types_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3433,7 +3838,7 @@ func (x *CertificateVerification) String() string {
 func (*CertificateVerification) ProtoMessage() {}
 
 func (x *CertificateVerification) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[38]
+	mi := &file_lms_v1_types_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3446,7 +3851,7 @@ func (x *CertificateVerification) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateVerification.ProtoReflect.Descriptor instead.
 func (*CertificateVerification) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{38}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *CertificateVerification) GetValid() bool {
@@ -3500,7 +3905,7 @@ type CheckinInput struct {
 
 func (x *CheckinInput) Reset() {
 	*x = CheckinInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[39]
+	mi := &file_lms_v1_types_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3512,7 +3917,7 @@ func (x *CheckinInput) String() string {
 func (*CheckinInput) ProtoMessage() {}
 
 func (x *CheckinInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[39]
+	mi := &file_lms_v1_types_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3525,7 +3930,7 @@ func (x *CheckinInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckinInput.ProtoReflect.Descriptor instead.
 func (*CheckinInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{39}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *CheckinInput) GetToken() string {
@@ -3546,7 +3951,7 @@ type CheckinResult struct {
 
 func (x *CheckinResult) Reset() {
 	*x = CheckinResult{}
-	mi := &file_lms_v1_types_proto_msgTypes[40]
+	mi := &file_lms_v1_types_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3558,7 +3963,7 @@ func (x *CheckinResult) String() string {
 func (*CheckinResult) ProtoMessage() {}
 
 func (x *CheckinResult) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[40]
+	mi := &file_lms_v1_types_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3571,7 +3976,7 @@ func (x *CheckinResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckinResult.ProtoReflect.Descriptor instead.
 func (*CheckinResult) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{40}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *CheckinResult) GetClassTitle() string {
@@ -3606,7 +4011,7 @@ type ClassInput struct {
 
 func (x *ClassInput) Reset() {
 	*x = ClassInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[41]
+	mi := &file_lms_v1_types_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3618,7 +4023,7 @@ func (x *ClassInput) String() string {
 func (*ClassInput) ProtoMessage() {}
 
 func (x *ClassInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[41]
+	mi := &file_lms_v1_types_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3631,7 +4036,7 @@ func (x *ClassInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClassInput.ProtoReflect.Descriptor instead.
 func (*ClassInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{41}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *ClassInput) GetTitle() string {
@@ -3666,7 +4071,7 @@ type ClassQr struct {
 
 func (x *ClassQr) Reset() {
 	*x = ClassQr{}
-	mi := &file_lms_v1_types_proto_msgTypes[42]
+	mi := &file_lms_v1_types_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3678,7 +4083,7 @@ func (x *ClassQr) String() string {
 func (*ClassQr) ProtoMessage() {}
 
 func (x *ClassQr) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[42]
+	mi := &file_lms_v1_types_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3691,7 +4096,7 @@ func (x *ClassQr) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClassQr.ProtoReflect.Descriptor instead.
 func (*ClassQr) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{42}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ClassQr) GetToken() string {
@@ -3731,7 +4136,7 @@ type ClassSession struct {
 
 func (x *ClassSession) Reset() {
 	*x = ClassSession{}
-	mi := &file_lms_v1_types_proto_msgTypes[43]
+	mi := &file_lms_v1_types_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3743,7 +4148,7 @@ func (x *ClassSession) String() string {
 func (*ClassSession) ProtoMessage() {}
 
 func (x *ClassSession) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[43]
+	mi := &file_lms_v1_types_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3756,7 +4161,7 @@ func (x *ClassSession) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClassSession.ProtoReflect.Descriptor instead.
 func (*ClassSession) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{43}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ClassSession) GetId() string {
@@ -3830,7 +4235,7 @@ type CollectionRow struct {
 
 func (x *CollectionRow) Reset() {
 	*x = CollectionRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[44]
+	mi := &file_lms_v1_types_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3842,7 +4247,7 @@ func (x *CollectionRow) String() string {
 func (*CollectionRow) ProtoMessage() {}
 
 func (x *CollectionRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[44]
+	mi := &file_lms_v1_types_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3855,7 +4260,7 @@ func (x *CollectionRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CollectionRow.ProtoReflect.Descriptor instead.
 func (*CollectionRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{44}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *CollectionRow) GetPeriod() string {
@@ -3924,7 +4329,7 @@ type CollectionsReport struct {
 
 func (x *CollectionsReport) Reset() {
 	*x = CollectionsReport{}
-	mi := &file_lms_v1_types_proto_msgTypes[45]
+	mi := &file_lms_v1_types_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3936,7 +4341,7 @@ func (x *CollectionsReport) String() string {
 func (*CollectionsReport) ProtoMessage() {}
 
 func (x *CollectionsReport) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[45]
+	mi := &file_lms_v1_types_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3949,7 +4354,7 @@ func (x *CollectionsReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CollectionsReport.ProtoReflect.Descriptor instead.
 func (*CollectionsReport) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{45}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *CollectionsReport) GetFrom() string {
@@ -4025,7 +4430,7 @@ type CommentInput struct {
 
 func (x *CommentInput) Reset() {
 	*x = CommentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[46]
+	mi := &file_lms_v1_types_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4037,7 +4442,7 @@ func (x *CommentInput) String() string {
 func (*CommentInput) ProtoMessage() {}
 
 func (x *CommentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[46]
+	mi := &file_lms_v1_types_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4050,7 +4455,7 @@ func (x *CommentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommentInput.ProtoReflect.Descriptor instead.
 func (*CommentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{46}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *CommentInput) GetBody() string {
@@ -4091,7 +4496,7 @@ type CommissionEntry struct {
 
 func (x *CommissionEntry) Reset() {
 	*x = CommissionEntry{}
-	mi := &file_lms_v1_types_proto_msgTypes[47]
+	mi := &file_lms_v1_types_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4103,7 +4508,7 @@ func (x *CommissionEntry) String() string {
 func (*CommissionEntry) ProtoMessage() {}
 
 func (x *CommissionEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[47]
+	mi := &file_lms_v1_types_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4116,7 +4521,7 @@ func (x *CommissionEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommissionEntry.ProtoReflect.Descriptor instead.
 func (*CommissionEntry) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{47}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *CommissionEntry) GetId() string {
@@ -4247,7 +4652,7 @@ type CommissionRow struct {
 
 func (x *CommissionRow) Reset() {
 	*x = CommissionRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[48]
+	mi := &file_lms_v1_types_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4259,7 +4664,7 @@ func (x *CommissionRow) String() string {
 func (*CommissionRow) ProtoMessage() {}
 
 func (x *CommissionRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[48]
+	mi := &file_lms_v1_types_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4272,7 +4677,7 @@ func (x *CommissionRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommissionRow.ProtoReflect.Descriptor instead.
 func (*CommissionRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{48}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *CommissionRow) GetCounsellorId() string {
@@ -4370,7 +4775,7 @@ type CommissionSummary struct {
 
 func (x *CommissionSummary) Reset() {
 	*x = CommissionSummary{}
-	mi := &file_lms_v1_types_proto_msgTypes[49]
+	mi := &file_lms_v1_types_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4382,7 +4787,7 @@ func (x *CommissionSummary) String() string {
 func (*CommissionSummary) ProtoMessage() {}
 
 func (x *CommissionSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[49]
+	mi := &file_lms_v1_types_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4395,7 +4800,7 @@ func (x *CommissionSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommissionSummary.ProtoReflect.Descriptor instead.
 func (*CommissionSummary) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{49}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *CommissionSummary) GetMonth() string {
@@ -4436,7 +4841,7 @@ type CommissionTarget struct {
 
 func (x *CommissionTarget) Reset() {
 	*x = CommissionTarget{}
-	mi := &file_lms_v1_types_proto_msgTypes[50]
+	mi := &file_lms_v1_types_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4448,7 +4853,7 @@ func (x *CommissionTarget) String() string {
 func (*CommissionTarget) ProtoMessage() {}
 
 func (x *CommissionTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[50]
+	mi := &file_lms_v1_types_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4461,7 +4866,7 @@ func (x *CommissionTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommissionTarget.ProtoReflect.Descriptor instead.
 func (*CommissionTarget) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{50}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *CommissionTarget) GetId() string {
@@ -4543,7 +4948,7 @@ type CommissionTargetInput struct {
 
 func (x *CommissionTargetInput) Reset() {
 	*x = CommissionTargetInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[51]
+	mi := &file_lms_v1_types_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4555,7 +4960,7 @@ func (x *CommissionTargetInput) String() string {
 func (*CommissionTargetInput) ProtoMessage() {}
 
 func (x *CommissionTargetInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[51]
+	mi := &file_lms_v1_types_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4568,7 +4973,7 @@ func (x *CommissionTargetInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommissionTargetInput.ProtoReflect.Descriptor instead.
 func (*CommissionTargetInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{51}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *CommissionTargetInput) GetCounsellorId() string {
@@ -4648,7 +5053,7 @@ type Counsellor struct {
 
 func (x *Counsellor) Reset() {
 	*x = Counsellor{}
-	mi := &file_lms_v1_types_proto_msgTypes[52]
+	mi := &file_lms_v1_types_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4660,7 +5065,7 @@ func (x *Counsellor) String() string {
 func (*Counsellor) ProtoMessage() {}
 
 func (x *Counsellor) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[52]
+	mi := &file_lms_v1_types_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4673,7 +5078,7 @@ func (x *Counsellor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Counsellor.ProtoReflect.Descriptor instead.
 func (*Counsellor) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{52}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *Counsellor) GetId() string {
@@ -4793,7 +5198,7 @@ type CounsellorInput struct {
 
 func (x *CounsellorInput) Reset() {
 	*x = CounsellorInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[53]
+	mi := &file_lms_v1_types_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4805,7 +5210,7 @@ func (x *CounsellorInput) String() string {
 func (*CounsellorInput) ProtoMessage() {}
 
 func (x *CounsellorInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[53]
+	mi := &file_lms_v1_types_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4818,7 +5223,7 @@ func (x *CounsellorInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CounsellorInput.ProtoReflect.Descriptor instead.
 func (*CounsellorInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{53}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *CounsellorInput) GetTeamId() string {
@@ -4868,7 +5273,7 @@ type CounsellorPerformance struct {
 
 func (x *CounsellorPerformance) Reset() {
 	*x = CounsellorPerformance{}
-	mi := &file_lms_v1_types_proto_msgTypes[54]
+	mi := &file_lms_v1_types_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4880,7 +5285,7 @@ func (x *CounsellorPerformance) String() string {
 func (*CounsellorPerformance) ProtoMessage() {}
 
 func (x *CounsellorPerformance) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[54]
+	mi := &file_lms_v1_types_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4893,7 +5298,7 @@ func (x *CounsellorPerformance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CounsellorPerformance.ProtoReflect.Descriptor instead.
 func (*CounsellorPerformance) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{54}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *CounsellorPerformance) GetCounsellorId() string {
@@ -4992,7 +5397,7 @@ type Counts struct {
 
 func (x *Counts) Reset() {
 	*x = Counts{}
-	mi := &file_lms_v1_types_proto_msgTypes[55]
+	mi := &file_lms_v1_types_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5004,7 +5409,7 @@ func (x *Counts) String() string {
 func (*Counts) ProtoMessage() {}
 
 func (x *Counts) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[55]
+	mi := &file_lms_v1_types_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5017,7 +5422,7 @@ func (x *Counts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Counts.ProtoReflect.Descriptor instead.
 func (*Counts) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{55}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *Counts) GetStudents() int32 {
@@ -5114,20 +5519,25 @@ type Course struct {
 	// Course fee incl. GST, in paise
 	FeePaise int64 `protobuf:"varint,13,opt,name=fee_paise,json=feePaise,proto3" json:"fee_paise,omitempty"`
 	// GST rate in basis points (1800 = 18%)
-	GstBp         int32                  `protobuf:"varint,14,opt,name=gst_bp,json=gstBp,proto3" json:"gst_bp,omitempty"`
-	WhatYouLearn  []string               `protobuf:"bytes,15,rep,name=what_you_learn,json=whatYouLearn,proto3" json:"what_you_learn,omitempty"`
-	VideoCount    int32                  `protobuf:"varint,16,opt,name=video_count,json=videoCount,proto3" json:"video_count,omitempty"`
-	StudentCount  int32                  `protobuf:"varint,17,opt,name=student_count,json=studentCount,proto3" json:"student_count,omitempty"`
-	Mentors       []*Person              `protobuf:"bytes,18,rep,name=mentors,proto3" json:"mentors,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,19,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,20,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	GstBp        int32    `protobuf:"varint,14,opt,name=gst_bp,json=gstBp,proto3" json:"gst_bp,omitempty"`
+	WhatYouLearn []string `protobuf:"bytes,15,rep,name=what_you_learn,json=whatYouLearn,proto3" json:"what_you_learn,omitempty"`
+	// Certificate settings: off, a chosen template, or the default template (nil).
+	CertificateEnabled    bool    `protobuf:"varint,16,opt,name=certificate_enabled,json=certificateEnabled,proto3" json:"certificate_enabled,omitempty"`
+	CertificateTemplateId *string `protobuf:"bytes,17,opt,name=certificate_template_id,json=certificateTemplateId,proto3,oneof" json:"certificate_template_id,omitempty"`
+	// Course sentence printed on the certificate ({course_text})
+	CertificateText string                 `protobuf:"bytes,18,opt,name=certificate_text,json=certificateText,proto3" json:"certificate_text,omitempty"`
+	VideoCount      int32                  `protobuf:"varint,19,opt,name=video_count,json=videoCount,proto3" json:"video_count,omitempty"`
+	StudentCount    int32                  `protobuf:"varint,20,opt,name=student_count,json=studentCount,proto3" json:"student_count,omitempty"`
+	Mentors         []*Person              `protobuf:"bytes,21,rep,name=mentors,proto3" json:"mentors,omitempty"`
+	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,22,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Course) Reset() {
 	*x = Course{}
-	mi := &file_lms_v1_types_proto_msgTypes[56]
+	mi := &file_lms_v1_types_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5139,7 +5549,7 @@ func (x *Course) String() string {
 func (*Course) ProtoMessage() {}
 
 func (x *Course) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[56]
+	mi := &file_lms_v1_types_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5152,7 +5562,7 @@ func (x *Course) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Course.ProtoReflect.Descriptor instead.
 func (*Course) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{56}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *Course) GetId() string {
@@ -5260,6 +5670,27 @@ func (x *Course) GetWhatYouLearn() []string {
 	return nil
 }
 
+func (x *Course) GetCertificateEnabled() bool {
+	if x != nil {
+		return x.CertificateEnabled
+	}
+	return false
+}
+
+func (x *Course) GetCertificateTemplateId() string {
+	if x != nil && x.CertificateTemplateId != nil {
+		return *x.CertificateTemplateId
+	}
+	return ""
+}
+
+func (x *Course) GetCertificateText() string {
+	if x != nil {
+		return x.CertificateText
+	}
+	return ""
+}
+
 func (x *Course) GetVideoCount() int32 {
 	if x != nil {
 		return x.VideoCount
@@ -5312,16 +5743,22 @@ type CourseInput struct {
 	// Course fee incl. GST, in paise (used for admissions)
 	FeePaise int64 `protobuf:"varint,12,opt,name=fee_paise,json=feePaise,proto3" json:"fee_paise,omitempty"`
 	// GST rate in basis points; empty = default rate
-	GstBp         *int32   `protobuf:"varint,13,opt,name=gst_bp,json=gstBp,proto3,oneof" json:"gst_bp,omitempty"`
-	WhatYouLearn  []string `protobuf:"bytes,14,rep,name=what_you_learn,json=whatYouLearn,proto3" json:"what_you_learn,omitempty"`
-	MentorIds     []string `protobuf:"bytes,15,rep,name=mentor_ids,json=mentorIds,proto3" json:"mentor_ids,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	GstBp        *int32   `protobuf:"varint,13,opt,name=gst_bp,json=gstBp,proto3,oneof" json:"gst_bp,omitempty"`
+	WhatYouLearn []string `protobuf:"bytes,14,rep,name=what_you_learn,json=whatYouLearn,proto3" json:"what_you_learn,omitempty"`
+	MentorIds    []string `protobuf:"bytes,15,rep,name=mentor_ids,json=mentorIds,proto3" json:"mentor_ids,omitempty"`
+	// Issue a certificate when the course is completed (default on)
+	CertificateEnabled *bool `protobuf:"varint,16,opt,name=certificate_enabled,json=certificateEnabled,proto3,oneof" json:"certificate_enabled,omitempty"`
+	// Certificate template; empty = the default template
+	CertificateTemplateId *string `protobuf:"bytes,17,opt,name=certificate_template_id,json=certificateTemplateId,proto3,oneof" json:"certificate_template_id,omitempty"`
+	// Course sentence printed on the certificate ({course_text})
+	CertificateText string `protobuf:"bytes,18,opt,name=certificate_text,json=certificateText,proto3" json:"certificate_text,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CourseInput) Reset() {
 	*x = CourseInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[57]
+	mi := &file_lms_v1_types_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5333,7 +5770,7 @@ func (x *CourseInput) String() string {
 func (*CourseInput) ProtoMessage() {}
 
 func (x *CourseInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[57]
+	mi := &file_lms_v1_types_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5346,7 +5783,7 @@ func (x *CourseInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CourseInput.ProtoReflect.Descriptor instead.
 func (*CourseInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{57}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *CourseInput) GetTitle() string {
@@ -5454,6 +5891,27 @@ func (x *CourseInput) GetMentorIds() []string {
 	return nil
 }
 
+func (x *CourseInput) GetCertificateEnabled() bool {
+	if x != nil && x.CertificateEnabled != nil {
+		return *x.CertificateEnabled
+	}
+	return false
+}
+
+func (x *CourseInput) GetCertificateTemplateId() string {
+	if x != nil && x.CertificateTemplateId != nil {
+		return *x.CertificateTemplateId
+	}
+	return ""
+}
+
+func (x *CourseInput) GetCertificateText() string {
+	if x != nil {
+		return x.CertificateText
+	}
+	return ""
+}
+
 type CourseOption struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -5467,7 +5925,7 @@ type CourseOption struct {
 
 func (x *CourseOption) Reset() {
 	*x = CourseOption{}
-	mi := &file_lms_v1_types_proto_msgTypes[58]
+	mi := &file_lms_v1_types_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5479,7 +5937,7 @@ func (x *CourseOption) String() string {
 func (*CourseOption) ProtoMessage() {}
 
 func (x *CourseOption) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[58]
+	mi := &file_lms_v1_types_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5492,7 +5950,7 @@ func (x *CourseOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CourseOption.ProtoReflect.Descriptor instead.
 func (*CourseOption) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{58}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *CourseOption) GetId() string {
@@ -5543,7 +6001,7 @@ type CourseStat struct {
 
 func (x *CourseStat) Reset() {
 	*x = CourseStat{}
-	mi := &file_lms_v1_types_proto_msgTypes[59]
+	mi := &file_lms_v1_types_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5555,7 +6013,7 @@ func (x *CourseStat) String() string {
 func (*CourseStat) ProtoMessage() {}
 
 func (x *CourseStat) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[59]
+	mi := &file_lms_v1_types_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5568,7 +6026,7 @@ func (x *CourseStat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CourseStat.ProtoReflect.Descriptor instead.
 func (*CourseStat) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{59}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *CourseStat) GetId() string {
@@ -5623,7 +6081,7 @@ type DbPool struct {
 
 func (x *DbPool) Reset() {
 	*x = DbPool{}
-	mi := &file_lms_v1_types_proto_msgTypes[60]
+	mi := &file_lms_v1_types_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5635,7 +6093,7 @@ func (x *DbPool) String() string {
 func (*DbPool) ProtoMessage() {}
 
 func (x *DbPool) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[60]
+	mi := &file_lms_v1_types_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5648,7 +6106,7 @@ func (x *DbPool) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DbPool.ProtoReflect.Descriptor instead.
 func (*DbPool) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{60}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *DbPool) GetMax() int32 {
@@ -5716,7 +6174,7 @@ type DbQuery struct {
 
 func (x *DbQuery) Reset() {
 	*x = DbQuery{}
-	mi := &file_lms_v1_types_proto_msgTypes[61]
+	mi := &file_lms_v1_types_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5728,7 +6186,7 @@ func (x *DbQuery) String() string {
 func (*DbQuery) ProtoMessage() {}
 
 func (x *DbQuery) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[61]
+	mi := &file_lms_v1_types_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5741,7 +6199,7 @@ func (x *DbQuery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DbQuery.ProtoReflect.Descriptor instead.
 func (*DbQuery) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{61}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *DbQuery) GetPid() int32 {
@@ -5809,7 +6267,7 @@ type DbTable struct {
 
 func (x *DbTable) Reset() {
 	*x = DbTable{}
-	mi := &file_lms_v1_types_proto_msgTypes[62]
+	mi := &file_lms_v1_types_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5821,7 +6279,7 @@ func (x *DbTable) String() string {
 func (*DbTable) ProtoMessage() {}
 
 func (x *DbTable) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[62]
+	mi := &file_lms_v1_types_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5834,7 +6292,7 @@ func (x *DbTable) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DbTable.ProtoReflect.Descriptor instead.
 func (*DbTable) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{62}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *DbTable) GetName() string {
@@ -5901,7 +6359,7 @@ type DbUser struct {
 
 func (x *DbUser) Reset() {
 	*x = DbUser{}
-	mi := &file_lms_v1_types_proto_msgTypes[63]
+	mi := &file_lms_v1_types_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5913,7 +6371,7 @@ func (x *DbUser) String() string {
 func (*DbUser) ProtoMessage() {}
 
 func (x *DbUser) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[63]
+	mi := &file_lms_v1_types_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5926,7 +6384,7 @@ func (x *DbUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DbUser.ProtoReflect.Descriptor instead.
 func (*DbUser) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{63}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *DbUser) GetName() string {
@@ -5984,7 +6442,7 @@ type Dashboard struct {
 
 func (x *Dashboard) Reset() {
 	*x = Dashboard{}
-	mi := &file_lms_v1_types_proto_msgTypes[64]
+	mi := &file_lms_v1_types_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5996,7 +6454,7 @@ func (x *Dashboard) String() string {
 func (*Dashboard) ProtoMessage() {}
 
 func (x *Dashboard) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[64]
+	mi := &file_lms_v1_types_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6009,7 +6467,7 @@ func (x *Dashboard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Dashboard.ProtoReflect.Descriptor instead.
 func (*Dashboard) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{64}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *Dashboard) GetStats() *DashboardStats {
@@ -6062,7 +6520,7 @@ type DashboardStats struct {
 
 func (x *DashboardStats) Reset() {
 	*x = DashboardStats{}
-	mi := &file_lms_v1_types_proto_msgTypes[65]
+	mi := &file_lms_v1_types_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6074,7 +6532,7 @@ func (x *DashboardStats) String() string {
 func (*DashboardStats) ProtoMessage() {}
 
 func (x *DashboardStats) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[65]
+	mi := &file_lms_v1_types_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6087,7 +6545,7 @@ func (x *DashboardStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DashboardStats.ProtoReflect.Descriptor instead.
 func (*DashboardStats) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{65}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *DashboardStats) GetCourses() int32 {
@@ -6145,7 +6603,7 @@ type DatabaseBrief struct {
 
 func (x *DatabaseBrief) Reset() {
 	*x = DatabaseBrief{}
-	mi := &file_lms_v1_types_proto_msgTypes[66]
+	mi := &file_lms_v1_types_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6157,7 +6615,7 @@ func (x *DatabaseBrief) String() string {
 func (*DatabaseBrief) ProtoMessage() {}
 
 func (x *DatabaseBrief) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[66]
+	mi := &file_lms_v1_types_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6170,7 +6628,7 @@ func (x *DatabaseBrief) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseBrief.ProtoReflect.Descriptor instead.
 func (*DatabaseBrief) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{66}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *DatabaseBrief) GetUp() bool {
@@ -6226,7 +6684,7 @@ type DatabaseStats struct {
 
 func (x *DatabaseStats) Reset() {
 	*x = DatabaseStats{}
-	mi := &file_lms_v1_types_proto_msgTypes[67]
+	mi := &file_lms_v1_types_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6238,7 +6696,7 @@ func (x *DatabaseStats) String() string {
 func (*DatabaseStats) ProtoMessage() {}
 
 func (x *DatabaseStats) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[67]
+	mi := &file_lms_v1_types_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6251,7 +6709,7 @@ func (x *DatabaseStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseStats.ProtoReflect.Descriptor instead.
 func (*DatabaseStats) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{67}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *DatabaseStats) GetUp() bool {
@@ -6377,7 +6835,7 @@ type DayPoint struct {
 
 func (x *DayPoint) Reset() {
 	*x = DayPoint{}
-	mi := &file_lms_v1_types_proto_msgTypes[68]
+	mi := &file_lms_v1_types_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6389,7 +6847,7 @@ func (x *DayPoint) String() string {
 func (*DayPoint) ProtoMessage() {}
 
 func (x *DayPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[68]
+	mi := &file_lms_v1_types_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6402,7 +6860,7 @@ func (x *DayPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DayPoint.ProtoReflect.Descriptor instead.
 func (*DayPoint) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{68}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *DayPoint) GetDay() string {
@@ -6446,7 +6904,7 @@ type DueRow struct {
 
 func (x *DueRow) Reset() {
 	*x = DueRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[69]
+	mi := &file_lms_v1_types_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6458,7 +6916,7 @@ func (x *DueRow) String() string {
 func (*DueRow) ProtoMessage() {}
 
 func (x *DueRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[69]
+	mi := &file_lms_v1_types_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6471,7 +6929,7 @@ func (x *DueRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DueRow.ProtoReflect.Descriptor instead.
 func (*DueRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{69}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *DueRow) GetAdmissionId() string {
@@ -6570,7 +7028,7 @@ type DuesReport struct {
 
 func (x *DuesReport) Reset() {
 	*x = DuesReport{}
-	mi := &file_lms_v1_types_proto_msgTypes[70]
+	mi := &file_lms_v1_types_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6582,7 +7040,7 @@ func (x *DuesReport) String() string {
 func (*DuesReport) ProtoMessage() {}
 
 func (x *DuesReport) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[70]
+	mi := &file_lms_v1_types_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6595,7 +7053,7 @@ func (x *DuesReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DuesReport.ProtoReflect.Descriptor instead.
 func (*DuesReport) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{70}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *DuesReport) GetRows() []*DueRow {
@@ -6644,7 +7102,7 @@ type EndpointStat struct {
 
 func (x *EndpointStat) Reset() {
 	*x = EndpointStat{}
-	mi := &file_lms_v1_types_proto_msgTypes[71]
+	mi := &file_lms_v1_types_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6656,7 +7114,7 @@ func (x *EndpointStat) String() string {
 func (*EndpointStat) ProtoMessage() {}
 
 func (x *EndpointStat) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[71]
+	mi := &file_lms_v1_types_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6669,7 +7127,7 @@ func (x *EndpointStat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EndpointStat.ProtoReflect.Descriptor instead.
 func (*EndpointStat) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{71}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *EndpointStat) GetProcedure() string {
@@ -6745,7 +7203,7 @@ type EnrollInput struct {
 
 func (x *EnrollInput) Reset() {
 	*x = EnrollInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[72]
+	mi := &file_lms_v1_types_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6757,7 +7215,7 @@ func (x *EnrollInput) String() string {
 func (*EnrollInput) ProtoMessage() {}
 
 func (x *EnrollInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[72]
+	mi := &file_lms_v1_types_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6770,7 +7228,7 @@ func (x *EnrollInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnrollInput.ProtoReflect.Descriptor instead.
 func (*EnrollInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{72}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *EnrollInput) GetCourseId() string {
@@ -6808,7 +7266,7 @@ type Enrollment struct {
 
 func (x *Enrollment) Reset() {
 	*x = Enrollment{}
-	mi := &file_lms_v1_types_proto_msgTypes[73]
+	mi := &file_lms_v1_types_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6820,7 +7278,7 @@ func (x *Enrollment) String() string {
 func (*Enrollment) ProtoMessage() {}
 
 func (x *Enrollment) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[73]
+	mi := &file_lms_v1_types_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6833,7 +7291,7 @@ func (x *Enrollment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Enrollment.ProtoReflect.Descriptor instead.
 func (*Enrollment) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{73}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *Enrollment) GetId() string {
@@ -6937,7 +7395,7 @@ type EnrollmentUpdate struct {
 
 func (x *EnrollmentUpdate) Reset() {
 	*x = EnrollmentUpdate{}
-	mi := &file_lms_v1_types_proto_msgTypes[74]
+	mi := &file_lms_v1_types_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6949,7 +7407,7 @@ func (x *EnrollmentUpdate) String() string {
 func (*EnrollmentUpdate) ProtoMessage() {}
 
 func (x *EnrollmentUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[74]
+	mi := &file_lms_v1_types_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6962,7 +7420,7 @@ func (x *EnrollmentUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnrollmentUpdate.ProtoReflect.Descriptor instead.
 func (*EnrollmentUpdate) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{74}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *EnrollmentUpdate) GetBatchId() string {
@@ -6991,7 +7449,7 @@ type FeeLineInput struct {
 
 func (x *FeeLineInput) Reset() {
 	*x = FeeLineInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[75]
+	mi := &file_lms_v1_types_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7003,7 +7461,7 @@ func (x *FeeLineInput) String() string {
 func (*FeeLineInput) ProtoMessage() {}
 
 func (x *FeeLineInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[75]
+	mi := &file_lms_v1_types_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7016,7 +7474,7 @@ func (x *FeeLineInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeeLineInput.ProtoReflect.Descriptor instead.
 func (*FeeLineInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{75}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *FeeLineInput) GetCourseId() string {
@@ -7056,7 +7514,7 @@ type FeeQuote struct {
 
 func (x *FeeQuote) Reset() {
 	*x = FeeQuote{}
-	mi := &file_lms_v1_types_proto_msgTypes[76]
+	mi := &file_lms_v1_types_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7068,7 +7526,7 @@ func (x *FeeQuote) String() string {
 func (*FeeQuote) ProtoMessage() {}
 
 func (x *FeeQuote) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[76]
+	mi := &file_lms_v1_types_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7081,7 +7539,7 @@ func (x *FeeQuote) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeeQuote.ProtoReflect.Descriptor instead.
 func (*FeeQuote) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{76}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *FeeQuote) GetGrossPaise() int64 {
@@ -7144,7 +7602,7 @@ type FeeQuoteInput struct {
 
 func (x *FeeQuoteInput) Reset() {
 	*x = FeeQuoteInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[77]
+	mi := &file_lms_v1_types_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7156,7 +7614,7 @@ func (x *FeeQuoteInput) String() string {
 func (*FeeQuoteInput) ProtoMessage() {}
 
 func (x *FeeQuoteInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[77]
+	mi := &file_lms_v1_types_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7169,7 +7627,7 @@ func (x *FeeQuoteInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeeQuoteInput.ProtoReflect.Descriptor instead.
 func (*FeeQuoteInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{77}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *FeeQuoteInput) GetCourses() []*FeeLineInput {
@@ -7212,7 +7670,7 @@ type FollowUp struct {
 
 func (x *FollowUp) Reset() {
 	*x = FollowUp{}
-	mi := &file_lms_v1_types_proto_msgTypes[78]
+	mi := &file_lms_v1_types_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7224,7 +7682,7 @@ func (x *FollowUp) String() string {
 func (*FollowUp) ProtoMessage() {}
 
 func (x *FollowUp) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[78]
+	mi := &file_lms_v1_types_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7237,7 +7695,7 @@ func (x *FollowUp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FollowUp.ProtoReflect.Descriptor instead.
 func (*FollowUp) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{78}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *FollowUp) GetId() string {
@@ -7327,7 +7785,7 @@ type FollowUpInput struct {
 
 func (x *FollowUpInput) Reset() {
 	*x = FollowUpInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[79]
+	mi := &file_lms_v1_types_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7339,7 +7797,7 @@ func (x *FollowUpInput) String() string {
 func (*FollowUpInput) ProtoMessage() {}
 
 func (x *FollowUpInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[79]
+	mi := &file_lms_v1_types_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7352,7 +7810,7 @@ func (x *FollowUpInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FollowUpInput.ProtoReflect.Descriptor instead.
 func (*FollowUpInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{79}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *FollowUpInput) GetDueAt() *timestamppb.Timestamp {
@@ -7384,7 +7842,7 @@ type FunnelReport struct {
 
 func (x *FunnelReport) Reset() {
 	*x = FunnelReport{}
-	mi := &file_lms_v1_types_proto_msgTypes[80]
+	mi := &file_lms_v1_types_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7396,7 +7854,7 @@ func (x *FunnelReport) String() string {
 func (*FunnelReport) ProtoMessage() {}
 
 func (x *FunnelReport) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[80]
+	mi := &file_lms_v1_types_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7409,7 +7867,7 @@ func (x *FunnelReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FunnelReport.ProtoReflect.Descriptor instead.
 func (*FunnelReport) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{80}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *FunnelReport) GetFrom() string {
@@ -7474,7 +7932,7 @@ type FunnelStage struct {
 
 func (x *FunnelStage) Reset() {
 	*x = FunnelStage{}
-	mi := &file_lms_v1_types_proto_msgTypes[81]
+	mi := &file_lms_v1_types_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7486,7 +7944,7 @@ func (x *FunnelStage) String() string {
 func (*FunnelStage) ProtoMessage() {}
 
 func (x *FunnelStage) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[81]
+	mi := &file_lms_v1_types_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7499,7 +7957,7 @@ func (x *FunnelStage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FunnelStage.ProtoReflect.Descriptor instead.
 func (*FunnelStage) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{81}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *FunnelStage) GetId() string {
@@ -7552,7 +8010,7 @@ type GstMonth struct {
 
 func (x *GstMonth) Reset() {
 	*x = GstMonth{}
-	mi := &file_lms_v1_types_proto_msgTypes[82]
+	mi := &file_lms_v1_types_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7564,7 +8022,7 @@ func (x *GstMonth) String() string {
 func (*GstMonth) ProtoMessage() {}
 
 func (x *GstMonth) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[82]
+	mi := &file_lms_v1_types_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7577,7 +8035,7 @@ func (x *GstMonth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GstMonth.ProtoReflect.Descriptor instead.
 func (*GstMonth) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{82}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *GstMonth) GetMonth() string {
@@ -7642,7 +8100,7 @@ type GstReport struct {
 
 func (x *GstReport) Reset() {
 	*x = GstReport{}
-	mi := &file_lms_v1_types_proto_msgTypes[83]
+	mi := &file_lms_v1_types_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7654,7 +8112,7 @@ func (x *GstReport) String() string {
 func (*GstReport) ProtoMessage() {}
 
 func (x *GstReport) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[83]
+	mi := &file_lms_v1_types_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7667,7 +8125,7 @@ func (x *GstReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GstReport.ProtoReflect.Descriptor instead.
 func (*GstReport) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{83}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *GstReport) GetFrom() string {
@@ -7717,7 +8175,7 @@ type GoogleSettings struct {
 
 func (x *GoogleSettings) Reset() {
 	*x = GoogleSettings{}
-	mi := &file_lms_v1_types_proto_msgTypes[84]
+	mi := &file_lms_v1_types_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7729,7 +8187,7 @@ func (x *GoogleSettings) String() string {
 func (*GoogleSettings) ProtoMessage() {}
 
 func (x *GoogleSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[84]
+	mi := &file_lms_v1_types_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7742,7 +8200,7 @@ func (x *GoogleSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GoogleSettings.ProtoReflect.Descriptor instead.
 func (*GoogleSettings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{84}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *GoogleSettings) GetCalendarSync() bool {
@@ -7772,7 +8230,7 @@ type GoogleStatus struct {
 
 func (x *GoogleStatus) Reset() {
 	*x = GoogleStatus{}
-	mi := &file_lms_v1_types_proto_msgTypes[85]
+	mi := &file_lms_v1_types_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7784,7 +8242,7 @@ func (x *GoogleStatus) String() string {
 func (*GoogleStatus) ProtoMessage() {}
 
 func (x *GoogleStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[85]
+	mi := &file_lms_v1_types_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7797,7 +8255,7 @@ func (x *GoogleStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GoogleStatus.ProtoReflect.Descriptor instead.
 func (*GoogleStatus) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{85}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *GoogleStatus) GetConfigured() bool {
@@ -7838,7 +8296,7 @@ type Ids struct {
 
 func (x *Ids) Reset() {
 	*x = Ids{}
-	mi := &file_lms_v1_types_proto_msgTypes[86]
+	mi := &file_lms_v1_types_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7850,7 +8308,7 @@ func (x *Ids) String() string {
 func (*Ids) ProtoMessage() {}
 
 func (x *Ids) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[86]
+	mi := &file_lms_v1_types_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7863,7 +8321,7 @@ func (x *Ids) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ids.ProtoReflect.Descriptor instead.
 func (*Ids) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{86}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *Ids) GetIds() []string {
@@ -7886,7 +8344,7 @@ type ImportInput struct {
 
 func (x *ImportInput) Reset() {
 	*x = ImportInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[87]
+	mi := &file_lms_v1_types_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7898,7 +8356,7 @@ func (x *ImportInput) String() string {
 func (*ImportInput) ProtoMessage() {}
 
 func (x *ImportInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[87]
+	mi := &file_lms_v1_types_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7911,7 +8369,7 @@ func (x *ImportInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportInput.ProtoReflect.Descriptor instead.
 func (*ImportInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{87}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *ImportInput) GetCsv() string {
@@ -7953,7 +8411,7 @@ type ImportResult struct {
 
 func (x *ImportResult) Reset() {
 	*x = ImportResult{}
-	mi := &file_lms_v1_types_proto_msgTypes[88]
+	mi := &file_lms_v1_types_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7965,7 +8423,7 @@ func (x *ImportResult) String() string {
 func (*ImportResult) ProtoMessage() {}
 
 func (x *ImportResult) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[88]
+	mi := &file_lms_v1_types_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7978,7 +8436,7 @@ func (x *ImportResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportResult.ProtoReflect.Descriptor instead.
 func (*ImportResult) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{88}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *ImportResult) GetCreated() int32 {
@@ -8016,7 +8474,7 @@ type Installment struct {
 
 func (x *Installment) Reset() {
 	*x = Installment{}
-	mi := &file_lms_v1_types_proto_msgTypes[89]
+	mi := &file_lms_v1_types_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8028,7 +8486,7 @@ func (x *Installment) String() string {
 func (*Installment) ProtoMessage() {}
 
 func (x *Installment) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[89]
+	mi := &file_lms_v1_types_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8041,7 +8499,7 @@ func (x *Installment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Installment.ProtoReflect.Descriptor instead.
 func (*Installment) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{89}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *Installment) GetId() string {
@@ -8096,7 +8554,7 @@ type InstallmentInput struct {
 
 func (x *InstallmentInput) Reset() {
 	*x = InstallmentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[90]
+	mi := &file_lms_v1_types_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8108,7 +8566,7 @@ func (x *InstallmentInput) String() string {
 func (*InstallmentInput) ProtoMessage() {}
 
 func (x *InstallmentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[90]
+	mi := &file_lms_v1_types_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8121,7 +8579,7 @@ func (x *InstallmentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstallmentInput.ProtoReflect.Descriptor instead.
 func (*InstallmentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{90}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *InstallmentInput) GetDueDate() string {
@@ -8150,7 +8608,7 @@ type InstallmentPlan struct {
 
 func (x *InstallmentPlan) Reset() {
 	*x = InstallmentPlan{}
-	mi := &file_lms_v1_types_proto_msgTypes[91]
+	mi := &file_lms_v1_types_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8162,7 +8620,7 @@ func (x *InstallmentPlan) String() string {
 func (*InstallmentPlan) ProtoMessage() {}
 
 func (x *InstallmentPlan) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[91]
+	mi := &file_lms_v1_types_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8175,7 +8633,7 @@ func (x *InstallmentPlan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstallmentPlan.ProtoReflect.Descriptor instead.
 func (*InstallmentPlan) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{91}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *InstallmentPlan) GetCount() int32 {
@@ -8209,7 +8667,7 @@ type InstallmentsInput struct {
 
 func (x *InstallmentsInput) Reset() {
 	*x = InstallmentsInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[92]
+	mi := &file_lms_v1_types_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8221,7 +8679,7 @@ func (x *InstallmentsInput) String() string {
 func (*InstallmentsInput) ProtoMessage() {}
 
 func (x *InstallmentsInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[92]
+	mi := &file_lms_v1_types_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8234,7 +8692,7 @@ func (x *InstallmentsInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InstallmentsInput.ProtoReflect.Descriptor instead.
 func (*InstallmentsInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{92}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *InstallmentsInput) GetInstallments() []*InstallmentInput {
@@ -8260,7 +8718,7 @@ type JoinResult struct {
 
 func (x *JoinResult) Reset() {
 	*x = JoinResult{}
-	mi := &file_lms_v1_types_proto_msgTypes[93]
+	mi := &file_lms_v1_types_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8272,7 +8730,7 @@ func (x *JoinResult) String() string {
 func (*JoinResult) ProtoMessage() {}
 
 func (x *JoinResult) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[93]
+	mi := &file_lms_v1_types_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8285,7 +8743,7 @@ func (x *JoinResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinResult.ProtoReflect.Descriptor instead.
 func (*JoinResult) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{93}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *JoinResult) GetMeetUrl() string {
@@ -8333,7 +8791,7 @@ type Lead struct {
 
 func (x *Lead) Reset() {
 	*x = Lead{}
-	mi := &file_lms_v1_types_proto_msgTypes[94]
+	mi := &file_lms_v1_types_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8345,7 +8803,7 @@ func (x *Lead) String() string {
 func (*Lead) ProtoMessage() {}
 
 func (x *Lead) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[94]
+	mi := &file_lms_v1_types_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8358,7 +8816,7 @@ func (x *Lead) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Lead.ProtoReflect.Descriptor instead.
 func (*Lead) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{94}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *Lead) GetId() string {
@@ -8579,7 +9037,7 @@ type LeadActivity struct {
 
 func (x *LeadActivity) Reset() {
 	*x = LeadActivity{}
-	mi := &file_lms_v1_types_proto_msgTypes[95]
+	mi := &file_lms_v1_types_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8591,7 +9049,7 @@ func (x *LeadActivity) String() string {
 func (*LeadActivity) ProtoMessage() {}
 
 func (x *LeadActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[95]
+	mi := &file_lms_v1_types_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8604,7 +9062,7 @@ func (x *LeadActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadActivity.ProtoReflect.Descriptor instead.
 func (*LeadActivity) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{95}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *LeadActivity) GetId() string {
@@ -8676,7 +9134,7 @@ type LeadCreate struct {
 
 func (x *LeadCreate) Reset() {
 	*x = LeadCreate{}
-	mi := &file_lms_v1_types_proto_msgTypes[96]
+	mi := &file_lms_v1_types_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8688,7 +9146,7 @@ func (x *LeadCreate) String() string {
 func (*LeadCreate) ProtoMessage() {}
 
 func (x *LeadCreate) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[96]
+	mi := &file_lms_v1_types_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8701,7 +9159,7 @@ func (x *LeadCreate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadCreate.ProtoReflect.Descriptor instead.
 func (*LeadCreate) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{96}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *LeadCreate) GetName() string {
@@ -8778,7 +9236,7 @@ type LeadCreated struct {
 
 func (x *LeadCreated) Reset() {
 	*x = LeadCreated{}
-	mi := &file_lms_v1_types_proto_msgTypes[97]
+	mi := &file_lms_v1_types_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8790,7 +9248,7 @@ func (x *LeadCreated) String() string {
 func (*LeadCreated) ProtoMessage() {}
 
 func (x *LeadCreated) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[97]
+	mi := &file_lms_v1_types_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8803,7 +9261,7 @@ func (x *LeadCreated) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadCreated.ProtoReflect.Descriptor instead.
 func (*LeadCreated) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{97}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *LeadCreated) GetLead() *Lead {
@@ -8832,7 +9290,7 @@ type LeadDetail struct {
 
 func (x *LeadDetail) Reset() {
 	*x = LeadDetail{}
-	mi := &file_lms_v1_types_proto_msgTypes[98]
+	mi := &file_lms_v1_types_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8844,7 +9302,7 @@ func (x *LeadDetail) String() string {
 func (*LeadDetail) ProtoMessage() {}
 
 func (x *LeadDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[98]
+	mi := &file_lms_v1_types_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8857,7 +9315,7 @@ func (x *LeadDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadDetail.ProtoReflect.Descriptor instead.
 func (*LeadDetail) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{98}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *LeadDetail) GetLead() *Lead {
@@ -8900,7 +9358,7 @@ type LeadImportInput struct {
 
 func (x *LeadImportInput) Reset() {
 	*x = LeadImportInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[99]
+	mi := &file_lms_v1_types_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8912,7 +9370,7 @@ func (x *LeadImportInput) String() string {
 func (*LeadImportInput) ProtoMessage() {}
 
 func (x *LeadImportInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[99]
+	mi := &file_lms_v1_types_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8925,7 +9383,7 @@ func (x *LeadImportInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadImportInput.ProtoReflect.Descriptor instead.
 func (*LeadImportInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{99}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *LeadImportInput) GetCsv() string {
@@ -8957,7 +9415,7 @@ type LeadInput struct {
 
 func (x *LeadInput) Reset() {
 	*x = LeadInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[100]
+	mi := &file_lms_v1_types_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8969,7 +9427,7 @@ func (x *LeadInput) String() string {
 func (*LeadInput) ProtoMessage() {}
 
 func (x *LeadInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[100]
+	mi := &file_lms_v1_types_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8982,7 +9440,7 @@ func (x *LeadInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadInput.ProtoReflect.Descriptor instead.
 func (*LeadInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{100}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *LeadInput) GetName() string {
@@ -9041,7 +9499,7 @@ type LeadList struct {
 
 func (x *LeadList) Reset() {
 	*x = LeadList{}
-	mi := &file_lms_v1_types_proto_msgTypes[101]
+	mi := &file_lms_v1_types_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9053,7 +9511,7 @@ func (x *LeadList) String() string {
 func (*LeadList) ProtoMessage() {}
 
 func (x *LeadList) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[101]
+	mi := &file_lms_v1_types_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9066,7 +9524,7 @@ func (x *LeadList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadList.ProtoReflect.Descriptor instead.
 func (*LeadList) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{101}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *LeadList) GetItems() []*Lead {
@@ -9115,7 +9573,7 @@ type LeadStageInput struct {
 
 func (x *LeadStageInput) Reset() {
 	*x = LeadStageInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[102]
+	mi := &file_lms_v1_types_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9127,7 +9585,7 @@ func (x *LeadStageInput) String() string {
 func (*LeadStageInput) ProtoMessage() {}
 
 func (x *LeadStageInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[102]
+	mi := &file_lms_v1_types_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9140,7 +9598,7 @@ func (x *LeadStageInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadStageInput.ProtoReflect.Descriptor instead.
 func (*LeadStageInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{102}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *LeadStageInput) GetStageId() string {
@@ -9179,7 +9637,7 @@ type LeadUpdate struct {
 
 func (x *LeadUpdate) Reset() {
 	*x = LeadUpdate{}
-	mi := &file_lms_v1_types_proto_msgTypes[103]
+	mi := &file_lms_v1_types_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9191,7 +9649,7 @@ func (x *LeadUpdate) String() string {
 func (*LeadUpdate) ProtoMessage() {}
 
 func (x *LeadUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[103]
+	mi := &file_lms_v1_types_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9204,7 +9662,7 @@ func (x *LeadUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeadUpdate.ProtoReflect.Descriptor instead.
 func (*LeadUpdate) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{103}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *LeadUpdate) GetName() string {
@@ -9265,7 +9723,7 @@ type LiveAttendanceInput struct {
 
 func (x *LiveAttendanceInput) Reset() {
 	*x = LiveAttendanceInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[104]
+	mi := &file_lms_v1_types_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9277,7 +9735,7 @@ func (x *LiveAttendanceInput) String() string {
 func (*LiveAttendanceInput) ProtoMessage() {}
 
 func (x *LiveAttendanceInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[104]
+	mi := &file_lms_v1_types_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9290,7 +9748,7 @@ func (x *LiveAttendanceInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveAttendanceInput.ProtoReflect.Descriptor instead.
 func (*LiveAttendanceInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{104}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *LiveAttendanceInput) GetRecords() []*LiveAttendanceMark {
@@ -9310,7 +9768,7 @@ type LiveAttendanceMark struct {
 
 func (x *LiveAttendanceMark) Reset() {
 	*x = LiveAttendanceMark{}
-	mi := &file_lms_v1_types_proto_msgTypes[105]
+	mi := &file_lms_v1_types_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9322,7 +9780,7 @@ func (x *LiveAttendanceMark) String() string {
 func (*LiveAttendanceMark) ProtoMessage() {}
 
 func (x *LiveAttendanceMark) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[105]
+	mi := &file_lms_v1_types_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9335,7 +9793,7 @@ func (x *LiveAttendanceMark) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveAttendanceMark.ProtoReflect.Descriptor instead.
 func (*LiveAttendanceMark) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{105}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *LiveAttendanceMark) GetStudentId() string {
@@ -9362,7 +9820,7 @@ type LiveDetail struct {
 
 func (x *LiveDetail) Reset() {
 	*x = LiveDetail{}
-	mi := &file_lms_v1_types_proto_msgTypes[106]
+	mi := &file_lms_v1_types_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9374,7 +9832,7 @@ func (x *LiveDetail) String() string {
 func (*LiveDetail) ProtoMessage() {}
 
 func (x *LiveDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[106]
+	mi := &file_lms_v1_types_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9387,7 +9845,7 @@ func (x *LiveDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveDetail.ProtoReflect.Descriptor instead.
 func (*LiveDetail) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{106}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *LiveDetail) GetSession() *LiveSession {
@@ -9422,7 +9880,7 @@ type LiveInput struct {
 
 func (x *LiveInput) Reset() {
 	*x = LiveInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[107]
+	mi := &file_lms_v1_types_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9434,7 +9892,7 @@ func (x *LiveInput) String() string {
 func (*LiveInput) ProtoMessage() {}
 
 func (x *LiveInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[107]
+	mi := &file_lms_v1_types_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9447,7 +9905,7 @@ func (x *LiveInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveInput.ProtoReflect.Descriptor instead.
 func (*LiveInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{107}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *LiveInput) GetTitle() string {
@@ -9523,7 +9981,7 @@ type LiveRosterRow struct {
 
 func (x *LiveRosterRow) Reset() {
 	*x = LiveRosterRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[108]
+	mi := &file_lms_v1_types_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9535,7 +9993,7 @@ func (x *LiveRosterRow) String() string {
 func (*LiveRosterRow) ProtoMessage() {}
 
 func (x *LiveRosterRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[108]
+	mi := &file_lms_v1_types_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9548,7 +10006,7 @@ func (x *LiveRosterRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveRosterRow.ProtoReflect.Descriptor instead.
 func (*LiveRosterRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{108}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *LiveRosterRow) GetStudentId() string {
@@ -9639,7 +10097,7 @@ type LiveSession struct {
 
 func (x *LiveSession) Reset() {
 	*x = LiveSession{}
-	mi := &file_lms_v1_types_proto_msgTypes[109]
+	mi := &file_lms_v1_types_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9651,7 +10109,7 @@ func (x *LiveSession) String() string {
 func (*LiveSession) ProtoMessage() {}
 
 func (x *LiveSession) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[109]
+	mi := &file_lms_v1_types_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9664,7 +10122,7 @@ func (x *LiveSession) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveSession.ProtoReflect.Descriptor instead.
 func (*LiveSession) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{109}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *LiveSession) GetId() string {
@@ -9790,7 +10248,7 @@ type LiveTarget struct {
 
 func (x *LiveTarget) Reset() {
 	*x = LiveTarget{}
-	mi := &file_lms_v1_types_proto_msgTypes[110]
+	mi := &file_lms_v1_types_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9802,7 +10260,7 @@ func (x *LiveTarget) String() string {
 func (*LiveTarget) ProtoMessage() {}
 
 func (x *LiveTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[110]
+	mi := &file_lms_v1_types_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9815,7 +10273,7 @@ func (x *LiveTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveTarget.ProtoReflect.Descriptor instead.
 func (*LiveTarget) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{110}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *LiveTarget) GetType() string {
@@ -9849,7 +10307,7 @@ type LostReason struct {
 
 func (x *LostReason) Reset() {
 	*x = LostReason{}
-	mi := &file_lms_v1_types_proto_msgTypes[111]
+	mi := &file_lms_v1_types_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9861,7 +10319,7 @@ func (x *LostReason) String() string {
 func (*LostReason) ProtoMessage() {}
 
 func (x *LostReason) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[111]
+	mi := &file_lms_v1_types_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9874,7 +10332,7 @@ func (x *LostReason) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LostReason.ProtoReflect.Descriptor instead.
 func (*LostReason) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{111}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *LostReason) GetId() string {
@@ -9900,7 +10358,7 @@ type LostReasonInput struct {
 
 func (x *LostReasonInput) Reset() {
 	*x = LostReasonInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[112]
+	mi := &file_lms_v1_types_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9912,7 +10370,7 @@ func (x *LostReasonInput) String() string {
 func (*LostReasonInput) ProtoMessage() {}
 
 func (x *LostReasonInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[112]
+	mi := &file_lms_v1_types_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9925,7 +10383,7 @@ func (x *LostReasonInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LostReasonInput.ProtoReflect.Descriptor instead.
 func (*LostReasonInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{112}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *LostReasonInput) GetLabel() string {
@@ -9948,7 +10406,7 @@ type ManualCommissionInput struct {
 
 func (x *ManualCommissionInput) Reset() {
 	*x = ManualCommissionInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[113]
+	mi := &file_lms_v1_types_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9960,7 +10418,7 @@ func (x *ManualCommissionInput) String() string {
 func (*ManualCommissionInput) ProtoMessage() {}
 
 func (x *ManualCommissionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[113]
+	mi := &file_lms_v1_types_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9973,7 +10431,7 @@ func (x *ManualCommissionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManualCommissionInput.ProtoReflect.Descriptor instead.
 func (*ManualCommissionInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{113}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *ManualCommissionInput) GetCounsellorId() string {
@@ -10023,7 +10481,7 @@ type ModerationComment struct {
 
 func (x *ModerationComment) Reset() {
 	*x = ModerationComment{}
-	mi := &file_lms_v1_types_proto_msgTypes[114]
+	mi := &file_lms_v1_types_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10035,7 +10493,7 @@ func (x *ModerationComment) String() string {
 func (*ModerationComment) ProtoMessage() {}
 
 func (x *ModerationComment) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[114]
+	mi := &file_lms_v1_types_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10048,7 +10506,7 @@ func (x *ModerationComment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModerationComment.ProtoReflect.Descriptor instead.
 func (*ModerationComment) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{114}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *ModerationComment) GetId() string {
@@ -10139,7 +10597,7 @@ type ModuleDef struct {
 
 func (x *ModuleDef) Reset() {
 	*x = ModuleDef{}
-	mi := &file_lms_v1_types_proto_msgTypes[115]
+	mi := &file_lms_v1_types_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10151,7 +10609,7 @@ func (x *ModuleDef) String() string {
 func (*ModuleDef) ProtoMessage() {}
 
 func (x *ModuleDef) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[115]
+	mi := &file_lms_v1_types_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10164,7 +10622,7 @@ func (x *ModuleDef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModuleDef.ProtoReflect.Descriptor instead.
 func (*ModuleDef) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{115}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *ModuleDef) GetKey() string {
@@ -10197,7 +10655,7 @@ type MonthInput struct {
 
 func (x *MonthInput) Reset() {
 	*x = MonthInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[116]
+	mi := &file_lms_v1_types_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10209,7 +10667,7 @@ func (x *MonthInput) String() string {
 func (*MonthInput) ProtoMessage() {}
 
 func (x *MonthInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[116]
+	mi := &file_lms_v1_types_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10222,7 +10680,7 @@ func (x *MonthInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MonthInput.ProtoReflect.Descriptor instead.
 func (*MonthInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{116}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *MonthInput) GetMonth() string {
@@ -10246,7 +10704,7 @@ type MyClassAttendance struct {
 
 func (x *MyClassAttendance) Reset() {
 	*x = MyClassAttendance{}
-	mi := &file_lms_v1_types_proto_msgTypes[117]
+	mi := &file_lms_v1_types_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10258,7 +10716,7 @@ func (x *MyClassAttendance) String() string {
 func (*MyClassAttendance) ProtoMessage() {}
 
 func (x *MyClassAttendance) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[117]
+	mi := &file_lms_v1_types_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10271,7 +10729,7 @@ func (x *MyClassAttendance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyClassAttendance.ProtoReflect.Descriptor instead.
 func (*MyClassAttendance) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{117}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *MyClassAttendance) GetClassId() string {
@@ -10344,7 +10802,7 @@ type MyCourse struct {
 
 func (x *MyCourse) Reset() {
 	*x = MyCourse{}
-	mi := &file_lms_v1_types_proto_msgTypes[118]
+	mi := &file_lms_v1_types_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10356,7 +10814,7 @@ func (x *MyCourse) String() string {
 func (*MyCourse) ProtoMessage() {}
 
 func (x *MyCourse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[118]
+	mi := &file_lms_v1_types_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10369,7 +10827,7 @@ func (x *MyCourse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyCourse.ProtoReflect.Descriptor instead.
 func (*MyCourse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{118}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *MyCourse) GetEnrollmentId() string {
@@ -10511,7 +10969,7 @@ type MyCourseDetail struct {
 
 func (x *MyCourseDetail) Reset() {
 	*x = MyCourseDetail{}
-	mi := &file_lms_v1_types_proto_msgTypes[119]
+	mi := &file_lms_v1_types_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10523,7 +10981,7 @@ func (x *MyCourseDetail) String() string {
 func (*MyCourseDetail) ProtoMessage() {}
 
 func (x *MyCourseDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[119]
+	mi := &file_lms_v1_types_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10536,7 +10994,7 @@ func (x *MyCourseDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyCourseDetail.ProtoReflect.Descriptor instead.
 func (*MyCourseDetail) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{119}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *MyCourseDetail) GetCourse() *MyCourse {
@@ -10586,7 +11044,7 @@ type MyEarnings struct {
 
 func (x *MyEarnings) Reset() {
 	*x = MyEarnings{}
-	mi := &file_lms_v1_types_proto_msgTypes[120]
+	mi := &file_lms_v1_types_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10598,7 +11056,7 @@ func (x *MyEarnings) String() string {
 func (*MyEarnings) ProtoMessage() {}
 
 func (x *MyEarnings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[120]
+	mi := &file_lms_v1_types_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10611,7 +11069,7 @@ func (x *MyEarnings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyEarnings.ProtoReflect.Descriptor instead.
 func (*MyEarnings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{120}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *MyEarnings) GetMonth() string {
@@ -10663,7 +11121,7 @@ type MyQuiz struct {
 
 func (x *MyQuiz) Reset() {
 	*x = MyQuiz{}
-	mi := &file_lms_v1_types_proto_msgTypes[121]
+	mi := &file_lms_v1_types_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10675,7 +11133,7 @@ func (x *MyQuiz) String() string {
 func (*MyQuiz) ProtoMessage() {}
 
 func (x *MyQuiz) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[121]
+	mi := &file_lms_v1_types_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10688,7 +11146,7 @@ func (x *MyQuiz) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyQuiz.ProtoReflect.Descriptor instead.
 func (*MyQuiz) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{121}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *MyQuiz) GetId() string {
@@ -10800,7 +11258,7 @@ type MySales struct {
 
 func (x *MySales) Reset() {
 	*x = MySales{}
-	mi := &file_lms_v1_types_proto_msgTypes[122]
+	mi := &file_lms_v1_types_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10812,7 +11270,7 @@ func (x *MySales) String() string {
 func (*MySales) ProtoMessage() {}
 
 func (x *MySales) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[122]
+	mi := &file_lms_v1_types_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10825,7 +11283,7 @@ func (x *MySales) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MySales.ProtoReflect.Descriptor instead.
 func (*MySales) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{122}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *MySales) GetSalesScope() string {
@@ -10914,7 +11372,7 @@ type MyTask struct {
 
 func (x *MyTask) Reset() {
 	*x = MyTask{}
-	mi := &file_lms_v1_types_proto_msgTypes[123]
+	mi := &file_lms_v1_types_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10926,7 +11384,7 @@ func (x *MyTask) String() string {
 func (*MyTask) ProtoMessage() {}
 
 func (x *MyTask) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[123]
+	mi := &file_lms_v1_types_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10939,7 +11397,7 @@ func (x *MyTask) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MyTask.ProtoReflect.Descriptor instead.
 func (*MyTask) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{123}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *MyTask) GetId() string {
@@ -11058,7 +11516,7 @@ type NewStudentInput struct {
 
 func (x *NewStudentInput) Reset() {
 	*x = NewStudentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[124]
+	mi := &file_lms_v1_types_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11070,7 +11528,7 @@ func (x *NewStudentInput) String() string {
 func (*NewStudentInput) ProtoMessage() {}
 
 func (x *NewStudentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[124]
+	mi := &file_lms_v1_types_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11083,7 +11541,7 @@ func (x *NewStudentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewStudentInput.ProtoReflect.Descriptor instead.
 func (*NewStudentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{124}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *NewStudentInput) GetName() string {
@@ -11116,7 +11574,7 @@ type NoteInput struct {
 
 func (x *NoteInput) Reset() {
 	*x = NoteInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[125]
+	mi := &file_lms_v1_types_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11128,7 +11586,7 @@ func (x *NoteInput) String() string {
 func (*NoteInput) ProtoMessage() {}
 
 func (x *NoteInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[125]
+	mi := &file_lms_v1_types_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11141,7 +11599,7 @@ func (x *NoteInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NoteInput.ProtoReflect.Descriptor instead.
 func (*NoteInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{125}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *NoteInput) GetBody() string {
@@ -11166,7 +11624,7 @@ type Notification struct {
 
 func (x *Notification) Reset() {
 	*x = Notification{}
-	mi := &file_lms_v1_types_proto_msgTypes[126]
+	mi := &file_lms_v1_types_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11178,7 +11636,7 @@ func (x *Notification) String() string {
 func (*Notification) ProtoMessage() {}
 
 func (x *Notification) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[126]
+	mi := &file_lms_v1_types_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11191,7 +11649,7 @@ func (x *Notification) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Notification.ProtoReflect.Descriptor instead.
 func (*Notification) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{126}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *Notification) GetId() string {
@@ -11253,7 +11711,7 @@ type NotificationFeed struct {
 
 func (x *NotificationFeed) Reset() {
 	*x = NotificationFeed{}
-	mi := &file_lms_v1_types_proto_msgTypes[127]
+	mi := &file_lms_v1_types_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11265,7 +11723,7 @@ func (x *NotificationFeed) String() string {
 func (*NotificationFeed) ProtoMessage() {}
 
 func (x *NotificationFeed) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[127]
+	mi := &file_lms_v1_types_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11278,7 +11736,7 @@ func (x *NotificationFeed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NotificationFeed.ProtoReflect.Descriptor instead.
 func (*NotificationFeed) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{127}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *NotificationFeed) GetItems() []*Notification {
@@ -11307,7 +11765,7 @@ type OnlineCount struct {
 
 func (x *OnlineCount) Reset() {
 	*x = OnlineCount{}
-	mi := &file_lms_v1_types_proto_msgTypes[128]
+	mi := &file_lms_v1_types_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11319,7 +11777,7 @@ func (x *OnlineCount) String() string {
 func (*OnlineCount) ProtoMessage() {}
 
 func (x *OnlineCount) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[128]
+	mi := &file_lms_v1_types_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11332,7 +11790,7 @@ func (x *OnlineCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OnlineCount.ProtoReflect.Descriptor instead.
 func (*OnlineCount) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{128}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *OnlineCount) GetTotal() int32 {
@@ -11376,7 +11834,7 @@ type OnlineUser struct {
 
 func (x *OnlineUser) Reset() {
 	*x = OnlineUser{}
-	mi := &file_lms_v1_types_proto_msgTypes[129]
+	mi := &file_lms_v1_types_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11388,7 +11846,7 @@ func (x *OnlineUser) String() string {
 func (*OnlineUser) ProtoMessage() {}
 
 func (x *OnlineUser) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[129]
+	mi := &file_lms_v1_types_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11401,7 +11859,7 @@ func (x *OnlineUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OnlineUser.ProtoReflect.Descriptor instead.
 func (*OnlineUser) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{129}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *OnlineUser) GetId() string {
@@ -11480,7 +11938,7 @@ type Overview struct {
 
 func (x *Overview) Reset() {
 	*x = Overview{}
-	mi := &file_lms_v1_types_proto_msgTypes[130]
+	mi := &file_lms_v1_types_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11492,7 +11950,7 @@ func (x *Overview) String() string {
 func (*Overview) ProtoMessage() {}
 
 func (x *Overview) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[130]
+	mi := &file_lms_v1_types_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11505,7 +11963,7 @@ func (x *Overview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Overview.ProtoReflect.Descriptor instead.
 func (*Overview) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{130}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *Overview) GetCounts() *Counts {
@@ -11556,7 +12014,7 @@ type PayInfo struct {
 
 func (x *PayInfo) Reset() {
 	*x = PayInfo{}
-	mi := &file_lms_v1_types_proto_msgTypes[131]
+	mi := &file_lms_v1_types_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11568,7 +12026,7 @@ func (x *PayInfo) String() string {
 func (*PayInfo) ProtoMessage() {}
 
 func (x *PayInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[131]
+	mi := &file_lms_v1_types_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11581,7 +12039,7 @@ func (x *PayInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PayInfo.ProtoReflect.Descriptor instead.
 func (*PayInfo) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{131}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *PayInfo) GetUpiId() string {
@@ -11649,7 +12107,7 @@ type Payment struct {
 
 func (x *Payment) Reset() {
 	*x = Payment{}
-	mi := &file_lms_v1_types_proto_msgTypes[132]
+	mi := &file_lms_v1_types_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11661,7 +12119,7 @@ func (x *Payment) String() string {
 func (*Payment) ProtoMessage() {}
 
 func (x *Payment) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[132]
+	mi := &file_lms_v1_types_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11674,7 +12132,7 @@ func (x *Payment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Payment.ProtoReflect.Descriptor instead.
 func (*Payment) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{132}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *Payment) GetId() string {
@@ -11850,7 +12308,7 @@ type PaymentInput struct {
 
 func (x *PaymentInput) Reset() {
 	*x = PaymentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[133]
+	mi := &file_lms_v1_types_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11862,7 +12320,7 @@ func (x *PaymentInput) String() string {
 func (*PaymentInput) ProtoMessage() {}
 
 func (x *PaymentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[133]
+	mi := &file_lms_v1_types_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11875,7 +12333,7 @@ func (x *PaymentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentInput.ProtoReflect.Descriptor instead.
 func (*PaymentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{133}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *PaymentInput) GetAmountPaise() int64 {
@@ -11940,7 +12398,7 @@ type PaymentSettings struct {
 
 func (x *PaymentSettings) Reset() {
 	*x = PaymentSettings{}
-	mi := &file_lms_v1_types_proto_msgTypes[134]
+	mi := &file_lms_v1_types_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11952,7 +12410,7 @@ func (x *PaymentSettings) String() string {
 func (*PaymentSettings) ProtoMessage() {}
 
 func (x *PaymentSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[134]
+	mi := &file_lms_v1_types_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11965,7 +12423,7 @@ func (x *PaymentSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaymentSettings.ProtoReflect.Descriptor instead.
 func (*PaymentSettings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{134}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *PaymentSettings) GetUpiId() string {
@@ -12021,7 +12479,7 @@ type Payout struct {
 
 func (x *Payout) Reset() {
 	*x = Payout{}
-	mi := &file_lms_v1_types_proto_msgTypes[135]
+	mi := &file_lms_v1_types_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12033,7 +12491,7 @@ func (x *Payout) String() string {
 func (*Payout) ProtoMessage() {}
 
 func (x *Payout) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[135]
+	mi := &file_lms_v1_types_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12046,7 +12504,7 @@ func (x *Payout) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Payout.ProtoReflect.Descriptor instead.
 func (*Payout) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{135}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *Payout) GetId() string {
@@ -12133,7 +12591,7 @@ type PayoutInput struct {
 
 func (x *PayoutInput) Reset() {
 	*x = PayoutInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[136]
+	mi := &file_lms_v1_types_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12145,7 +12603,7 @@ func (x *PayoutInput) String() string {
 func (*PayoutInput) ProtoMessage() {}
 
 func (x *PayoutInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[136]
+	mi := &file_lms_v1_types_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12158,7 +12616,7 @@ func (x *PayoutInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PayoutInput.ProtoReflect.Descriptor instead.
 func (*PayoutInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{136}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *PayoutInput) GetCounsellorId() string {
@@ -12207,7 +12665,7 @@ type PerformanceReport struct {
 
 func (x *PerformanceReport) Reset() {
 	*x = PerformanceReport{}
-	mi := &file_lms_v1_types_proto_msgTypes[137]
+	mi := &file_lms_v1_types_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12219,7 +12677,7 @@ func (x *PerformanceReport) String() string {
 func (*PerformanceReport) ProtoMessage() {}
 
 func (x *PerformanceReport) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[137]
+	mi := &file_lms_v1_types_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12232,7 +12690,7 @@ func (x *PerformanceReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerformanceReport.ProtoReflect.Descriptor instead.
 func (*PerformanceReport) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{137}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *PerformanceReport) GetFrom() string {
@@ -12266,7 +12724,7 @@ type PermissionCatalog struct {
 
 func (x *PermissionCatalog) Reset() {
 	*x = PermissionCatalog{}
-	mi := &file_lms_v1_types_proto_msgTypes[138]
+	mi := &file_lms_v1_types_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12278,7 +12736,7 @@ func (x *PermissionCatalog) String() string {
 func (*PermissionCatalog) ProtoMessage() {}
 
 func (x *PermissionCatalog) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[138]
+	mi := &file_lms_v1_types_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12291,7 +12749,7 @@ func (x *PermissionCatalog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PermissionCatalog.ProtoReflect.Descriptor instead.
 func (*PermissionCatalog) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{138}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *PermissionCatalog) GetModules() []*ModuleDef {
@@ -12318,7 +12776,7 @@ type PlayOption struct {
 
 func (x *PlayOption) Reset() {
 	*x = PlayOption{}
-	mi := &file_lms_v1_types_proto_msgTypes[139]
+	mi := &file_lms_v1_types_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12330,7 +12788,7 @@ func (x *PlayOption) String() string {
 func (*PlayOption) ProtoMessage() {}
 
 func (x *PlayOption) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[139]
+	mi := &file_lms_v1_types_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12343,7 +12801,7 @@ func (x *PlayOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayOption.ProtoReflect.Descriptor instead.
 func (*PlayOption) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{139}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *PlayOption) GetId() string {
@@ -12373,7 +12831,7 @@ type PlayQuestion struct {
 
 func (x *PlayQuestion) Reset() {
 	*x = PlayQuestion{}
-	mi := &file_lms_v1_types_proto_msgTypes[140]
+	mi := &file_lms_v1_types_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12385,7 +12843,7 @@ func (x *PlayQuestion) String() string {
 func (*PlayQuestion) ProtoMessage() {}
 
 func (x *PlayQuestion) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[140]
+	mi := &file_lms_v1_types_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12398,7 +12856,7 @@ func (x *PlayQuestion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayQuestion.ProtoReflect.Descriptor instead.
 func (*PlayQuestion) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{140}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *PlayQuestion) GetId() string {
@@ -12454,7 +12912,7 @@ type PlaylistItem struct {
 
 func (x *PlaylistItem) Reset() {
 	*x = PlaylistItem{}
-	mi := &file_lms_v1_types_proto_msgTypes[141]
+	mi := &file_lms_v1_types_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12466,7 +12924,7 @@ func (x *PlaylistItem) String() string {
 func (*PlaylistItem) ProtoMessage() {}
 
 func (x *PlaylistItem) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[141]
+	mi := &file_lms_v1_types_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12479,7 +12937,7 @@ func (x *PlaylistItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlaylistItem.ProtoReflect.Descriptor instead.
 func (*PlaylistItem) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{141}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *PlaylistItem) GetId() string {
@@ -12557,7 +13015,7 @@ type PresignInput struct {
 
 func (x *PresignInput) Reset() {
 	*x = PresignInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[142]
+	mi := &file_lms_v1_types_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12569,7 +13027,7 @@ func (x *PresignInput) String() string {
 func (*PresignInput) ProtoMessage() {}
 
 func (x *PresignInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[142]
+	mi := &file_lms_v1_types_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12582,7 +13040,7 @@ func (x *PresignInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PresignInput.ProtoReflect.Descriptor instead.
 func (*PresignInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{142}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *PresignInput) GetPurpose() string {
@@ -12624,7 +13082,7 @@ type Presigned struct {
 
 func (x *Presigned) Reset() {
 	*x = Presigned{}
-	mi := &file_lms_v1_types_proto_msgTypes[143]
+	mi := &file_lms_v1_types_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12636,7 +13094,7 @@ func (x *Presigned) String() string {
 func (*Presigned) ProtoMessage() {}
 
 func (x *Presigned) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[143]
+	mi := &file_lms_v1_types_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12649,7 +13107,7 @@ func (x *Presigned) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Presigned.ProtoReflect.Descriptor instead.
 func (*Presigned) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{143}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *Presigned) GetUpload() *Upload {
@@ -12690,7 +13148,7 @@ type PublicBatch struct {
 
 func (x *PublicBatch) Reset() {
 	*x = PublicBatch{}
-	mi := &file_lms_v1_types_proto_msgTypes[144]
+	mi := &file_lms_v1_types_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12702,7 +13160,7 @@ func (x *PublicBatch) String() string {
 func (*PublicBatch) ProtoMessage() {}
 
 func (x *PublicBatch) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[144]
+	mi := &file_lms_v1_types_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12715,7 +13173,7 @@ func (x *PublicBatch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicBatch.ProtoReflect.Descriptor instead.
 func (*PublicBatch) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{144}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *PublicBatch) GetId() string {
@@ -12801,7 +13259,7 @@ type PublicCourse struct {
 
 func (x *PublicCourse) Reset() {
 	*x = PublicCourse{}
-	mi := &file_lms_v1_types_proto_msgTypes[145]
+	mi := &file_lms_v1_types_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12813,7 +13271,7 @@ func (x *PublicCourse) String() string {
 func (*PublicCourse) ProtoMessage() {}
 
 func (x *PublicCourse) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[145]
+	mi := &file_lms_v1_types_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12826,7 +13284,7 @@ func (x *PublicCourse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicCourse.ProtoReflect.Descriptor instead.
 func (*PublicCourse) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{145}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *PublicCourse) GetId() string {
@@ -12928,7 +13386,7 @@ type PublicCourseDetail struct {
 
 func (x *PublicCourseDetail) Reset() {
 	*x = PublicCourseDetail{}
-	mi := &file_lms_v1_types_proto_msgTypes[146]
+	mi := &file_lms_v1_types_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12940,7 +13398,7 @@ func (x *PublicCourseDetail) String() string {
 func (*PublicCourseDetail) ProtoMessage() {}
 
 func (x *PublicCourseDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[146]
+	mi := &file_lms_v1_types_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12953,7 +13411,7 @@ func (x *PublicCourseDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicCourseDetail.ProtoReflect.Descriptor instead.
 func (*PublicCourseDetail) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{146}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *PublicCourseDetail) GetCourse() *PublicCourse {
@@ -13021,7 +13479,7 @@ type PublicLesson struct {
 
 func (x *PublicLesson) Reset() {
 	*x = PublicLesson{}
-	mi := &file_lms_v1_types_proto_msgTypes[147]
+	mi := &file_lms_v1_types_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13033,7 +13491,7 @@ func (x *PublicLesson) String() string {
 func (*PublicLesson) ProtoMessage() {}
 
 func (x *PublicLesson) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[147]
+	mi := &file_lms_v1_types_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13046,7 +13504,7 @@ func (x *PublicLesson) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicLesson.ProtoReflect.Descriptor instead.
 func (*PublicLesson) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{147}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *PublicLesson) GetId() string {
@@ -13114,7 +13572,7 @@ type PublicPost struct {
 
 func (x *PublicPost) Reset() {
 	*x = PublicPost{}
-	mi := &file_lms_v1_types_proto_msgTypes[148]
+	mi := &file_lms_v1_types_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13126,7 +13584,7 @@ func (x *PublicPost) String() string {
 func (*PublicPost) ProtoMessage() {}
 
 func (x *PublicPost) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[148]
+	mi := &file_lms_v1_types_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13139,7 +13597,7 @@ func (x *PublicPost) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublicPost.ProtoReflect.Descriptor instead.
 func (*PublicPost) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{148}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *PublicPost) GetId() string {
@@ -13214,7 +13672,7 @@ type QuestionReview struct {
 
 func (x *QuestionReview) Reset() {
 	*x = QuestionReview{}
-	mi := &file_lms_v1_types_proto_msgTypes[149]
+	mi := &file_lms_v1_types_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13226,7 +13684,7 @@ func (x *QuestionReview) String() string {
 func (*QuestionReview) ProtoMessage() {}
 
 func (x *QuestionReview) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[149]
+	mi := &file_lms_v1_types_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13239,7 +13697,7 @@ func (x *QuestionReview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestionReview.ProtoReflect.Descriptor instead.
 func (*QuestionReview) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{149}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *QuestionReview) GetQuestionId() string {
@@ -13317,7 +13775,7 @@ type Quiz struct {
 
 func (x *Quiz) Reset() {
 	*x = Quiz{}
-	mi := &file_lms_v1_types_proto_msgTypes[150]
+	mi := &file_lms_v1_types_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13329,7 +13787,7 @@ func (x *Quiz) String() string {
 func (*Quiz) ProtoMessage() {}
 
 func (x *Quiz) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[150]
+	mi := &file_lms_v1_types_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13342,7 +13800,7 @@ func (x *Quiz) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Quiz.ProtoReflect.Descriptor instead.
 func (*Quiz) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{150}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *Quiz) GetId() string {
@@ -13425,7 +13883,7 @@ type QuizAnswer struct {
 
 func (x *QuizAnswer) Reset() {
 	*x = QuizAnswer{}
-	mi := &file_lms_v1_types_proto_msgTypes[151]
+	mi := &file_lms_v1_types_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13437,7 +13895,7 @@ func (x *QuizAnswer) String() string {
 func (*QuizAnswer) ProtoMessage() {}
 
 func (x *QuizAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[151]
+	mi := &file_lms_v1_types_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13450,7 +13908,7 @@ func (x *QuizAnswer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizAnswer.ProtoReflect.Descriptor instead.
 func (*QuizAnswer) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{151}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *QuizAnswer) GetQuestionId() string {
@@ -13485,7 +13943,7 @@ type QuizAttemptRow struct {
 
 func (x *QuizAttemptRow) Reset() {
 	*x = QuizAttemptRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[152]
+	mi := &file_lms_v1_types_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13497,7 +13955,7 @@ func (x *QuizAttemptRow) String() string {
 func (*QuizAttemptRow) ProtoMessage() {}
 
 func (x *QuizAttemptRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[152]
+	mi := &file_lms_v1_types_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13510,7 +13968,7 @@ func (x *QuizAttemptRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizAttemptRow.ProtoReflect.Descriptor instead.
 func (*QuizAttemptRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{152}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *QuizAttemptRow) GetId() string {
@@ -13597,7 +14055,7 @@ type QuizInput struct {
 
 func (x *QuizInput) Reset() {
 	*x = QuizInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[153]
+	mi := &file_lms_v1_types_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13609,7 +14067,7 @@ func (x *QuizInput) String() string {
 func (*QuizInput) ProtoMessage() {}
 
 func (x *QuizInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[153]
+	mi := &file_lms_v1_types_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13622,7 +14080,7 @@ func (x *QuizInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizInput.ProtoReflect.Descriptor instead.
 func (*QuizInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{153}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *QuizInput) GetTitle() string {
@@ -13678,7 +14136,7 @@ type QuizOption struct {
 
 func (x *QuizOption) Reset() {
 	*x = QuizOption{}
-	mi := &file_lms_v1_types_proto_msgTypes[154]
+	mi := &file_lms_v1_types_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13690,7 +14148,7 @@ func (x *QuizOption) String() string {
 func (*QuizOption) ProtoMessage() {}
 
 func (x *QuizOption) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[154]
+	mi := &file_lms_v1_types_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13703,7 +14161,7 @@ func (x *QuizOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizOption.ProtoReflect.Descriptor instead.
 func (*QuizOption) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{154}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *QuizOption) GetId() string {
@@ -13737,7 +14195,7 @@ type QuizOptionInput struct {
 
 func (x *QuizOptionInput) Reset() {
 	*x = QuizOptionInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[155]
+	mi := &file_lms_v1_types_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13749,7 +14207,7 @@ func (x *QuizOptionInput) String() string {
 func (*QuizOptionInput) ProtoMessage() {}
 
 func (x *QuizOptionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[155]
+	mi := &file_lms_v1_types_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13762,7 +14220,7 @@ func (x *QuizOptionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizOptionInput.ProtoReflect.Descriptor instead.
 func (*QuizOptionInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{155}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *QuizOptionInput) GetBody() string {
@@ -13795,7 +14253,7 @@ type QuizPlay struct {
 
 func (x *QuizPlay) Reset() {
 	*x = QuizPlay{}
-	mi := &file_lms_v1_types_proto_msgTypes[156]
+	mi := &file_lms_v1_types_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13807,7 +14265,7 @@ func (x *QuizPlay) String() string {
 func (*QuizPlay) ProtoMessage() {}
 
 func (x *QuizPlay) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[156]
+	mi := &file_lms_v1_types_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13820,7 +14278,7 @@ func (x *QuizPlay) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizPlay.ProtoReflect.Descriptor instead.
 func (*QuizPlay) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{156}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *QuizPlay) GetAttemptId() string {
@@ -13895,7 +14353,7 @@ type QuizQuestion struct {
 
 func (x *QuizQuestion) Reset() {
 	*x = QuizQuestion{}
-	mi := &file_lms_v1_types_proto_msgTypes[157]
+	mi := &file_lms_v1_types_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13907,7 +14365,7 @@ func (x *QuizQuestion) String() string {
 func (*QuizQuestion) ProtoMessage() {}
 
 func (x *QuizQuestion) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[157]
+	mi := &file_lms_v1_types_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13920,7 +14378,7 @@ func (x *QuizQuestion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizQuestion.ProtoReflect.Descriptor instead.
 func (*QuizQuestion) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{157}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *QuizQuestion) GetId() string {
@@ -13985,7 +14443,7 @@ type QuizQuestionInput struct {
 
 func (x *QuizQuestionInput) Reset() {
 	*x = QuizQuestionInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[158]
+	mi := &file_lms_v1_types_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13997,7 +14455,7 @@ func (x *QuizQuestionInput) String() string {
 func (*QuizQuestionInput) ProtoMessage() {}
 
 func (x *QuizQuestionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[158]
+	mi := &file_lms_v1_types_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14010,7 +14468,7 @@ func (x *QuizQuestionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizQuestionInput.ProtoReflect.Descriptor instead.
 func (*QuizQuestionInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{158}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *QuizQuestionInput) GetBody() string {
@@ -14063,7 +14521,7 @@ type QuizResult struct {
 
 func (x *QuizResult) Reset() {
 	*x = QuizResult{}
-	mi := &file_lms_v1_types_proto_msgTypes[159]
+	mi := &file_lms_v1_types_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14075,7 +14533,7 @@ func (x *QuizResult) String() string {
 func (*QuizResult) ProtoMessage() {}
 
 func (x *QuizResult) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[159]
+	mi := &file_lms_v1_types_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14088,7 +14546,7 @@ func (x *QuizResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizResult.ProtoReflect.Descriptor instead.
 func (*QuizResult) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{159}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *QuizResult) GetAttemptId() string {
@@ -14149,7 +14607,7 @@ type QuizSubmitInput struct {
 
 func (x *QuizSubmitInput) Reset() {
 	*x = QuizSubmitInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[160]
+	mi := &file_lms_v1_types_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14161,7 +14619,7 @@ func (x *QuizSubmitInput) String() string {
 func (*QuizSubmitInput) ProtoMessage() {}
 
 func (x *QuizSubmitInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[160]
+	mi := &file_lms_v1_types_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14174,7 +14632,7 @@ func (x *QuizSubmitInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuizSubmitInput.ProtoReflect.Descriptor instead.
 func (*QuizSubmitInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{160}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *QuizSubmitInput) GetAnswers() []*QuizAnswer {
@@ -14193,7 +14651,7 @@ type ReasonInput struct {
 
 func (x *ReasonInput) Reset() {
 	*x = ReasonInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[161]
+	mi := &file_lms_v1_types_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14205,7 +14663,7 @@ func (x *ReasonInput) String() string {
 func (*ReasonInput) ProtoMessage() {}
 
 func (x *ReasonInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[161]
+	mi := &file_lms_v1_types_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14218,7 +14676,7 @@ func (x *ReasonInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasonInput.ProtoReflect.Descriptor instead.
 func (*ReasonInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{161}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *ReasonInput) GetReason() string {
@@ -14238,7 +14696,7 @@ type ReasonRow struct {
 
 func (x *ReasonRow) Reset() {
 	*x = ReasonRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[162]
+	mi := &file_lms_v1_types_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14250,7 +14708,7 @@ func (x *ReasonRow) String() string {
 func (*ReasonRow) ProtoMessage() {}
 
 func (x *ReasonRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[162]
+	mi := &file_lms_v1_types_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14263,7 +14721,7 @@ func (x *ReasonRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReasonRow.ProtoReflect.Descriptor instead.
 func (*ReasonRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{162}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *ReasonRow) GetReason() string {
@@ -14290,7 +14748,7 @@ type RecordingInput struct {
 
 func (x *RecordingInput) Reset() {
 	*x = RecordingInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[163]
+	mi := &file_lms_v1_types_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14302,7 +14760,7 @@ func (x *RecordingInput) String() string {
 func (*RecordingInput) ProtoMessage() {}
 
 func (x *RecordingInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[163]
+	mi := &file_lms_v1_types_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14315,7 +14773,7 @@ func (x *RecordingInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordingInput.ProtoReflect.Descriptor instead.
 func (*RecordingInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{163}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *RecordingInput) GetRecordingUrl() string {
@@ -14341,7 +14799,7 @@ type Refund struct {
 
 func (x *Refund) Reset() {
 	*x = Refund{}
-	mi := &file_lms_v1_types_proto_msgTypes[164]
+	mi := &file_lms_v1_types_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14353,7 +14811,7 @@ func (x *Refund) String() string {
 func (*Refund) ProtoMessage() {}
 
 func (x *Refund) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[164]
+	mi := &file_lms_v1_types_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14366,7 +14824,7 @@ func (x *Refund) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Refund.ProtoReflect.Descriptor instead.
 func (*Refund) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{164}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *Refund) GetId() string {
@@ -14438,7 +14896,7 @@ type RefundInput struct {
 
 func (x *RefundInput) Reset() {
 	*x = RefundInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[165]
+	mi := &file_lms_v1_types_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14450,7 +14908,7 @@ func (x *RefundInput) String() string {
 func (*RefundInput) ProtoMessage() {}
 
 func (x *RefundInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[165]
+	mi := &file_lms_v1_types_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14463,7 +14921,7 @@ func (x *RefundInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefundInput.ProtoReflect.Descriptor instead.
 func (*RefundInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{165}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *RefundInput) GetAmountPaise() int64 {
@@ -14517,7 +14975,7 @@ type ReminderSettings struct {
 
 func (x *ReminderSettings) Reset() {
 	*x = ReminderSettings{}
-	mi := &file_lms_v1_types_proto_msgTypes[166]
+	mi := &file_lms_v1_types_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14529,7 +14987,7 @@ func (x *ReminderSettings) String() string {
 func (*ReminderSettings) ProtoMessage() {}
 
 func (x *ReminderSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[166]
+	mi := &file_lms_v1_types_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14542,7 +15000,7 @@ func (x *ReminderSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReminderSettings.ProtoReflect.Descriptor instead.
 func (*ReminderSettings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{166}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *ReminderSettings) GetFeeDaysBefore() int32 {
@@ -14597,7 +15055,7 @@ type ReportRange struct {
 
 func (x *ReportRange) Reset() {
 	*x = ReportRange{}
-	mi := &file_lms_v1_types_proto_msgTypes[167]
+	mi := &file_lms_v1_types_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14609,7 +15067,7 @@ func (x *ReportRange) String() string {
 func (*ReportRange) ProtoMessage() {}
 
 func (x *ReportRange) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[167]
+	mi := &file_lms_v1_types_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14622,7 +15080,7 @@ func (x *ReportRange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportRange.ProtoReflect.Descriptor instead.
 func (*ReportRange) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{167}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *ReportRange) GetFrom() string {
@@ -14656,7 +15114,7 @@ type RequestLog struct {
 
 func (x *RequestLog) Reset() {
 	*x = RequestLog{}
-	mi := &file_lms_v1_types_proto_msgTypes[168]
+	mi := &file_lms_v1_types_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14668,7 +15126,7 @@ func (x *RequestLog) String() string {
 func (*RequestLog) ProtoMessage() {}
 
 func (x *RequestLog) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[168]
+	mi := &file_lms_v1_types_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14681,7 +15139,7 @@ func (x *RequestLog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestLog.ProtoReflect.Descriptor instead.
 func (*RequestLog) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{168}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *RequestLog) GetAt() *timestamppb.Timestamp {
@@ -14751,7 +15209,7 @@ type ReviewInput struct {
 
 func (x *ReviewInput) Reset() {
 	*x = ReviewInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[169]
+	mi := &file_lms_v1_types_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14763,7 +15221,7 @@ func (x *ReviewInput) String() string {
 func (*ReviewInput) ProtoMessage() {}
 
 func (x *ReviewInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[169]
+	mi := &file_lms_v1_types_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14776,7 +15234,7 @@ func (x *ReviewInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReviewInput.ProtoReflect.Descriptor instead.
 func (*ReviewInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{169}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *ReviewInput) GetStatus() string {
@@ -14819,7 +15277,7 @@ type Role struct {
 
 func (x *Role) Reset() {
 	*x = Role{}
-	mi := &file_lms_v1_types_proto_msgTypes[170]
+	mi := &file_lms_v1_types_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14831,7 +15289,7 @@ func (x *Role) String() string {
 func (*Role) ProtoMessage() {}
 
 func (x *Role) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[170]
+	mi := &file_lms_v1_types_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14844,7 +15302,7 @@ func (x *Role) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Role.ProtoReflect.Descriptor instead.
 func (*Role) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{170}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *Role) GetId() string {
@@ -14916,7 +15374,7 @@ type RoleInput struct {
 
 func (x *RoleInput) Reset() {
 	*x = RoleInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[171]
+	mi := &file_lms_v1_types_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14928,7 +15386,7 @@ func (x *RoleInput) String() string {
 func (*RoleInput) ProtoMessage() {}
 
 func (x *RoleInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[171]
+	mi := &file_lms_v1_types_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14941,7 +15399,7 @@ func (x *RoleInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleInput.ProtoReflect.Descriptor instead.
 func (*RoleInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{171}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *RoleInput) GetName() string {
@@ -14989,7 +15447,7 @@ type RoleRef struct {
 
 func (x *RoleRef) Reset() {
 	*x = RoleRef{}
-	mi := &file_lms_v1_types_proto_msgTypes[172]
+	mi := &file_lms_v1_types_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15001,7 +15459,7 @@ func (x *RoleRef) String() string {
 func (*RoleRef) ProtoMessage() {}
 
 func (x *RoleRef) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[172]
+	mi := &file_lms_v1_types_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15014,7 +15472,7 @@ func (x *RoleRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleRef.ProtoReflect.Descriptor instead.
 func (*RoleRef) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{172}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *RoleRef) GetId() string {
@@ -15047,7 +15505,7 @@ type RosterRow struct {
 
 func (x *RosterRow) Reset() {
 	*x = RosterRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[173]
+	mi := &file_lms_v1_types_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15059,7 +15517,7 @@ func (x *RosterRow) String() string {
 func (*RosterRow) ProtoMessage() {}
 
 func (x *RosterRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[173]
+	mi := &file_lms_v1_types_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15072,7 +15530,7 @@ func (x *RosterRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RosterRow.ProtoReflect.Descriptor instead.
 func (*RosterRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{173}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *RosterRow) GetStudentId() string {
@@ -15141,7 +15599,7 @@ type SalesCounts struct {
 
 func (x *SalesCounts) Reset() {
 	*x = SalesCounts{}
-	mi := &file_lms_v1_types_proto_msgTypes[174]
+	mi := &file_lms_v1_types_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15153,7 +15611,7 @@ func (x *SalesCounts) String() string {
 func (*SalesCounts) ProtoMessage() {}
 
 func (x *SalesCounts) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[174]
+	mi := &file_lms_v1_types_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15166,7 +15624,7 @@ func (x *SalesCounts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SalesCounts.ProtoReflect.Descriptor instead.
 func (*SalesCounts) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{174}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *SalesCounts) GetOpenLeads() int32 {
@@ -15237,7 +15695,7 @@ type SalesSettings struct {
 
 func (x *SalesSettings) Reset() {
 	*x = SalesSettings{}
-	mi := &file_lms_v1_types_proto_msgTypes[175]
+	mi := &file_lms_v1_types_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15249,7 +15707,7 @@ func (x *SalesSettings) String() string {
 func (*SalesSettings) ProtoMessage() {}
 
 func (x *SalesSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[175]
+	mi := &file_lms_v1_types_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15262,7 +15720,7 @@ func (x *SalesSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SalesSettings.ProtoReflect.Descriptor instead.
 func (*SalesSettings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{175}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *SalesSettings) GetBusiness() *BusinessSettings {
@@ -15316,7 +15774,7 @@ type ServerOverview struct {
 
 func (x *ServerOverview) Reset() {
 	*x = ServerOverview{}
-	mi := &file_lms_v1_types_proto_msgTypes[176]
+	mi := &file_lms_v1_types_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15328,7 +15786,7 @@ func (x *ServerOverview) String() string {
 func (*ServerOverview) ProtoMessage() {}
 
 func (x *ServerOverview) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[176]
+	mi := &file_lms_v1_types_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15341,7 +15799,7 @@ func (x *ServerOverview) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerOverview.ProtoReflect.Descriptor instead.
 func (*ServerOverview) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{176}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *ServerOverview) GetPeriod() string {
@@ -15439,7 +15897,7 @@ type ServerPoint struct {
 
 func (x *ServerPoint) Reset() {
 	*x = ServerPoint{}
-	mi := &file_lms_v1_types_proto_msgTypes[177]
+	mi := &file_lms_v1_types_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15451,7 +15909,7 @@ func (x *ServerPoint) String() string {
 func (*ServerPoint) ProtoMessage() {}
 
 func (x *ServerPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[177]
+	mi := &file_lms_v1_types_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15464,7 +15922,7 @@ func (x *ServerPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerPoint.ProtoReflect.Descriptor instead.
 func (*ServerPoint) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{177}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *ServerPoint) GetAt() *timestamppb.Timestamp {
@@ -15591,7 +16049,7 @@ type Settings struct {
 
 func (x *Settings) Reset() {
 	*x = Settings{}
-	mi := &file_lms_v1_types_proto_msgTypes[178]
+	mi := &file_lms_v1_types_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15603,7 +16061,7 @@ func (x *Settings) String() string {
 func (*Settings) ProtoMessage() {}
 
 func (x *Settings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[178]
+	mi := &file_lms_v1_types_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15616,7 +16074,7 @@ func (x *Settings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Settings.ProtoReflect.Descriptor instead.
 func (*Settings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{178}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *Settings) GetBranding() *Branding {
@@ -15657,7 +16115,7 @@ type SettingsView struct {
 
 func (x *SettingsView) Reset() {
 	*x = SettingsView{}
-	mi := &file_lms_v1_types_proto_msgTypes[179]
+	mi := &file_lms_v1_types_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15669,7 +16127,7 @@ func (x *SettingsView) String() string {
 func (*SettingsView) ProtoMessage() {}
 
 func (x *SettingsView) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[179]
+	mi := &file_lms_v1_types_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15682,7 +16140,7 @@ func (x *SettingsView) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SettingsView.ProtoReflect.Descriptor instead.
 func (*SettingsView) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{179}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *SettingsView) GetSettings() *Settings {
@@ -15709,7 +16167,7 @@ type SignupSettings struct {
 
 func (x *SignupSettings) Reset() {
 	*x = SignupSettings{}
-	mi := &file_lms_v1_types_proto_msgTypes[180]
+	mi := &file_lms_v1_types_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15721,7 +16179,7 @@ func (x *SignupSettings) String() string {
 func (*SignupSettings) ProtoMessage() {}
 
 func (x *SignupSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[180]
+	mi := &file_lms_v1_types_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15734,7 +16192,7 @@ func (x *SignupSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignupSettings.ProtoReflect.Descriptor instead.
 func (*SignupSettings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{180}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *SignupSettings) GetEnabled() bool {
@@ -15758,7 +16216,7 @@ type SiteInfo struct {
 
 func (x *SiteInfo) Reset() {
 	*x = SiteInfo{}
-	mi := &file_lms_v1_types_proto_msgTypes[181]
+	mi := &file_lms_v1_types_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15770,7 +16228,7 @@ func (x *SiteInfo) String() string {
 func (*SiteInfo) ProtoMessage() {}
 
 func (x *SiteInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[181]
+	mi := &file_lms_v1_types_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15783,7 +16241,7 @@ func (x *SiteInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SiteInfo.ProtoReflect.Descriptor instead.
 func (*SiteInfo) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{181}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *SiteInfo) GetBranding() *Branding {
@@ -15824,7 +16282,7 @@ type Slab struct {
 
 func (x *Slab) Reset() {
 	*x = Slab{}
-	mi := &file_lms_v1_types_proto_msgTypes[182]
+	mi := &file_lms_v1_types_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15836,7 +16294,7 @@ func (x *Slab) String() string {
 func (*Slab) ProtoMessage() {}
 
 func (x *Slab) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[182]
+	mi := &file_lms_v1_types_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15849,7 +16307,7 @@ func (x *Slab) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Slab.ProtoReflect.Descriptor instead.
 func (*Slab) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{182}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *Slab) GetMinAdmissions() int32 {
@@ -15879,7 +16337,7 @@ type SourceRow struct {
 
 func (x *SourceRow) Reset() {
 	*x = SourceRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[183]
+	mi := &file_lms_v1_types_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15891,7 +16349,7 @@ func (x *SourceRow) String() string {
 func (*SourceRow) ProtoMessage() {}
 
 func (x *SourceRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[183]
+	mi := &file_lms_v1_types_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15904,7 +16362,7 @@ func (x *SourceRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceRow.ProtoReflect.Descriptor instead.
 func (*SourceRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{183}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *SourceRow) GetSource() string {
@@ -15961,7 +16419,7 @@ type Staff struct {
 
 func (x *Staff) Reset() {
 	*x = Staff{}
-	mi := &file_lms_v1_types_proto_msgTypes[184]
+	mi := &file_lms_v1_types_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15973,7 +16431,7 @@ func (x *Staff) String() string {
 func (*Staff) ProtoMessage() {}
 
 func (x *Staff) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[184]
+	mi := &file_lms_v1_types_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15986,7 +16444,7 @@ func (x *Staff) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Staff.ProtoReflect.Descriptor instead.
 func (*Staff) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{184}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *Staff) GetId() string {
@@ -16082,7 +16540,7 @@ type StaffInput struct {
 
 func (x *StaffInput) Reset() {
 	*x = StaffInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[185]
+	mi := &file_lms_v1_types_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16094,7 +16552,7 @@ func (x *StaffInput) String() string {
 func (*StaffInput) ProtoMessage() {}
 
 func (x *StaffInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[185]
+	mi := &file_lms_v1_types_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16107,7 +16565,7 @@ func (x *StaffInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaffInput.ProtoReflect.Descriptor instead.
 func (*StaffInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{185}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *StaffInput) GetName() string {
@@ -16174,7 +16632,7 @@ type Stage struct {
 
 func (x *Stage) Reset() {
 	*x = Stage{}
-	mi := &file_lms_v1_types_proto_msgTypes[186]
+	mi := &file_lms_v1_types_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16186,7 +16644,7 @@ func (x *Stage) String() string {
 func (*Stage) ProtoMessage() {}
 
 func (x *Stage) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[186]
+	mi := &file_lms_v1_types_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16199,7 +16657,7 @@ func (x *Stage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stage.ProtoReflect.Descriptor instead.
 func (*Stage) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{186}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *Stage) GetId() string {
@@ -16264,7 +16722,7 @@ type StageInput struct {
 
 func (x *StageInput) Reset() {
 	*x = StageInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[187]
+	mi := &file_lms_v1_types_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16276,7 +16734,7 @@ func (x *StageInput) String() string {
 func (*StageInput) ProtoMessage() {}
 
 func (x *StageInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[187]
+	mi := &file_lms_v1_types_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16289,7 +16747,7 @@ func (x *StageInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StageInput.ProtoReflect.Descriptor instead.
 func (*StageInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{187}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *StageInput) GetName() string {
@@ -16338,7 +16796,7 @@ type Student struct {
 
 func (x *Student) Reset() {
 	*x = Student{}
-	mi := &file_lms_v1_types_proto_msgTypes[188]
+	mi := &file_lms_v1_types_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16350,7 +16808,7 @@ func (x *Student) String() string {
 func (*Student) ProtoMessage() {}
 
 func (x *Student) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[188]
+	mi := &file_lms_v1_types_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16363,7 +16821,7 @@ func (x *Student) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Student.ProtoReflect.Descriptor instead.
 func (*Student) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{188}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *Student) GetId() string {
@@ -16447,7 +16905,7 @@ type StudentDetail struct {
 
 func (x *StudentDetail) Reset() {
 	*x = StudentDetail{}
-	mi := &file_lms_v1_types_proto_msgTypes[189]
+	mi := &file_lms_v1_types_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16459,7 +16917,7 @@ func (x *StudentDetail) String() string {
 func (*StudentDetail) ProtoMessage() {}
 
 func (x *StudentDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[189]
+	mi := &file_lms_v1_types_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16472,7 +16930,7 @@ func (x *StudentDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudentDetail.ProtoReflect.Descriptor instead.
 func (*StudentDetail) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{189}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *StudentDetail) GetStudent() *Student {
@@ -16507,7 +16965,7 @@ type StudentFeeAccount struct {
 
 func (x *StudentFeeAccount) Reset() {
 	*x = StudentFeeAccount{}
-	mi := &file_lms_v1_types_proto_msgTypes[190]
+	mi := &file_lms_v1_types_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16519,7 +16977,7 @@ func (x *StudentFeeAccount) String() string {
 func (*StudentFeeAccount) ProtoMessage() {}
 
 func (x *StudentFeeAccount) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[190]
+	mi := &file_lms_v1_types_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16532,7 +16990,7 @@ func (x *StudentFeeAccount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudentFeeAccount.ProtoReflect.Descriptor instead.
 func (*StudentFeeAccount) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{190}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *StudentFeeAccount) GetAdmission() *Admission {
@@ -16573,7 +17031,7 @@ type StudentFees struct {
 
 func (x *StudentFees) Reset() {
 	*x = StudentFees{}
-	mi := &file_lms_v1_types_proto_msgTypes[191]
+	mi := &file_lms_v1_types_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16585,7 +17043,7 @@ func (x *StudentFees) String() string {
 func (*StudentFees) ProtoMessage() {}
 
 func (x *StudentFees) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[191]
+	mi := &file_lms_v1_types_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16598,7 +17056,7 @@ func (x *StudentFees) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudentFees.ProtoReflect.Descriptor instead.
 func (*StudentFees) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{191}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *StudentFees) GetAccounts() []*StudentFeeAccount {
@@ -16680,7 +17138,7 @@ type StudentInput struct {
 
 func (x *StudentInput) Reset() {
 	*x = StudentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[192]
+	mi := &file_lms_v1_types_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16692,7 +17150,7 @@ func (x *StudentInput) String() string {
 func (*StudentInput) ProtoMessage() {}
 
 func (x *StudentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[192]
+	mi := &file_lms_v1_types_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16705,7 +17163,7 @@ func (x *StudentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudentInput.ProtoReflect.Descriptor instead.
 func (*StudentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{192}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *StudentInput) GetName() string {
@@ -16765,7 +17223,7 @@ type StudentPaymentInput struct {
 
 func (x *StudentPaymentInput) Reset() {
 	*x = StudentPaymentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[193]
+	mi := &file_lms_v1_types_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16777,7 +17235,7 @@ func (x *StudentPaymentInput) String() string {
 func (*StudentPaymentInput) ProtoMessage() {}
 
 func (x *StudentPaymentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[193]
+	mi := &file_lms_v1_types_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16790,7 +17248,7 @@ func (x *StudentPaymentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StudentPaymentInput.ProtoReflect.Descriptor instead.
 func (*StudentPaymentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{193}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{197}
 }
 
 func (x *StudentPaymentInput) GetAdmissionId() string {
@@ -16854,7 +17312,7 @@ type Submission struct {
 
 func (x *Submission) Reset() {
 	*x = Submission{}
-	mi := &file_lms_v1_types_proto_msgTypes[194]
+	mi := &file_lms_v1_types_proto_msgTypes[198]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16866,7 +17324,7 @@ func (x *Submission) String() string {
 func (*Submission) ProtoMessage() {}
 
 func (x *Submission) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[194]
+	mi := &file_lms_v1_types_proto_msgTypes[198]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16879,7 +17337,7 @@ func (x *Submission) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Submission.ProtoReflect.Descriptor instead.
 func (*Submission) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{194}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{198}
 }
 
 func (x *Submission) GetId() string {
@@ -16965,7 +17423,7 @@ type SubmissionDetail struct {
 
 func (x *SubmissionDetail) Reset() {
 	*x = SubmissionDetail{}
-	mi := &file_lms_v1_types_proto_msgTypes[195]
+	mi := &file_lms_v1_types_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16977,7 +17435,7 @@ func (x *SubmissionDetail) String() string {
 func (*SubmissionDetail) ProtoMessage() {}
 
 func (x *SubmissionDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[195]
+	mi := &file_lms_v1_types_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16990,7 +17448,7 @@ func (x *SubmissionDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmissionDetail.ProtoReflect.Descriptor instead.
 func (*SubmissionDetail) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{195}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{199}
 }
 
 func (x *SubmissionDetail) GetTask() *TaskBrief {
@@ -17037,7 +17495,7 @@ type SubmissionInput struct {
 
 func (x *SubmissionInput) Reset() {
 	*x = SubmissionInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[196]
+	mi := &file_lms_v1_types_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17049,7 +17507,7 @@ func (x *SubmissionInput) String() string {
 func (*SubmissionInput) ProtoMessage() {}
 
 func (x *SubmissionInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[196]
+	mi := &file_lms_v1_types_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17062,7 +17520,7 @@ func (x *SubmissionInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmissionInput.ProtoReflect.Descriptor instead.
 func (*SubmissionInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{196}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{200}
 }
 
 func (x *SubmissionInput) GetItems() []*SubmissionItemInput {
@@ -17089,7 +17547,7 @@ type SubmissionItem struct {
 
 func (x *SubmissionItem) Reset() {
 	*x = SubmissionItem{}
-	mi := &file_lms_v1_types_proto_msgTypes[197]
+	mi := &file_lms_v1_types_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17101,7 +17559,7 @@ func (x *SubmissionItem) String() string {
 func (*SubmissionItem) ProtoMessage() {}
 
 func (x *SubmissionItem) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[197]
+	mi := &file_lms_v1_types_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17114,7 +17572,7 @@ func (x *SubmissionItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmissionItem.ProtoReflect.Descriptor instead.
 func (*SubmissionItem) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{197}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{201}
 }
 
 func (x *SubmissionItem) GetId() string {
@@ -17195,7 +17653,7 @@ type SubmissionItemInput struct {
 
 func (x *SubmissionItemInput) Reset() {
 	*x = SubmissionItemInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[198]
+	mi := &file_lms_v1_types_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17207,7 +17665,7 @@ func (x *SubmissionItemInput) String() string {
 func (*SubmissionItemInput) ProtoMessage() {}
 
 func (x *SubmissionItemInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[198]
+	mi := &file_lms_v1_types_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17220,7 +17678,7 @@ func (x *SubmissionItemInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmissionItemInput.ProtoReflect.Descriptor instead.
 func (*SubmissionItemInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{198}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{202}
 }
 
 func (x *SubmissionItemInput) GetKind() string {
@@ -17277,7 +17735,7 @@ type SubmissionRow struct {
 
 func (x *SubmissionRow) Reset() {
 	*x = SubmissionRow{}
-	mi := &file_lms_v1_types_proto_msgTypes[199]
+	mi := &file_lms_v1_types_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17289,7 +17747,7 @@ func (x *SubmissionRow) String() string {
 func (*SubmissionRow) ProtoMessage() {}
 
 func (x *SubmissionRow) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[199]
+	mi := &file_lms_v1_types_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17302,7 +17760,7 @@ func (x *SubmissionRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmissionRow.ProtoReflect.Descriptor instead.
 func (*SubmissionRow) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{199}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{203}
 }
 
 func (x *SubmissionRow) GetId() string {
@@ -17438,7 +17896,7 @@ type SyncInput struct {
 
 func (x *SyncInput) Reset() {
 	*x = SyncInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[200]
+	mi := &file_lms_v1_types_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17450,7 +17908,7 @@ func (x *SyncInput) String() string {
 func (*SyncInput) ProtoMessage() {}
 
 func (x *SyncInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[200]
+	mi := &file_lms_v1_types_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17463,7 +17921,7 @@ func (x *SyncInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncInput.ProtoReflect.Descriptor instead.
 func (*SyncInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{200}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{204}
 }
 
 func (x *SyncInput) GetCalendar() bool {
@@ -17499,7 +17957,7 @@ type SyncResult struct {
 
 func (x *SyncResult) Reset() {
 	*x = SyncResult{}
-	mi := &file_lms_v1_types_proto_msgTypes[201]
+	mi := &file_lms_v1_types_proto_msgTypes[205]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17511,7 +17969,7 @@ func (x *SyncResult) String() string {
 func (*SyncResult) ProtoMessage() {}
 
 func (x *SyncResult) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[201]
+	mi := &file_lms_v1_types_proto_msgTypes[205]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17524,7 +17982,7 @@ func (x *SyncResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncResult.ProtoReflect.Descriptor instead.
 func (*SyncResult) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{201}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{205}
 }
 
 func (x *SyncResult) GetCalendar() *SyncStep {
@@ -17566,7 +18024,7 @@ type SyncStep struct {
 
 func (x *SyncStep) Reset() {
 	*x = SyncStep{}
-	mi := &file_lms_v1_types_proto_msgTypes[202]
+	mi := &file_lms_v1_types_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17578,7 +18036,7 @@ func (x *SyncStep) String() string {
 func (*SyncStep) ProtoMessage() {}
 
 func (x *SyncStep) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[202]
+	mi := &file_lms_v1_types_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17591,7 +18049,7 @@ func (x *SyncStep) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SyncStep.ProtoReflect.Descriptor instead.
 func (*SyncStep) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{202}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{206}
 }
 
 func (x *SyncStep) GetRan() bool {
@@ -17642,7 +18100,7 @@ type SystemInfo struct {
 
 func (x *SystemInfo) Reset() {
 	*x = SystemInfo{}
-	mi := &file_lms_v1_types_proto_msgTypes[203]
+	mi := &file_lms_v1_types_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17654,7 +18112,7 @@ func (x *SystemInfo) String() string {
 func (*SystemInfo) ProtoMessage() {}
 
 func (x *SystemInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[203]
+	mi := &file_lms_v1_types_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17667,7 +18125,7 @@ func (x *SystemInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SystemInfo.ProtoReflect.Descriptor instead.
 func (*SystemInfo) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{203}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{207}
 }
 
 func (x *SystemInfo) GetHost() string {
@@ -17815,7 +18273,7 @@ type TargetProgress struct {
 
 func (x *TargetProgress) Reset() {
 	*x = TargetProgress{}
-	mi := &file_lms_v1_types_proto_msgTypes[204]
+	mi := &file_lms_v1_types_proto_msgTypes[208]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17827,7 +18285,7 @@ func (x *TargetProgress) String() string {
 func (*TargetProgress) ProtoMessage() {}
 
 func (x *TargetProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[204]
+	mi := &file_lms_v1_types_proto_msgTypes[208]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17840,7 +18298,7 @@ func (x *TargetProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TargetProgress.ProtoReflect.Descriptor instead.
 func (*TargetProgress) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{204}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{208}
 }
 
 func (x *TargetProgress) GetMonth() string {
@@ -17926,7 +18384,7 @@ type Task struct {
 
 func (x *Task) Reset() {
 	*x = Task{}
-	mi := &file_lms_v1_types_proto_msgTypes[205]
+	mi := &file_lms_v1_types_proto_msgTypes[209]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17938,7 +18396,7 @@ func (x *Task) String() string {
 func (*Task) ProtoMessage() {}
 
 func (x *Task) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[205]
+	mi := &file_lms_v1_types_proto_msgTypes[209]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17951,7 +18409,7 @@ func (x *Task) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Task.ProtoReflect.Descriptor instead.
 func (*Task) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{205}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{209}
 }
 
 func (x *Task) GetId() string {
@@ -18057,7 +18515,7 @@ type TaskBrief struct {
 
 func (x *TaskBrief) Reset() {
 	*x = TaskBrief{}
-	mi := &file_lms_v1_types_proto_msgTypes[206]
+	mi := &file_lms_v1_types_proto_msgTypes[210]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18069,7 +18527,7 @@ func (x *TaskBrief) String() string {
 func (*TaskBrief) ProtoMessage() {}
 
 func (x *TaskBrief) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[206]
+	mi := &file_lms_v1_types_proto_msgTypes[210]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18082,7 +18540,7 @@ func (x *TaskBrief) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskBrief.ProtoReflect.Descriptor instead.
 func (*TaskBrief) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{206}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{210}
 }
 
 func (x *TaskBrief) GetId() string {
@@ -18179,7 +18637,7 @@ type TaskInput struct {
 
 func (x *TaskInput) Reset() {
 	*x = TaskInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[207]
+	mi := &file_lms_v1_types_proto_msgTypes[211]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18191,7 +18649,7 @@ func (x *TaskInput) String() string {
 func (*TaskInput) ProtoMessage() {}
 
 func (x *TaskInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[207]
+	mi := &file_lms_v1_types_proto_msgTypes[211]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18204,7 +18662,7 @@ func (x *TaskInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskInput.ProtoReflect.Descriptor instead.
 func (*TaskInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{207}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{211}
 }
 
 func (x *TaskInput) GetTitle() string {
@@ -18287,7 +18745,7 @@ type TaskPage struct {
 
 func (x *TaskPage) Reset() {
 	*x = TaskPage{}
-	mi := &file_lms_v1_types_proto_msgTypes[208]
+	mi := &file_lms_v1_types_proto_msgTypes[212]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18299,7 +18757,7 @@ func (x *TaskPage) String() string {
 func (*TaskPage) ProtoMessage() {}
 
 func (x *TaskPage) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[208]
+	mi := &file_lms_v1_types_proto_msgTypes[212]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18312,7 +18770,7 @@ func (x *TaskPage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskPage.ProtoReflect.Descriptor instead.
 func (*TaskPage) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{208}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{212}
 }
 
 func (x *TaskPage) GetTask() *TaskBrief {
@@ -18383,7 +18841,7 @@ type TaskRules struct {
 
 func (x *TaskRules) Reset() {
 	*x = TaskRules{}
-	mi := &file_lms_v1_types_proto_msgTypes[209]
+	mi := &file_lms_v1_types_proto_msgTypes[213]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18395,7 +18853,7 @@ func (x *TaskRules) String() string {
 func (*TaskRules) ProtoMessage() {}
 
 func (x *TaskRules) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[209]
+	mi := &file_lms_v1_types_proto_msgTypes[213]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18408,7 +18866,7 @@ func (x *TaskRules) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskRules.ProtoReflect.Descriptor instead.
 func (*TaskRules) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{209}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{213}
 }
 
 func (x *TaskRules) GetMaxFiles() int32 {
@@ -18451,7 +18909,7 @@ type Team struct {
 
 func (x *Team) Reset() {
 	*x = Team{}
-	mi := &file_lms_v1_types_proto_msgTypes[210]
+	mi := &file_lms_v1_types_proto_msgTypes[214]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18463,7 +18921,7 @@ func (x *Team) String() string {
 func (*Team) ProtoMessage() {}
 
 func (x *Team) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[210]
+	mi := &file_lms_v1_types_proto_msgTypes[214]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18476,7 +18934,7 @@ func (x *Team) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Team.ProtoReflect.Descriptor instead.
 func (*Team) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{210}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{214}
 }
 
 func (x *Team) GetId() string {
@@ -18516,7 +18974,7 @@ type TeamInput struct {
 
 func (x *TeamInput) Reset() {
 	*x = TeamInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[211]
+	mi := &file_lms_v1_types_proto_msgTypes[215]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18528,7 +18986,7 @@ func (x *TeamInput) String() string {
 func (*TeamInput) ProtoMessage() {}
 
 func (x *TeamInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[211]
+	mi := &file_lms_v1_types_proto_msgTypes[215]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18541,7 +18999,7 @@ func (x *TeamInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TeamInput.ProtoReflect.Descriptor instead.
 func (*TeamInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{211}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{215}
 }
 
 func (x *TeamInput) GetName() string {
@@ -18567,7 +19025,7 @@ type ThreadComment struct {
 
 func (x *ThreadComment) Reset() {
 	*x = ThreadComment{}
-	mi := &file_lms_v1_types_proto_msgTypes[212]
+	mi := &file_lms_v1_types_proto_msgTypes[216]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18579,7 +19037,7 @@ func (x *ThreadComment) String() string {
 func (*ThreadComment) ProtoMessage() {}
 
 func (x *ThreadComment) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[212]
+	mi := &file_lms_v1_types_proto_msgTypes[216]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18592,7 +19050,7 @@ func (x *ThreadComment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThreadComment.ProtoReflect.Descriptor instead.
 func (*ThreadComment) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{212}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{216}
 }
 
 func (x *ThreadComment) GetId() string {
@@ -18666,7 +19124,7 @@ type TrafficStat struct {
 
 func (x *TrafficStat) Reset() {
 	*x = TrafficStat{}
-	mi := &file_lms_v1_types_proto_msgTypes[213]
+	mi := &file_lms_v1_types_proto_msgTypes[217]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18678,7 +19136,7 @@ func (x *TrafficStat) String() string {
 func (*TrafficStat) ProtoMessage() {}
 
 func (x *TrafficStat) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[213]
+	mi := &file_lms_v1_types_proto_msgTypes[217]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18691,7 +19149,7 @@ func (x *TrafficStat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TrafficStat.ProtoReflect.Descriptor instead.
 func (*TrafficStat) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{213}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{217}
 }
 
 func (x *TrafficStat) GetRequests() int32 {
@@ -18750,7 +19208,7 @@ type Upload struct {
 
 func (x *Upload) Reset() {
 	*x = Upload{}
-	mi := &file_lms_v1_types_proto_msgTypes[214]
+	mi := &file_lms_v1_types_proto_msgTypes[218]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18762,7 +19220,7 @@ func (x *Upload) String() string {
 func (*Upload) ProtoMessage() {}
 
 func (x *Upload) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[214]
+	mi := &file_lms_v1_types_proto_msgTypes[218]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18775,7 +19233,7 @@ func (x *Upload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Upload.ProtoReflect.Descriptor instead.
 func (*Upload) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{214}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{218}
 }
 
 func (x *Upload) GetId() string {
@@ -18830,7 +19288,7 @@ type UploadSettings struct {
 
 func (x *UploadSettings) Reset() {
 	*x = UploadSettings{}
-	mi := &file_lms_v1_types_proto_msgTypes[215]
+	mi := &file_lms_v1_types_proto_msgTypes[219]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18842,7 +19300,7 @@ func (x *UploadSettings) String() string {
 func (*UploadSettings) ProtoMessage() {}
 
 func (x *UploadSettings) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[215]
+	mi := &file_lms_v1_types_proto_msgTypes[219]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18855,7 +19313,7 @@ func (x *UploadSettings) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadSettings.ProtoReflect.Descriptor instead.
 func (*UploadSettings) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{215}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{219}
 }
 
 func (x *UploadSettings) GetMaxImageMb() int32 {
@@ -18893,7 +19351,7 @@ type Video struct {
 
 func (x *Video) Reset() {
 	*x = Video{}
-	mi := &file_lms_v1_types_proto_msgTypes[216]
+	mi := &file_lms_v1_types_proto_msgTypes[220]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18905,7 +19363,7 @@ func (x *Video) String() string {
 func (*Video) ProtoMessage() {}
 
 func (x *Video) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[216]
+	mi := &file_lms_v1_types_proto_msgTypes[220]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18918,7 +19376,7 @@ func (x *Video) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Video.ProtoReflect.Descriptor instead.
 func (*Video) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{216}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{220}
 }
 
 func (x *Video) GetId() string {
@@ -19031,7 +19489,7 @@ type VideoComment struct {
 
 func (x *VideoComment) Reset() {
 	*x = VideoComment{}
-	mi := &file_lms_v1_types_proto_msgTypes[217]
+	mi := &file_lms_v1_types_proto_msgTypes[221]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19043,7 +19501,7 @@ func (x *VideoComment) String() string {
 func (*VideoComment) ProtoMessage() {}
 
 func (x *VideoComment) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[217]
+	mi := &file_lms_v1_types_proto_msgTypes[221]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19056,7 +19514,7 @@ func (x *VideoComment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoComment.ProtoReflect.Descriptor instead.
 func (*VideoComment) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{217}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{221}
 }
 
 func (x *VideoComment) GetId() string {
@@ -19146,7 +19604,7 @@ type VideoCommentInput struct {
 
 func (x *VideoCommentInput) Reset() {
 	*x = VideoCommentInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[218]
+	mi := &file_lms_v1_types_proto_msgTypes[222]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19158,7 +19616,7 @@ func (x *VideoCommentInput) String() string {
 func (*VideoCommentInput) ProtoMessage() {}
 
 func (x *VideoCommentInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[218]
+	mi := &file_lms_v1_types_proto_msgTypes[222]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19171,7 +19629,7 @@ func (x *VideoCommentInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoCommentInput.ProtoReflect.Descriptor instead.
 func (*VideoCommentInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{218}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{222}
 }
 
 func (x *VideoCommentInput) GetBody() string {
@@ -19205,7 +19663,7 @@ type VideoInput struct {
 
 func (x *VideoInput) Reset() {
 	*x = VideoInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[219]
+	mi := &file_lms_v1_types_proto_msgTypes[223]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19217,7 +19675,7 @@ func (x *VideoInput) String() string {
 func (*VideoInput) ProtoMessage() {}
 
 func (x *VideoInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[219]
+	mi := &file_lms_v1_types_proto_msgTypes[223]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19230,7 +19688,7 @@ func (x *VideoInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoInput.ProtoReflect.Descriptor instead.
 func (*VideoInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{219}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{223}
 }
 
 func (x *VideoInput) GetTitle() string {
@@ -19286,7 +19744,7 @@ type VideoLink struct {
 
 func (x *VideoLink) Reset() {
 	*x = VideoLink{}
-	mi := &file_lms_v1_types_proto_msgTypes[220]
+	mi := &file_lms_v1_types_proto_msgTypes[224]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19298,7 +19756,7 @@ func (x *VideoLink) String() string {
 func (*VideoLink) ProtoMessage() {}
 
 func (x *VideoLink) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[220]
+	mi := &file_lms_v1_types_proto_msgTypes[224]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19311,7 +19769,7 @@ func (x *VideoLink) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoLink.ProtoReflect.Descriptor instead.
 func (*VideoLink) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{220}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{224}
 }
 
 func (x *VideoLink) GetProviderRef() string {
@@ -19345,7 +19803,7 @@ type VideoLinkInput struct {
 
 func (x *VideoLinkInput) Reset() {
 	*x = VideoLinkInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[221]
+	mi := &file_lms_v1_types_proto_msgTypes[225]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19357,7 +19815,7 @@ func (x *VideoLinkInput) String() string {
 func (*VideoLinkInput) ProtoMessage() {}
 
 func (x *VideoLinkInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[221]
+	mi := &file_lms_v1_types_proto_msgTypes[225]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19370,7 +19828,7 @@ func (x *VideoLinkInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoLinkInput.ProtoReflect.Descriptor instead.
 func (*VideoLinkInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{221}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{225}
 }
 
 func (x *VideoLinkInput) GetProvider() string {
@@ -19408,7 +19866,7 @@ type WaBroadcast struct {
 
 func (x *WaBroadcast) Reset() {
 	*x = WaBroadcast{}
-	mi := &file_lms_v1_types_proto_msgTypes[222]
+	mi := &file_lms_v1_types_proto_msgTypes[226]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19420,7 +19878,7 @@ func (x *WaBroadcast) String() string {
 func (*WaBroadcast) ProtoMessage() {}
 
 func (x *WaBroadcast) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[222]
+	mi := &file_lms_v1_types_proto_msgTypes[226]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19433,7 +19891,7 @@ func (x *WaBroadcast) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaBroadcast.ProtoReflect.Descriptor instead.
 func (*WaBroadcast) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{222}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{226}
 }
 
 func (x *WaBroadcast) GetId() string {
@@ -19541,7 +19999,7 @@ type WaBroadcastInput struct {
 
 func (x *WaBroadcastInput) Reset() {
 	*x = WaBroadcastInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[223]
+	mi := &file_lms_v1_types_proto_msgTypes[227]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19553,7 +20011,7 @@ func (x *WaBroadcastInput) String() string {
 func (*WaBroadcastInput) ProtoMessage() {}
 
 func (x *WaBroadcastInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[223]
+	mi := &file_lms_v1_types_proto_msgTypes[227]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19566,7 +20024,7 @@ func (x *WaBroadcastInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaBroadcastInput.ProtoReflect.Descriptor instead.
 func (*WaBroadcastInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{223}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{227}
 }
 
 func (x *WaBroadcastInput) GetName() string {
@@ -19628,7 +20086,7 @@ type WaConfig struct {
 
 func (x *WaConfig) Reset() {
 	*x = WaConfig{}
-	mi := &file_lms_v1_types_proto_msgTypes[224]
+	mi := &file_lms_v1_types_proto_msgTypes[228]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19640,7 +20098,7 @@ func (x *WaConfig) String() string {
 func (*WaConfig) ProtoMessage() {}
 
 func (x *WaConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[224]
+	mi := &file_lms_v1_types_proto_msgTypes[228]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19653,7 +20111,7 @@ func (x *WaConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaConfig.ProtoReflect.Descriptor instead.
 func (*WaConfig) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{224}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{228}
 }
 
 func (x *WaConfig) GetEnabled() bool {
@@ -19761,7 +20219,7 @@ type WaConfigInput struct {
 
 func (x *WaConfigInput) Reset() {
 	*x = WaConfigInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[225]
+	mi := &file_lms_v1_types_proto_msgTypes[229]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19773,7 +20231,7 @@ func (x *WaConfigInput) String() string {
 func (*WaConfigInput) ProtoMessage() {}
 
 func (x *WaConfigInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[225]
+	mi := &file_lms_v1_types_proto_msgTypes[229]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19786,7 +20244,7 @@ func (x *WaConfigInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaConfigInput.ProtoReflect.Descriptor instead.
 func (*WaConfigInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{225}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{229}
 }
 
 func (x *WaConfigInput) GetEnabled() bool {
@@ -19892,7 +20350,7 @@ type WaContact struct {
 
 func (x *WaContact) Reset() {
 	*x = WaContact{}
-	mi := &file_lms_v1_types_proto_msgTypes[226]
+	mi := &file_lms_v1_types_proto_msgTypes[230]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19904,7 +20362,7 @@ func (x *WaContact) String() string {
 func (*WaContact) ProtoMessage() {}
 
 func (x *WaContact) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[226]
+	mi := &file_lms_v1_types_proto_msgTypes[230]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19917,7 +20375,7 @@ func (x *WaContact) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaContact.ProtoReflect.Descriptor instead.
 func (*WaContact) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{226}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{230}
 }
 
 func (x *WaContact) GetId() string {
@@ -20059,7 +20517,7 @@ type WaMessage struct {
 
 func (x *WaMessage) Reset() {
 	*x = WaMessage{}
-	mi := &file_lms_v1_types_proto_msgTypes[227]
+	mi := &file_lms_v1_types_proto_msgTypes[231]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20071,7 +20529,7 @@ func (x *WaMessage) String() string {
 func (*WaMessage) ProtoMessage() {}
 
 func (x *WaMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[227]
+	mi := &file_lms_v1_types_proto_msgTypes[231]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20084,7 +20542,7 @@ func (x *WaMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaMessage.ProtoReflect.Descriptor instead.
 func (*WaMessage) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{227}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{231}
 }
 
 func (x *WaMessage) GetId() string {
@@ -20182,7 +20640,7 @@ type WaQuickReply struct {
 
 func (x *WaQuickReply) Reset() {
 	*x = WaQuickReply{}
-	mi := &file_lms_v1_types_proto_msgTypes[228]
+	mi := &file_lms_v1_types_proto_msgTypes[232]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20194,7 +20652,7 @@ func (x *WaQuickReply) String() string {
 func (*WaQuickReply) ProtoMessage() {}
 
 func (x *WaQuickReply) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[228]
+	mi := &file_lms_v1_types_proto_msgTypes[232]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20207,7 +20665,7 @@ func (x *WaQuickReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaQuickReply.ProtoReflect.Descriptor instead.
 func (*WaQuickReply) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{228}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{232}
 }
 
 func (x *WaQuickReply) GetId() string {
@@ -20241,7 +20699,7 @@ type WaQuickReplyInput struct {
 
 func (x *WaQuickReplyInput) Reset() {
 	*x = WaQuickReplyInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[229]
+	mi := &file_lms_v1_types_proto_msgTypes[233]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20253,7 +20711,7 @@ func (x *WaQuickReplyInput) String() string {
 func (*WaQuickReplyInput) ProtoMessage() {}
 
 func (x *WaQuickReplyInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[229]
+	mi := &file_lms_v1_types_proto_msgTypes[233]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20266,7 +20724,7 @@ func (x *WaQuickReplyInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaQuickReplyInput.ProtoReflect.Descriptor instead.
 func (*WaQuickReplyInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{229}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{233}
 }
 
 func (x *WaQuickReplyInput) GetShortcut() string {
@@ -20296,7 +20754,7 @@ type WaSendInput struct {
 
 func (x *WaSendInput) Reset() {
 	*x = WaSendInput{}
-	mi := &file_lms_v1_types_proto_msgTypes[230]
+	mi := &file_lms_v1_types_proto_msgTypes[234]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20308,7 +20766,7 @@ func (x *WaSendInput) String() string {
 func (*WaSendInput) ProtoMessage() {}
 
 func (x *WaSendInput) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[230]
+	mi := &file_lms_v1_types_proto_msgTypes[234]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20321,7 +20779,7 @@ func (x *WaSendInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaSendInput.ProtoReflect.Descriptor instead.
 func (*WaSendInput) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{230}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{234}
 }
 
 func (x *WaSendInput) GetText() string {
@@ -20368,7 +20826,7 @@ type WaTemplate struct {
 
 func (x *WaTemplate) Reset() {
 	*x = WaTemplate{}
-	mi := &file_lms_v1_types_proto_msgTypes[231]
+	mi := &file_lms_v1_types_proto_msgTypes[235]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20380,7 +20838,7 @@ func (x *WaTemplate) String() string {
 func (*WaTemplate) ProtoMessage() {}
 
 func (x *WaTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[231]
+	mi := &file_lms_v1_types_proto_msgTypes[235]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20393,7 +20851,7 @@ func (x *WaTemplate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaTemplate.ProtoReflect.Descriptor instead.
 func (*WaTemplate) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{231}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{235}
 }
 
 func (x *WaTemplate) GetId() string {
@@ -20463,7 +20921,7 @@ type WaTemplateSend struct {
 
 func (x *WaTemplateSend) Reset() {
 	*x = WaTemplateSend{}
-	mi := &file_lms_v1_types_proto_msgTypes[232]
+	mi := &file_lms_v1_types_proto_msgTypes[236]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20475,7 +20933,7 @@ func (x *WaTemplateSend) String() string {
 func (*WaTemplateSend) ProtoMessage() {}
 
 func (x *WaTemplateSend) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[232]
+	mi := &file_lms_v1_types_proto_msgTypes[236]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20488,7 +20946,7 @@ func (x *WaTemplateSend) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaTemplateSend.ProtoReflect.Descriptor instead.
 func (*WaTemplateSend) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{232}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{236}
 }
 
 func (x *WaTemplateSend) GetName() string {
@@ -20523,7 +20981,7 @@ type WaThread struct {
 
 func (x *WaThread) Reset() {
 	*x = WaThread{}
-	mi := &file_lms_v1_types_proto_msgTypes[233]
+	mi := &file_lms_v1_types_proto_msgTypes[237]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20535,7 +20993,7 @@ func (x *WaThread) String() string {
 func (*WaThread) ProtoMessage() {}
 
 func (x *WaThread) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[233]
+	mi := &file_lms_v1_types_proto_msgTypes[237]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20548,7 +21006,7 @@ func (x *WaThread) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaThread.ProtoReflect.Descriptor instead.
 func (*WaThread) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{233}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{237}
 }
 
 func (x *WaThread) GetContact() *WaContact {
@@ -20582,7 +21040,7 @@ type WatchPage struct {
 
 func (x *WatchPage) Reset() {
 	*x = WatchPage{}
-	mi := &file_lms_v1_types_proto_msgTypes[234]
+	mi := &file_lms_v1_types_proto_msgTypes[238]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20594,7 +21052,7 @@ func (x *WatchPage) String() string {
 func (*WatchPage) ProtoMessage() {}
 
 func (x *WatchPage) ProtoReflect() protoreflect.Message {
-	mi := &file_lms_v1_types_proto_msgTypes[234]
+	mi := &file_lms_v1_types_proto_msgTypes[238]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20607,7 +21065,7 @@ func (x *WatchPage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WatchPage.ProtoReflect.Descriptor instead.
 func (*WatchPage) Descriptor() ([]byte, []int) {
-	return file_lms_v1_types_proto_rawDescGZIP(), []int{234}
+	return file_lms_v1_types_proto_rawDescGZIP(), []int{238}
 }
 
 func (x *WatchPage) GetVideo() *Video {
@@ -21061,11 +21519,55 @@ const file_lms_v1_types_proto_rawDesc = "" +
 	"revoked_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\trevokedAt\x12\x1d\n" +
 	"\n" +
-	"verify_url\x18\v \x01(\tR\tverifyUrl\"b\n" +
+	"verify_url\x18\v \x01(\tR\tverifyUrl\"\xd1\x05\n" +
+	"\x10CertificateField\x12\x19\n" +
+	"\x02id\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18(R\x02id\x12*\n" +
+	"\x04kind\x18\x02 \x01(\tB\x16\xbaH\x13r\x11R\x04textR\x02qrR\x05imageR\x04kind\x12 \n" +
+	"\x05label\x18\x03 \x01(\tB\n" +
+	"\xbaH\a\xd8\x01\x01r\x02\x18<R\x05label\x12\x1f\n" +
+	"\x04text\x18\x04 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\x18\xd0\x0fR\x04text\x12\x1d\n" +
+	"\x03src\x18\x05 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\x18\xd8\x04R\x03src\x12%\n" +
+	"\x01x\x18\x06 \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x90r@)\x00\x00\x00\x00\x00\x00I\xc0R\x01x\x12%\n" +
+	"\x01y\x18\a \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00@j@)\x00\x00\x00\x00\x00\x00I\xc0R\x01y\x12%\n" +
+	"\x01w\x18\b \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x90r@)\x00\x00\x00\x00\x00\x00\xf0?R\x01w\x12m\n" +
+	"\x04font\x18\t \x01(\tBY\xbaHV\xd8\x01\x01rQR\x04sansR\n" +
+	"sans-lightR\vsans-mediumR\rsans-semiboldR\tsans-boldR\x0esans-extraboldR\x06scriptR\x04font\x12+\n" +
+	"\x04size\x18\n" +
+	" \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x00i@)\x00\x00\x00\x00\x00\x00\x00\x00R\x04size\x121\n" +
+	"\x05color\x18\v \x01(\tB\x1b\xbaH\x18\xd8\x01\x01r\x132\x11^#[0-9a-fA-F]{6}$R\x05color\x123\n" +
+	"\x05align\x18\f \x01(\tB\x1d\xbaH\x1a\xd8\x01\x01r\x15R\x04leftR\x06centerR\x05rightR\x05align\x121\n" +
+	"\aspacing\x18\r \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x004@)\x00\x00\x00\x00\x00\x00\x14\xc0R\aspacing\x128\n" +
+	"\vline_height\x18\x0e \x01(\x01B\x17\xbaH\x14\x12\x12\x19\x00\x00\x00\x00\x00\x00\x14@)\x00\x00\x00\x00\x00\x00\x00\x00R\n" +
+	"lineHeight\x12\x1c\n" +
+	"\tuppercase\x18\x0f \x01(\bR\tuppercase\x12\x10\n" +
+	"\x03fit\x18\x10 \x01(\bR\x03fit\"b\n" +
 	"\x10CertificateInput\x12'\n" +
 	"\n" +
 	"student_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\tstudentId\x12%\n" +
-	"\tcourse_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\bcourseId\"\xda\x01\n" +
+	"\tcourse_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\bcourseId\"\xd4\x02\n" +
+	"\x13CertificateTemplate\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\x0ebackground_url\x18\x03 \x01(\tR\rbackgroundUrl\x120\n" +
+	"\x06fields\x18\x04 \x03(\v2\x18.lms.v1.CertificateFieldR\x06fields\x12\x1d\n" +
+	"\n" +
+	"is_default\x18\x05 \x01(\bR\tisDefault\x12!\n" +
+	"\fcourse_count\x18\x06 \x01(\x05R\vcourseCount\x129\n" +
+	"\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xc8\x01\n" +
+	"\x18CertificateTemplateInput\x12\x1d\n" +
+	"\x04name\x18\x01 \x01(\tB\t\xbaH\x06r\x04\x10\x01\x18xR\x04name\x122\n" +
+	"\x0ebackground_url\x18\x02 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\x18\xd8\x04R\rbackgroundUrl\x12:\n" +
+	"\x06fields\x18\x03 \x03(\v2\x18.lms.v1.CertificateFieldB\b\xbaH\x05\x92\x01\x02\x10(R\x06fields\x12\x1d\n" +
+	"\n" +
+	"is_default\x18\x04 \x01(\bR\tisDefault\"h\n" +
+	"\x19CertificateTemplateOption\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"is_default\x18\x03 \x01(\bR\tisDefault\"\xda\x01\n" +
 	"\x17CertificateVerification\x12\x14\n" +
 	"\x05valid\x18\x01 \x01(\bR\x05valid\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12!\n" +
@@ -21255,7 +21757,7 @@ const file_lms_v1_types_proto_rawDesc = "" +
 	"\rupcoming_live\x18\t \x01(\x05R\fupcomingLive\x12\x1b\n" +
 	"\tnew_leads\x18\n" +
 	" \x01(\x05R\bnewLeads\x12\"\n" +
-	"\fcertificates\x18\v \x01(\x05R\fcertificates\"\x93\x05\n" +
+	"\fcertificates\x18\v \x01(\x05R\fcertificates\"\xa2\a\n" +
 	"\x06Course\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
 	"\x04slug\x18\x02 \x01(\tR\x04slug\x12\x14\n" +
@@ -21273,15 +21775,19 @@ const file_lms_v1_types_proto_rawDesc = "" +
 	"priceLabel\x12\x1b\n" +
 	"\tfee_paise\x18\r \x01(\x03R\bfeePaise\x12\x15\n" +
 	"\x06gst_bp\x18\x0e \x01(\x05R\x05gstBp\x12$\n" +
-	"\x0ewhat_you_learn\x18\x0f \x03(\tR\fwhatYouLearn\x12\x1f\n" +
-	"\vvideo_count\x18\x10 \x01(\x05R\n" +
+	"\x0ewhat_you_learn\x18\x0f \x03(\tR\fwhatYouLearn\x12/\n" +
+	"\x13certificate_enabled\x18\x10 \x01(\bR\x12certificateEnabled\x12\x94\x01\n" +
+	"\x17certificate_template_id\x18\x11 \x01(\tBW\xbaHTrR2P^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$H\x00R\x15certificateTemplateId\x88\x01\x01\x12)\n" +
+	"\x10certificate_text\x18\x12 \x01(\tR\x0fcertificateText\x12\x1f\n" +
+	"\vvideo_count\x18\x13 \x01(\x05R\n" +
 	"videoCount\x12#\n" +
-	"\rstudent_count\x18\x11 \x01(\x05R\fstudentCount\x12(\n" +
-	"\amentors\x18\x12 \x03(\v2\x0e.lms.v1.PersonR\amentors\x129\n" +
+	"\rstudent_count\x18\x14 \x01(\x05R\fstudentCount\x12(\n" +
+	"\amentors\x18\x15 \x03(\v2\x0e.lms.v1.PersonR\amentors\x129\n" +
 	"\n" +
-	"created_at\x18\x13 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x16 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x14 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xbe\x05\n" +
+	"updated_at\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x1a\n" +
+	"\x18_certificate_template_id\"\xf7\a\n" +
 	"\vCourseInput\x12 \n" +
 	"\x05title\x18\x01 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x03\x18\xa0\x01R\x05title\x12,\n" +
@@ -21306,8 +21812,13 @@ const file_lms_v1_types_proto_rawDesc = "" +
 	"\x0ewhat_you_learn\x18\x0e \x03(\tB\b\xbaH\x05\x92\x01\x02\x10\x14R\fwhatYouLearn\x12,\n" +
 	"\n" +
 	"mentor_ids\x18\x0f \x03(\tB\r\xbaH\n" +
-	"\x92\x01\a\"\x05r\x03\xb0\x01\x01R\tmentorIdsB\t\n" +
-	"\a_gst_bp\"\x8a\x01\n" +
+	"\x92\x01\a\"\x05r\x03\xb0\x01\x01R\tmentorIds\x124\n" +
+	"\x13certificate_enabled\x18\x10 \x01(\bH\x01R\x12certificateEnabled\x88\x01\x01\x12\x94\x01\n" +
+	"\x17certificate_template_id\x18\x11 \x01(\tBW\xbaHTrR2P^(|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$H\x02R\x15certificateTemplateId\x88\x01\x01\x126\n" +
+	"\x10certificate_text\x18\x12 \x01(\tB\v\xbaH\b\xd8\x01\x01r\x03\x18\xe8\aR\x0fcertificateTextB\t\n" +
+	"\a_gst_bpB\x16\n" +
+	"\x14_certificate_enabledB\x1a\n" +
+	"\x18_certificate_template_id\"\x8a\x01\n" +
 	"\fCourseOption\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
@@ -22057,10 +22568,10 @@ const file_lms_v1_types_proto_rawDesc = "" +
 	"\n" +
 	"task_count\x18\a \x01(\x05R\ttaskCount\x12%\n" +
 	"\x0eapproved_count\x18\b \x01(\x05R\rapprovedCount\x12\x12\n" +
-	"\x04done\x18\t \x01(\bR\x04done\"\xc7\x01\n" +
-	"\fPresignInput\x12R\n" +
-	"\apurpose\x18\x01 \x01(\tB8\xbaH5r3R\n" +
-	"submissionR\acommentR\x06avatarR\tthumbnailR\x03cmsR\x04blogR\apurpose\x12'\n" +
+	"\x04done\x18\t \x01(\bR\x04done\"\xd4\x01\n" +
+	"\fPresignInput\x12_\n" +
+	"\apurpose\x18\x01 \x01(\tBE\xbaHBr@R\n" +
+	"submissionR\acommentR\x06avatarR\tthumbnailR\x03cmsR\x04blogR\vcertificateR\apurpose\x12'\n" +
 	"\tfile_name\x18\x02 \x01(\tB\n" +
 	"\xbaH\ar\x05\x10\x01\x18\xc8\x01R\bfileName\x12\x1d\n" +
 	"\x04mime\x18\x03 \x01(\tB\t\xbaH\x06r\x04\x10\x03\x18xR\x04mime\x12\x1b\n" +
@@ -22955,496 +23466,504 @@ func file_lms_v1_types_proto_rawDescGZIP() []byte {
 	return file_lms_v1_types_proto_rawDescData
 }
 
-var file_lms_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 239)
+var file_lms_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 243)
 var file_lms_v1_types_proto_goTypes = []any{
-	(*StringList)(nil),              // 0: lms.v1.StringList
-	(*ApiInfo)(nil),                 // 1: lms.v1.ApiInfo
-	(*Admission)(nil),               // 2: lms.v1.Admission
-	(*AdmissionCourse)(nil),         // 3: lms.v1.AdmissionCourse
-	(*AdmissionDetail)(nil),         // 4: lms.v1.AdmissionDetail
-	(*AdmissionInput)(nil),          // 5: lms.v1.AdmissionInput
-	(*AdmissionUpdate)(nil),         // 6: lms.v1.AdmissionUpdate
-	(*AgingBucket)(nil),             // 7: lms.v1.AgingBucket
-	(*Announcement)(nil),            // 8: lms.v1.Announcement
-	(*AnnouncementInput)(nil),       // 9: lms.v1.AnnouncementInput
-	(*AssignInput)(nil),             // 10: lms.v1.AssignInput
-	(*AssignmentRule)(nil),          // 11: lms.v1.AssignmentRule
-	(*AssignmentRuleInput)(nil),     // 12: lms.v1.AssignmentRuleInput
-	(*Attachment)(nil),              // 13: lms.v1.Attachment
-	(*AttendanceInput)(nil),         // 14: lms.v1.AttendanceInput
-	(*AttendanceMark)(nil),          // 15: lms.v1.AttendanceMark
-	(*AttendanceStat)(nil),          // 16: lms.v1.AttendanceStat
-	(*AuditEntry)(nil),              // 17: lms.v1.AuditEntry
-	(*AvailabilityInput)(nil),       // 18: lms.v1.AvailabilityInput
-	(*Batch)(nil),                   // 19: lms.v1.Batch
-	(*BatchDetail)(nil),             // 20: lms.v1.BatchDetail
-	(*BatchInput)(nil),              // 21: lms.v1.BatchInput
-	(*BatchOption)(nil),             // 22: lms.v1.BatchOption
-	(*BatchStudent)(nil),            // 23: lms.v1.BatchStudent
-	(*BatchType)(nil),               // 24: lms.v1.BatchType
-	(*BatchTypeInput)(nil),          // 25: lms.v1.BatchTypeInput
-	(*BlogInput)(nil),               // 26: lms.v1.BlogInput
-	(*BlogPost)(nil),                // 27: lms.v1.BlogPost
-	(*Branding)(nil),                // 28: lms.v1.Branding
-	(*BroadcastAudience)(nil),       // 29: lms.v1.BroadcastAudience
-	(*BulkAssignInput)(nil),         // 30: lms.v1.BulkAssignInput
-	(*BusinessSettings)(nil),        // 31: lms.v1.BusinessSettings
-	(*CmsBlock)(nil),                // 32: lms.v1.CmsBlock
-	(*CmsInput)(nil),                // 33: lms.v1.CmsInput
-	(*CrmSettings)(nil),             // 34: lms.v1.CrmSettings
-	(*CallInput)(nil),               // 35: lms.v1.CallInput
-	(*Certificate)(nil),             // 36: lms.v1.Certificate
-	(*CertificateInput)(nil),        // 37: lms.v1.CertificateInput
-	(*CertificateVerification)(nil), // 38: lms.v1.CertificateVerification
-	(*CheckinInput)(nil),            // 39: lms.v1.CheckinInput
-	(*CheckinResult)(nil),           // 40: lms.v1.CheckinResult
-	(*ClassInput)(nil),              // 41: lms.v1.ClassInput
-	(*ClassQr)(nil),                 // 42: lms.v1.ClassQr
-	(*ClassSession)(nil),            // 43: lms.v1.ClassSession
-	(*CollectionRow)(nil),           // 44: lms.v1.CollectionRow
-	(*CollectionsReport)(nil),       // 45: lms.v1.CollectionsReport
-	(*CommentInput)(nil),            // 46: lms.v1.CommentInput
-	(*CommissionEntry)(nil),         // 47: lms.v1.CommissionEntry
-	(*CommissionRow)(nil),           // 48: lms.v1.CommissionRow
-	(*CommissionSummary)(nil),       // 49: lms.v1.CommissionSummary
-	(*CommissionTarget)(nil),        // 50: lms.v1.CommissionTarget
-	(*CommissionTargetInput)(nil),   // 51: lms.v1.CommissionTargetInput
-	(*Counsellor)(nil),              // 52: lms.v1.Counsellor
-	(*CounsellorInput)(nil),         // 53: lms.v1.CounsellorInput
-	(*CounsellorPerformance)(nil),   // 54: lms.v1.CounsellorPerformance
-	(*Counts)(nil),                  // 55: lms.v1.Counts
-	(*Course)(nil),                  // 56: lms.v1.Course
-	(*CourseInput)(nil),             // 57: lms.v1.CourseInput
-	(*CourseOption)(nil),            // 58: lms.v1.CourseOption
-	(*CourseStat)(nil),              // 59: lms.v1.CourseStat
-	(*DbPool)(nil),                  // 60: lms.v1.DbPool
-	(*DbQuery)(nil),                 // 61: lms.v1.DbQuery
-	(*DbTable)(nil),                 // 62: lms.v1.DbTable
-	(*DbUser)(nil),                  // 63: lms.v1.DbUser
-	(*Dashboard)(nil),               // 64: lms.v1.Dashboard
-	(*DashboardStats)(nil),          // 65: lms.v1.DashboardStats
-	(*DatabaseBrief)(nil),           // 66: lms.v1.DatabaseBrief
-	(*DatabaseStats)(nil),           // 67: lms.v1.DatabaseStats
-	(*DayPoint)(nil),                // 68: lms.v1.DayPoint
-	(*DueRow)(nil),                  // 69: lms.v1.DueRow
-	(*DuesReport)(nil),              // 70: lms.v1.DuesReport
-	(*EndpointStat)(nil),            // 71: lms.v1.EndpointStat
-	(*EnrollInput)(nil),             // 72: lms.v1.EnrollInput
-	(*Enrollment)(nil),              // 73: lms.v1.Enrollment
-	(*EnrollmentUpdate)(nil),        // 74: lms.v1.EnrollmentUpdate
-	(*FeeLineInput)(nil),            // 75: lms.v1.FeeLineInput
-	(*FeeQuote)(nil),                // 76: lms.v1.FeeQuote
-	(*FeeQuoteInput)(nil),           // 77: lms.v1.FeeQuoteInput
-	(*FollowUp)(nil),                // 78: lms.v1.FollowUp
-	(*FollowUpInput)(nil),           // 79: lms.v1.FollowUpInput
-	(*FunnelReport)(nil),            // 80: lms.v1.FunnelReport
-	(*FunnelStage)(nil),             // 81: lms.v1.FunnelStage
-	(*GstMonth)(nil),                // 82: lms.v1.GstMonth
-	(*GstReport)(nil),               // 83: lms.v1.GstReport
-	(*GoogleSettings)(nil),          // 84: lms.v1.GoogleSettings
-	(*GoogleStatus)(nil),            // 85: lms.v1.GoogleStatus
-	(*Ids)(nil),                     // 86: lms.v1.Ids
-	(*ImportInput)(nil),             // 87: lms.v1.ImportInput
-	(*ImportResult)(nil),            // 88: lms.v1.ImportResult
-	(*Installment)(nil),             // 89: lms.v1.Installment
-	(*InstallmentInput)(nil),        // 90: lms.v1.InstallmentInput
-	(*InstallmentPlan)(nil),         // 91: lms.v1.InstallmentPlan
-	(*InstallmentsInput)(nil),       // 92: lms.v1.InstallmentsInput
-	(*JoinResult)(nil),              // 93: lms.v1.JoinResult
-	(*Lead)(nil),                    // 94: lms.v1.Lead
-	(*LeadActivity)(nil),            // 95: lms.v1.LeadActivity
-	(*LeadCreate)(nil),              // 96: lms.v1.LeadCreate
-	(*LeadCreated)(nil),             // 97: lms.v1.LeadCreated
-	(*LeadDetail)(nil),              // 98: lms.v1.LeadDetail
-	(*LeadImportInput)(nil),         // 99: lms.v1.LeadImportInput
-	(*LeadInput)(nil),               // 100: lms.v1.LeadInput
-	(*LeadList)(nil),                // 101: lms.v1.LeadList
-	(*LeadStageInput)(nil),          // 102: lms.v1.LeadStageInput
-	(*LeadUpdate)(nil),              // 103: lms.v1.LeadUpdate
-	(*LiveAttendanceInput)(nil),     // 104: lms.v1.LiveAttendanceInput
-	(*LiveAttendanceMark)(nil),      // 105: lms.v1.LiveAttendanceMark
-	(*LiveDetail)(nil),              // 106: lms.v1.LiveDetail
-	(*LiveInput)(nil),               // 107: lms.v1.LiveInput
-	(*LiveRosterRow)(nil),           // 108: lms.v1.LiveRosterRow
-	(*LiveSession)(nil),             // 109: lms.v1.LiveSession
-	(*LiveTarget)(nil),              // 110: lms.v1.LiveTarget
-	(*LostReason)(nil),              // 111: lms.v1.LostReason
-	(*LostReasonInput)(nil),         // 112: lms.v1.LostReasonInput
-	(*ManualCommissionInput)(nil),   // 113: lms.v1.ManualCommissionInput
-	(*ModerationComment)(nil),       // 114: lms.v1.ModerationComment
-	(*ModuleDef)(nil),               // 115: lms.v1.ModuleDef
-	(*MonthInput)(nil),              // 116: lms.v1.MonthInput
-	(*MyClassAttendance)(nil),       // 117: lms.v1.MyClassAttendance
-	(*MyCourse)(nil),                // 118: lms.v1.MyCourse
-	(*MyCourseDetail)(nil),          // 119: lms.v1.MyCourseDetail
-	(*MyEarnings)(nil),              // 120: lms.v1.MyEarnings
-	(*MyQuiz)(nil),                  // 121: lms.v1.MyQuiz
-	(*MySales)(nil),                 // 122: lms.v1.MySales
-	(*MyTask)(nil),                  // 123: lms.v1.MyTask
-	(*NewStudentInput)(nil),         // 124: lms.v1.NewStudentInput
-	(*NoteInput)(nil),               // 125: lms.v1.NoteInput
-	(*Notification)(nil),            // 126: lms.v1.Notification
-	(*NotificationFeed)(nil),        // 127: lms.v1.NotificationFeed
-	(*OnlineCount)(nil),             // 128: lms.v1.OnlineCount
-	(*OnlineUser)(nil),              // 129: lms.v1.OnlineUser
-	(*Overview)(nil),                // 130: lms.v1.Overview
-	(*PayInfo)(nil),                 // 131: lms.v1.PayInfo
-	(*Payment)(nil),                 // 132: lms.v1.Payment
-	(*PaymentInput)(nil),            // 133: lms.v1.PaymentInput
-	(*PaymentSettings)(nil),         // 134: lms.v1.PaymentSettings
-	(*Payout)(nil),                  // 135: lms.v1.Payout
-	(*PayoutInput)(nil),             // 136: lms.v1.PayoutInput
-	(*PerformanceReport)(nil),       // 137: lms.v1.PerformanceReport
-	(*PermissionCatalog)(nil),       // 138: lms.v1.PermissionCatalog
-	(*PlayOption)(nil),              // 139: lms.v1.PlayOption
-	(*PlayQuestion)(nil),            // 140: lms.v1.PlayQuestion
-	(*PlaylistItem)(nil),            // 141: lms.v1.PlaylistItem
-	(*PresignInput)(nil),            // 142: lms.v1.PresignInput
-	(*Presigned)(nil),               // 143: lms.v1.Presigned
-	(*PublicBatch)(nil),             // 144: lms.v1.PublicBatch
-	(*PublicCourse)(nil),            // 145: lms.v1.PublicCourse
-	(*PublicCourseDetail)(nil),      // 146: lms.v1.PublicCourseDetail
-	(*PublicLesson)(nil),            // 147: lms.v1.PublicLesson
-	(*PublicPost)(nil),              // 148: lms.v1.PublicPost
-	(*QuestionReview)(nil),          // 149: lms.v1.QuestionReview
-	(*Quiz)(nil),                    // 150: lms.v1.Quiz
-	(*QuizAnswer)(nil),              // 151: lms.v1.QuizAnswer
-	(*QuizAttemptRow)(nil),          // 152: lms.v1.QuizAttemptRow
-	(*QuizInput)(nil),               // 153: lms.v1.QuizInput
-	(*QuizOption)(nil),              // 154: lms.v1.QuizOption
-	(*QuizOptionInput)(nil),         // 155: lms.v1.QuizOptionInput
-	(*QuizPlay)(nil),                // 156: lms.v1.QuizPlay
-	(*QuizQuestion)(nil),            // 157: lms.v1.QuizQuestion
-	(*QuizQuestionInput)(nil),       // 158: lms.v1.QuizQuestionInput
-	(*QuizResult)(nil),              // 159: lms.v1.QuizResult
-	(*QuizSubmitInput)(nil),         // 160: lms.v1.QuizSubmitInput
-	(*ReasonInput)(nil),             // 161: lms.v1.ReasonInput
-	(*ReasonRow)(nil),               // 162: lms.v1.ReasonRow
-	(*RecordingInput)(nil),          // 163: lms.v1.RecordingInput
-	(*Refund)(nil),                  // 164: lms.v1.Refund
-	(*RefundInput)(nil),             // 165: lms.v1.RefundInput
-	(*ReminderSettings)(nil),        // 166: lms.v1.ReminderSettings
-	(*ReportRange)(nil),             // 167: lms.v1.ReportRange
-	(*RequestLog)(nil),              // 168: lms.v1.RequestLog
-	(*ReviewInput)(nil),             // 169: lms.v1.ReviewInput
-	(*Role)(nil),                    // 170: lms.v1.Role
-	(*RoleInput)(nil),               // 171: lms.v1.RoleInput
-	(*RoleRef)(nil),                 // 172: lms.v1.RoleRef
-	(*RosterRow)(nil),               // 173: lms.v1.RosterRow
-	(*SalesCounts)(nil),             // 174: lms.v1.SalesCounts
-	(*SalesSettings)(nil),           // 175: lms.v1.SalesSettings
-	(*ServerOverview)(nil),          // 176: lms.v1.ServerOverview
-	(*ServerPoint)(nil),             // 177: lms.v1.ServerPoint
-	(*Settings)(nil),                // 178: lms.v1.Settings
-	(*SettingsView)(nil),            // 179: lms.v1.SettingsView
-	(*SignupSettings)(nil),          // 180: lms.v1.SignupSettings
-	(*SiteInfo)(nil),                // 181: lms.v1.SiteInfo
-	(*Slab)(nil),                    // 182: lms.v1.Slab
-	(*SourceRow)(nil),               // 183: lms.v1.SourceRow
-	(*Staff)(nil),                   // 184: lms.v1.Staff
-	(*StaffInput)(nil),              // 185: lms.v1.StaffInput
-	(*Stage)(nil),                   // 186: lms.v1.Stage
-	(*StageInput)(nil),              // 187: lms.v1.StageInput
-	(*Student)(nil),                 // 188: lms.v1.Student
-	(*StudentDetail)(nil),           // 189: lms.v1.StudentDetail
-	(*StudentFeeAccount)(nil),       // 190: lms.v1.StudentFeeAccount
-	(*StudentFees)(nil),             // 191: lms.v1.StudentFees
-	(*StudentInput)(nil),            // 192: lms.v1.StudentInput
-	(*StudentPaymentInput)(nil),     // 193: lms.v1.StudentPaymentInput
-	(*Submission)(nil),              // 194: lms.v1.Submission
-	(*SubmissionDetail)(nil),        // 195: lms.v1.SubmissionDetail
-	(*SubmissionInput)(nil),         // 196: lms.v1.SubmissionInput
-	(*SubmissionItem)(nil),          // 197: lms.v1.SubmissionItem
-	(*SubmissionItemInput)(nil),     // 198: lms.v1.SubmissionItemInput
-	(*SubmissionRow)(nil),           // 199: lms.v1.SubmissionRow
-	(*SyncInput)(nil),               // 200: lms.v1.SyncInput
-	(*SyncResult)(nil),              // 201: lms.v1.SyncResult
-	(*SyncStep)(nil),                // 202: lms.v1.SyncStep
-	(*SystemInfo)(nil),              // 203: lms.v1.SystemInfo
-	(*TargetProgress)(nil),          // 204: lms.v1.TargetProgress
-	(*Task)(nil),                    // 205: lms.v1.Task
-	(*TaskBrief)(nil),               // 206: lms.v1.TaskBrief
-	(*TaskInput)(nil),               // 207: lms.v1.TaskInput
-	(*TaskPage)(nil),                // 208: lms.v1.TaskPage
-	(*TaskRules)(nil),               // 209: lms.v1.TaskRules
-	(*Team)(nil),                    // 210: lms.v1.Team
-	(*TeamInput)(nil),               // 211: lms.v1.TeamInput
-	(*ThreadComment)(nil),           // 212: lms.v1.ThreadComment
-	(*TrafficStat)(nil),             // 213: lms.v1.TrafficStat
-	(*Upload)(nil),                  // 214: lms.v1.Upload
-	(*UploadSettings)(nil),          // 215: lms.v1.UploadSettings
-	(*Video)(nil),                   // 216: lms.v1.Video
-	(*VideoComment)(nil),            // 217: lms.v1.VideoComment
-	(*VideoCommentInput)(nil),       // 218: lms.v1.VideoCommentInput
-	(*VideoInput)(nil),              // 219: lms.v1.VideoInput
-	(*VideoLink)(nil),               // 220: lms.v1.VideoLink
-	(*VideoLinkInput)(nil),          // 221: lms.v1.VideoLinkInput
-	(*WaBroadcast)(nil),             // 222: lms.v1.WaBroadcast
-	(*WaBroadcastInput)(nil),        // 223: lms.v1.WaBroadcastInput
-	(*WaConfig)(nil),                // 224: lms.v1.WaConfig
-	(*WaConfigInput)(nil),           // 225: lms.v1.WaConfigInput
-	(*WaContact)(nil),               // 226: lms.v1.WaContact
-	(*WaMessage)(nil),               // 227: lms.v1.WaMessage
-	(*WaQuickReply)(nil),            // 228: lms.v1.WaQuickReply
-	(*WaQuickReplyInput)(nil),       // 229: lms.v1.WaQuickReplyInput
-	(*WaSendInput)(nil),             // 230: lms.v1.WaSendInput
-	(*WaTemplate)(nil),              // 231: lms.v1.WaTemplate
-	(*WaTemplateSend)(nil),          // 232: lms.v1.WaTemplateSend
-	(*WaThread)(nil),                // 233: lms.v1.WaThread
-	(*WatchPage)(nil),               // 234: lms.v1.WatchPage
-	nil,                             // 235: lms.v1.LeadList.StageCountsEntry
-	nil,                             // 236: lms.v1.Presigned.HeadersEntry
-	nil,                             // 237: lms.v1.Role.PermissionsEntry
-	nil,                             // 238: lms.v1.RoleInput.PermissionsEntry
-	(*timestamppb.Timestamp)(nil),   // 239: google.protobuf.Timestamp
-	(*structpb.Struct)(nil),         // 240: google.protobuf.Struct
-	(*Person)(nil),                  // 241: lms.v1.Person
+	(*StringList)(nil),                // 0: lms.v1.StringList
+	(*ApiInfo)(nil),                   // 1: lms.v1.ApiInfo
+	(*Admission)(nil),                 // 2: lms.v1.Admission
+	(*AdmissionCourse)(nil),           // 3: lms.v1.AdmissionCourse
+	(*AdmissionDetail)(nil),           // 4: lms.v1.AdmissionDetail
+	(*AdmissionInput)(nil),            // 5: lms.v1.AdmissionInput
+	(*AdmissionUpdate)(nil),           // 6: lms.v1.AdmissionUpdate
+	(*AgingBucket)(nil),               // 7: lms.v1.AgingBucket
+	(*Announcement)(nil),              // 8: lms.v1.Announcement
+	(*AnnouncementInput)(nil),         // 9: lms.v1.AnnouncementInput
+	(*AssignInput)(nil),               // 10: lms.v1.AssignInput
+	(*AssignmentRule)(nil),            // 11: lms.v1.AssignmentRule
+	(*AssignmentRuleInput)(nil),       // 12: lms.v1.AssignmentRuleInput
+	(*Attachment)(nil),                // 13: lms.v1.Attachment
+	(*AttendanceInput)(nil),           // 14: lms.v1.AttendanceInput
+	(*AttendanceMark)(nil),            // 15: lms.v1.AttendanceMark
+	(*AttendanceStat)(nil),            // 16: lms.v1.AttendanceStat
+	(*AuditEntry)(nil),                // 17: lms.v1.AuditEntry
+	(*AvailabilityInput)(nil),         // 18: lms.v1.AvailabilityInput
+	(*Batch)(nil),                     // 19: lms.v1.Batch
+	(*BatchDetail)(nil),               // 20: lms.v1.BatchDetail
+	(*BatchInput)(nil),                // 21: lms.v1.BatchInput
+	(*BatchOption)(nil),               // 22: lms.v1.BatchOption
+	(*BatchStudent)(nil),              // 23: lms.v1.BatchStudent
+	(*BatchType)(nil),                 // 24: lms.v1.BatchType
+	(*BatchTypeInput)(nil),            // 25: lms.v1.BatchTypeInput
+	(*BlogInput)(nil),                 // 26: lms.v1.BlogInput
+	(*BlogPost)(nil),                  // 27: lms.v1.BlogPost
+	(*Branding)(nil),                  // 28: lms.v1.Branding
+	(*BroadcastAudience)(nil),         // 29: lms.v1.BroadcastAudience
+	(*BulkAssignInput)(nil),           // 30: lms.v1.BulkAssignInput
+	(*BusinessSettings)(nil),          // 31: lms.v1.BusinessSettings
+	(*CmsBlock)(nil),                  // 32: lms.v1.CmsBlock
+	(*CmsInput)(nil),                  // 33: lms.v1.CmsInput
+	(*CrmSettings)(nil),               // 34: lms.v1.CrmSettings
+	(*CallInput)(nil),                 // 35: lms.v1.CallInput
+	(*Certificate)(nil),               // 36: lms.v1.Certificate
+	(*CertificateField)(nil),          // 37: lms.v1.CertificateField
+	(*CertificateInput)(nil),          // 38: lms.v1.CertificateInput
+	(*CertificateTemplate)(nil),       // 39: lms.v1.CertificateTemplate
+	(*CertificateTemplateInput)(nil),  // 40: lms.v1.CertificateTemplateInput
+	(*CertificateTemplateOption)(nil), // 41: lms.v1.CertificateTemplateOption
+	(*CertificateVerification)(nil),   // 42: lms.v1.CertificateVerification
+	(*CheckinInput)(nil),              // 43: lms.v1.CheckinInput
+	(*CheckinResult)(nil),             // 44: lms.v1.CheckinResult
+	(*ClassInput)(nil),                // 45: lms.v1.ClassInput
+	(*ClassQr)(nil),                   // 46: lms.v1.ClassQr
+	(*ClassSession)(nil),              // 47: lms.v1.ClassSession
+	(*CollectionRow)(nil),             // 48: lms.v1.CollectionRow
+	(*CollectionsReport)(nil),         // 49: lms.v1.CollectionsReport
+	(*CommentInput)(nil),              // 50: lms.v1.CommentInput
+	(*CommissionEntry)(nil),           // 51: lms.v1.CommissionEntry
+	(*CommissionRow)(nil),             // 52: lms.v1.CommissionRow
+	(*CommissionSummary)(nil),         // 53: lms.v1.CommissionSummary
+	(*CommissionTarget)(nil),          // 54: lms.v1.CommissionTarget
+	(*CommissionTargetInput)(nil),     // 55: lms.v1.CommissionTargetInput
+	(*Counsellor)(nil),                // 56: lms.v1.Counsellor
+	(*CounsellorInput)(nil),           // 57: lms.v1.CounsellorInput
+	(*CounsellorPerformance)(nil),     // 58: lms.v1.CounsellorPerformance
+	(*Counts)(nil),                    // 59: lms.v1.Counts
+	(*Course)(nil),                    // 60: lms.v1.Course
+	(*CourseInput)(nil),               // 61: lms.v1.CourseInput
+	(*CourseOption)(nil),              // 62: lms.v1.CourseOption
+	(*CourseStat)(nil),                // 63: lms.v1.CourseStat
+	(*DbPool)(nil),                    // 64: lms.v1.DbPool
+	(*DbQuery)(nil),                   // 65: lms.v1.DbQuery
+	(*DbTable)(nil),                   // 66: lms.v1.DbTable
+	(*DbUser)(nil),                    // 67: lms.v1.DbUser
+	(*Dashboard)(nil),                 // 68: lms.v1.Dashboard
+	(*DashboardStats)(nil),            // 69: lms.v1.DashboardStats
+	(*DatabaseBrief)(nil),             // 70: lms.v1.DatabaseBrief
+	(*DatabaseStats)(nil),             // 71: lms.v1.DatabaseStats
+	(*DayPoint)(nil),                  // 72: lms.v1.DayPoint
+	(*DueRow)(nil),                    // 73: lms.v1.DueRow
+	(*DuesReport)(nil),                // 74: lms.v1.DuesReport
+	(*EndpointStat)(nil),              // 75: lms.v1.EndpointStat
+	(*EnrollInput)(nil),               // 76: lms.v1.EnrollInput
+	(*Enrollment)(nil),                // 77: lms.v1.Enrollment
+	(*EnrollmentUpdate)(nil),          // 78: lms.v1.EnrollmentUpdate
+	(*FeeLineInput)(nil),              // 79: lms.v1.FeeLineInput
+	(*FeeQuote)(nil),                  // 80: lms.v1.FeeQuote
+	(*FeeQuoteInput)(nil),             // 81: lms.v1.FeeQuoteInput
+	(*FollowUp)(nil),                  // 82: lms.v1.FollowUp
+	(*FollowUpInput)(nil),             // 83: lms.v1.FollowUpInput
+	(*FunnelReport)(nil),              // 84: lms.v1.FunnelReport
+	(*FunnelStage)(nil),               // 85: lms.v1.FunnelStage
+	(*GstMonth)(nil),                  // 86: lms.v1.GstMonth
+	(*GstReport)(nil),                 // 87: lms.v1.GstReport
+	(*GoogleSettings)(nil),            // 88: lms.v1.GoogleSettings
+	(*GoogleStatus)(nil),              // 89: lms.v1.GoogleStatus
+	(*Ids)(nil),                       // 90: lms.v1.Ids
+	(*ImportInput)(nil),               // 91: lms.v1.ImportInput
+	(*ImportResult)(nil),              // 92: lms.v1.ImportResult
+	(*Installment)(nil),               // 93: lms.v1.Installment
+	(*InstallmentInput)(nil),          // 94: lms.v1.InstallmentInput
+	(*InstallmentPlan)(nil),           // 95: lms.v1.InstallmentPlan
+	(*InstallmentsInput)(nil),         // 96: lms.v1.InstallmentsInput
+	(*JoinResult)(nil),                // 97: lms.v1.JoinResult
+	(*Lead)(nil),                      // 98: lms.v1.Lead
+	(*LeadActivity)(nil),              // 99: lms.v1.LeadActivity
+	(*LeadCreate)(nil),                // 100: lms.v1.LeadCreate
+	(*LeadCreated)(nil),               // 101: lms.v1.LeadCreated
+	(*LeadDetail)(nil),                // 102: lms.v1.LeadDetail
+	(*LeadImportInput)(nil),           // 103: lms.v1.LeadImportInput
+	(*LeadInput)(nil),                 // 104: lms.v1.LeadInput
+	(*LeadList)(nil),                  // 105: lms.v1.LeadList
+	(*LeadStageInput)(nil),            // 106: lms.v1.LeadStageInput
+	(*LeadUpdate)(nil),                // 107: lms.v1.LeadUpdate
+	(*LiveAttendanceInput)(nil),       // 108: lms.v1.LiveAttendanceInput
+	(*LiveAttendanceMark)(nil),        // 109: lms.v1.LiveAttendanceMark
+	(*LiveDetail)(nil),                // 110: lms.v1.LiveDetail
+	(*LiveInput)(nil),                 // 111: lms.v1.LiveInput
+	(*LiveRosterRow)(nil),             // 112: lms.v1.LiveRosterRow
+	(*LiveSession)(nil),               // 113: lms.v1.LiveSession
+	(*LiveTarget)(nil),                // 114: lms.v1.LiveTarget
+	(*LostReason)(nil),                // 115: lms.v1.LostReason
+	(*LostReasonInput)(nil),           // 116: lms.v1.LostReasonInput
+	(*ManualCommissionInput)(nil),     // 117: lms.v1.ManualCommissionInput
+	(*ModerationComment)(nil),         // 118: lms.v1.ModerationComment
+	(*ModuleDef)(nil),                 // 119: lms.v1.ModuleDef
+	(*MonthInput)(nil),                // 120: lms.v1.MonthInput
+	(*MyClassAttendance)(nil),         // 121: lms.v1.MyClassAttendance
+	(*MyCourse)(nil),                  // 122: lms.v1.MyCourse
+	(*MyCourseDetail)(nil),            // 123: lms.v1.MyCourseDetail
+	(*MyEarnings)(nil),                // 124: lms.v1.MyEarnings
+	(*MyQuiz)(nil),                    // 125: lms.v1.MyQuiz
+	(*MySales)(nil),                   // 126: lms.v1.MySales
+	(*MyTask)(nil),                    // 127: lms.v1.MyTask
+	(*NewStudentInput)(nil),           // 128: lms.v1.NewStudentInput
+	(*NoteInput)(nil),                 // 129: lms.v1.NoteInput
+	(*Notification)(nil),              // 130: lms.v1.Notification
+	(*NotificationFeed)(nil),          // 131: lms.v1.NotificationFeed
+	(*OnlineCount)(nil),               // 132: lms.v1.OnlineCount
+	(*OnlineUser)(nil),                // 133: lms.v1.OnlineUser
+	(*Overview)(nil),                  // 134: lms.v1.Overview
+	(*PayInfo)(nil),                   // 135: lms.v1.PayInfo
+	(*Payment)(nil),                   // 136: lms.v1.Payment
+	(*PaymentInput)(nil),              // 137: lms.v1.PaymentInput
+	(*PaymentSettings)(nil),           // 138: lms.v1.PaymentSettings
+	(*Payout)(nil),                    // 139: lms.v1.Payout
+	(*PayoutInput)(nil),               // 140: lms.v1.PayoutInput
+	(*PerformanceReport)(nil),         // 141: lms.v1.PerformanceReport
+	(*PermissionCatalog)(nil),         // 142: lms.v1.PermissionCatalog
+	(*PlayOption)(nil),                // 143: lms.v1.PlayOption
+	(*PlayQuestion)(nil),              // 144: lms.v1.PlayQuestion
+	(*PlaylistItem)(nil),              // 145: lms.v1.PlaylistItem
+	(*PresignInput)(nil),              // 146: lms.v1.PresignInput
+	(*Presigned)(nil),                 // 147: lms.v1.Presigned
+	(*PublicBatch)(nil),               // 148: lms.v1.PublicBatch
+	(*PublicCourse)(nil),              // 149: lms.v1.PublicCourse
+	(*PublicCourseDetail)(nil),        // 150: lms.v1.PublicCourseDetail
+	(*PublicLesson)(nil),              // 151: lms.v1.PublicLesson
+	(*PublicPost)(nil),                // 152: lms.v1.PublicPost
+	(*QuestionReview)(nil),            // 153: lms.v1.QuestionReview
+	(*Quiz)(nil),                      // 154: lms.v1.Quiz
+	(*QuizAnswer)(nil),                // 155: lms.v1.QuizAnswer
+	(*QuizAttemptRow)(nil),            // 156: lms.v1.QuizAttemptRow
+	(*QuizInput)(nil),                 // 157: lms.v1.QuizInput
+	(*QuizOption)(nil),                // 158: lms.v1.QuizOption
+	(*QuizOptionInput)(nil),           // 159: lms.v1.QuizOptionInput
+	(*QuizPlay)(nil),                  // 160: lms.v1.QuizPlay
+	(*QuizQuestion)(nil),              // 161: lms.v1.QuizQuestion
+	(*QuizQuestionInput)(nil),         // 162: lms.v1.QuizQuestionInput
+	(*QuizResult)(nil),                // 163: lms.v1.QuizResult
+	(*QuizSubmitInput)(nil),           // 164: lms.v1.QuizSubmitInput
+	(*ReasonInput)(nil),               // 165: lms.v1.ReasonInput
+	(*ReasonRow)(nil),                 // 166: lms.v1.ReasonRow
+	(*RecordingInput)(nil),            // 167: lms.v1.RecordingInput
+	(*Refund)(nil),                    // 168: lms.v1.Refund
+	(*RefundInput)(nil),               // 169: lms.v1.RefundInput
+	(*ReminderSettings)(nil),          // 170: lms.v1.ReminderSettings
+	(*ReportRange)(nil),               // 171: lms.v1.ReportRange
+	(*RequestLog)(nil),                // 172: lms.v1.RequestLog
+	(*ReviewInput)(nil),               // 173: lms.v1.ReviewInput
+	(*Role)(nil),                      // 174: lms.v1.Role
+	(*RoleInput)(nil),                 // 175: lms.v1.RoleInput
+	(*RoleRef)(nil),                   // 176: lms.v1.RoleRef
+	(*RosterRow)(nil),                 // 177: lms.v1.RosterRow
+	(*SalesCounts)(nil),               // 178: lms.v1.SalesCounts
+	(*SalesSettings)(nil),             // 179: lms.v1.SalesSettings
+	(*ServerOverview)(nil),            // 180: lms.v1.ServerOverview
+	(*ServerPoint)(nil),               // 181: lms.v1.ServerPoint
+	(*Settings)(nil),                  // 182: lms.v1.Settings
+	(*SettingsView)(nil),              // 183: lms.v1.SettingsView
+	(*SignupSettings)(nil),            // 184: lms.v1.SignupSettings
+	(*SiteInfo)(nil),                  // 185: lms.v1.SiteInfo
+	(*Slab)(nil),                      // 186: lms.v1.Slab
+	(*SourceRow)(nil),                 // 187: lms.v1.SourceRow
+	(*Staff)(nil),                     // 188: lms.v1.Staff
+	(*StaffInput)(nil),                // 189: lms.v1.StaffInput
+	(*Stage)(nil),                     // 190: lms.v1.Stage
+	(*StageInput)(nil),                // 191: lms.v1.StageInput
+	(*Student)(nil),                   // 192: lms.v1.Student
+	(*StudentDetail)(nil),             // 193: lms.v1.StudentDetail
+	(*StudentFeeAccount)(nil),         // 194: lms.v1.StudentFeeAccount
+	(*StudentFees)(nil),               // 195: lms.v1.StudentFees
+	(*StudentInput)(nil),              // 196: lms.v1.StudentInput
+	(*StudentPaymentInput)(nil),       // 197: lms.v1.StudentPaymentInput
+	(*Submission)(nil),                // 198: lms.v1.Submission
+	(*SubmissionDetail)(nil),          // 199: lms.v1.SubmissionDetail
+	(*SubmissionInput)(nil),           // 200: lms.v1.SubmissionInput
+	(*SubmissionItem)(nil),            // 201: lms.v1.SubmissionItem
+	(*SubmissionItemInput)(nil),       // 202: lms.v1.SubmissionItemInput
+	(*SubmissionRow)(nil),             // 203: lms.v1.SubmissionRow
+	(*SyncInput)(nil),                 // 204: lms.v1.SyncInput
+	(*SyncResult)(nil),                // 205: lms.v1.SyncResult
+	(*SyncStep)(nil),                  // 206: lms.v1.SyncStep
+	(*SystemInfo)(nil),                // 207: lms.v1.SystemInfo
+	(*TargetProgress)(nil),            // 208: lms.v1.TargetProgress
+	(*Task)(nil),                      // 209: lms.v1.Task
+	(*TaskBrief)(nil),                 // 210: lms.v1.TaskBrief
+	(*TaskInput)(nil),                 // 211: lms.v1.TaskInput
+	(*TaskPage)(nil),                  // 212: lms.v1.TaskPage
+	(*TaskRules)(nil),                 // 213: lms.v1.TaskRules
+	(*Team)(nil),                      // 214: lms.v1.Team
+	(*TeamInput)(nil),                 // 215: lms.v1.TeamInput
+	(*ThreadComment)(nil),             // 216: lms.v1.ThreadComment
+	(*TrafficStat)(nil),               // 217: lms.v1.TrafficStat
+	(*Upload)(nil),                    // 218: lms.v1.Upload
+	(*UploadSettings)(nil),            // 219: lms.v1.UploadSettings
+	(*Video)(nil),                     // 220: lms.v1.Video
+	(*VideoComment)(nil),              // 221: lms.v1.VideoComment
+	(*VideoCommentInput)(nil),         // 222: lms.v1.VideoCommentInput
+	(*VideoInput)(nil),                // 223: lms.v1.VideoInput
+	(*VideoLink)(nil),                 // 224: lms.v1.VideoLink
+	(*VideoLinkInput)(nil),            // 225: lms.v1.VideoLinkInput
+	(*WaBroadcast)(nil),               // 226: lms.v1.WaBroadcast
+	(*WaBroadcastInput)(nil),          // 227: lms.v1.WaBroadcastInput
+	(*WaConfig)(nil),                  // 228: lms.v1.WaConfig
+	(*WaConfigInput)(nil),             // 229: lms.v1.WaConfigInput
+	(*WaContact)(nil),                 // 230: lms.v1.WaContact
+	(*WaMessage)(nil),                 // 231: lms.v1.WaMessage
+	(*WaQuickReply)(nil),              // 232: lms.v1.WaQuickReply
+	(*WaQuickReplyInput)(nil),         // 233: lms.v1.WaQuickReplyInput
+	(*WaSendInput)(nil),               // 234: lms.v1.WaSendInput
+	(*WaTemplate)(nil),                // 235: lms.v1.WaTemplate
+	(*WaTemplateSend)(nil),            // 236: lms.v1.WaTemplateSend
+	(*WaThread)(nil),                  // 237: lms.v1.WaThread
+	(*WatchPage)(nil),                 // 238: lms.v1.WatchPage
+	nil,                               // 239: lms.v1.LeadList.StageCountsEntry
+	nil,                               // 240: lms.v1.Presigned.HeadersEntry
+	nil,                               // 241: lms.v1.Role.PermissionsEntry
+	nil,                               // 242: lms.v1.RoleInput.PermissionsEntry
+	(*timestamppb.Timestamp)(nil),     // 243: google.protobuf.Timestamp
+	(*structpb.Struct)(nil),           // 244: google.protobuf.Struct
+	(*Person)(nil),                    // 245: lms.v1.Person
 }
 var file_lms_v1_types_proto_depIdxs = []int32{
-	239, // 0: lms.v1.ApiInfo.started_at:type_name -> google.protobuf.Timestamp
-	239, // 1: lms.v1.Admission.created_at:type_name -> google.protobuf.Timestamp
-	239, // 2: lms.v1.Admission.approved_at:type_name -> google.protobuf.Timestamp
+	243, // 0: lms.v1.ApiInfo.started_at:type_name -> google.protobuf.Timestamp
+	243, // 1: lms.v1.Admission.created_at:type_name -> google.protobuf.Timestamp
+	243, // 2: lms.v1.Admission.approved_at:type_name -> google.protobuf.Timestamp
 	2,   // 3: lms.v1.AdmissionDetail.admission:type_name -> lms.v1.Admission
 	3,   // 4: lms.v1.AdmissionDetail.course_lines:type_name -> lms.v1.AdmissionCourse
-	89,  // 5: lms.v1.AdmissionDetail.installments:type_name -> lms.v1.Installment
-	132, // 6: lms.v1.AdmissionDetail.payments:type_name -> lms.v1.Payment
-	164, // 7: lms.v1.AdmissionDetail.refunds:type_name -> lms.v1.Refund
-	47,  // 8: lms.v1.AdmissionDetail.commission:type_name -> lms.v1.CommissionEntry
-	124, // 9: lms.v1.AdmissionInput.student:type_name -> lms.v1.NewStudentInput
-	75,  // 10: lms.v1.AdmissionInput.courses:type_name -> lms.v1.FeeLineInput
-	90,  // 11: lms.v1.AdmissionInput.installments:type_name -> lms.v1.InstallmentInput
-	91,  // 12: lms.v1.AdmissionInput.plan:type_name -> lms.v1.InstallmentPlan
-	133, // 13: lms.v1.AdmissionInput.advance:type_name -> lms.v1.PaymentInput
-	239, // 14: lms.v1.Announcement.created_at:type_name -> google.protobuf.Timestamp
+	93,  // 5: lms.v1.AdmissionDetail.installments:type_name -> lms.v1.Installment
+	136, // 6: lms.v1.AdmissionDetail.payments:type_name -> lms.v1.Payment
+	168, // 7: lms.v1.AdmissionDetail.refunds:type_name -> lms.v1.Refund
+	51,  // 8: lms.v1.AdmissionDetail.commission:type_name -> lms.v1.CommissionEntry
+	128, // 9: lms.v1.AdmissionInput.student:type_name -> lms.v1.NewStudentInput
+	79,  // 10: lms.v1.AdmissionInput.courses:type_name -> lms.v1.FeeLineInput
+	94,  // 11: lms.v1.AdmissionInput.installments:type_name -> lms.v1.InstallmentInput
+	95,  // 12: lms.v1.AdmissionInput.plan:type_name -> lms.v1.InstallmentPlan
+	137, // 13: lms.v1.AdmissionInput.advance:type_name -> lms.v1.PaymentInput
+	243, // 14: lms.v1.Announcement.created_at:type_name -> google.protobuf.Timestamp
 	15,  // 15: lms.v1.AttendanceInput.records:type_name -> lms.v1.AttendanceMark
-	240, // 16: lms.v1.AuditEntry.data:type_name -> google.protobuf.Struct
-	239, // 17: lms.v1.AuditEntry.created_at:type_name -> google.protobuf.Timestamp
-	239, // 18: lms.v1.Batch.created_at:type_name -> google.protobuf.Timestamp
+	244, // 16: lms.v1.AuditEntry.data:type_name -> google.protobuf.Struct
+	243, // 17: lms.v1.AuditEntry.created_at:type_name -> google.protobuf.Timestamp
+	243, // 18: lms.v1.Batch.created_at:type_name -> google.protobuf.Timestamp
 	19,  // 19: lms.v1.BatchDetail.batch:type_name -> lms.v1.Batch
-	241, // 20: lms.v1.BatchDetail.mentors:type_name -> lms.v1.Person
+	245, // 20: lms.v1.BatchDetail.mentors:type_name -> lms.v1.Person
 	23,  // 21: lms.v1.BatchDetail.students:type_name -> lms.v1.BatchStudent
-	239, // 22: lms.v1.BlogPost.published_at:type_name -> google.protobuf.Timestamp
-	239, // 23: lms.v1.BlogPost.created_at:type_name -> google.protobuf.Timestamp
-	239, // 24: lms.v1.BlogPost.updated_at:type_name -> google.protobuf.Timestamp
-	240, // 25: lms.v1.CmsBlock.data:type_name -> google.protobuf.Struct
-	239, // 26: lms.v1.CmsBlock.updated_at:type_name -> google.protobuf.Timestamp
-	240, // 27: lms.v1.CmsInput.data:type_name -> google.protobuf.Struct
-	239, // 28: lms.v1.CallInput.started_at:type_name -> google.protobuf.Timestamp
-	239, // 29: lms.v1.Certificate.issued_at:type_name -> google.protobuf.Timestamp
-	239, // 30: lms.v1.Certificate.revoked_at:type_name -> google.protobuf.Timestamp
-	239, // 31: lms.v1.CertificateVerification.issued_at:type_name -> google.protobuf.Timestamp
-	239, // 32: lms.v1.ClassInput.starts_at:type_name -> google.protobuf.Timestamp
-	239, // 33: lms.v1.ClassInput.ends_at:type_name -> google.protobuf.Timestamp
-	239, // 34: lms.v1.ClassQr.expires_at:type_name -> google.protobuf.Timestamp
-	239, // 35: lms.v1.ClassSession.starts_at:type_name -> google.protobuf.Timestamp
-	239, // 36: lms.v1.ClassSession.ends_at:type_name -> google.protobuf.Timestamp
-	239, // 37: lms.v1.ClassSession.qr_expires_at:type_name -> google.protobuf.Timestamp
-	44,  // 38: lms.v1.CollectionsReport.rows:type_name -> lms.v1.CollectionRow
-	239, // 39: lms.v1.CommissionEntry.created_at:type_name -> google.protobuf.Timestamp
-	204, // 40: lms.v1.CommissionRow.target:type_name -> lms.v1.TargetProgress
-	48,  // 41: lms.v1.CommissionSummary.rows:type_name -> lms.v1.CommissionRow
-	48,  // 42: lms.v1.CommissionSummary.totals:type_name -> lms.v1.CommissionRow
-	182, // 43: lms.v1.CommissionTarget.slabs:type_name -> lms.v1.Slab
-	182, // 44: lms.v1.CommissionTargetInput.slabs:type_name -> lms.v1.Slab
-	239, // 45: lms.v1.Counsellor.last_assigned_at:type_name -> google.protobuf.Timestamp
-	239, // 46: lms.v1.Counsellor.last_seen_at:type_name -> google.protobuf.Timestamp
-	241, // 47: lms.v1.Course.mentors:type_name -> lms.v1.Person
-	239, // 48: lms.v1.Course.created_at:type_name -> google.protobuf.Timestamp
-	239, // 49: lms.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
-	239, // 50: lms.v1.DbTable.last_vacuum:type_name -> google.protobuf.Timestamp
-	65,  // 51: lms.v1.Dashboard.stats:type_name -> lms.v1.DashboardStats
-	118, // 52: lms.v1.Dashboard.courses:type_name -> lms.v1.MyCourse
-	123, // 53: lms.v1.Dashboard.next_tasks:type_name -> lms.v1.MyTask
-	109, // 54: lms.v1.Dashboard.upcoming_live:type_name -> lms.v1.LiveSession
-	8,   // 55: lms.v1.Dashboard.announcements:type_name -> lms.v1.Announcement
-	239, // 56: lms.v1.DatabaseStats.started_at:type_name -> google.protobuf.Timestamp
-	60,  // 57: lms.v1.DatabaseStats.pool:type_name -> lms.v1.DbPool
-	63,  // 58: lms.v1.DatabaseStats.users:type_name -> lms.v1.DbUser
-	62,  // 59: lms.v1.DatabaseStats.tables:type_name -> lms.v1.DbTable
-	61,  // 60: lms.v1.DatabaseStats.running:type_name -> lms.v1.DbQuery
-	69,  // 61: lms.v1.DuesReport.rows:type_name -> lms.v1.DueRow
-	7,   // 62: lms.v1.DuesReport.aging:type_name -> lms.v1.AgingBucket
-	239, // 63: lms.v1.Enrollment.enrolled_at:type_name -> google.protobuf.Timestamp
-	239, // 64: lms.v1.Enrollment.completed_at:type_name -> google.protobuf.Timestamp
-	3,   // 65: lms.v1.FeeQuote.lines:type_name -> lms.v1.AdmissionCourse
-	90,  // 66: lms.v1.FeeQuote.installments:type_name -> lms.v1.InstallmentInput
-	75,  // 67: lms.v1.FeeQuoteInput.courses:type_name -> lms.v1.FeeLineInput
-	91,  // 68: lms.v1.FeeQuoteInput.plan:type_name -> lms.v1.InstallmentPlan
-	239, // 69: lms.v1.FollowUp.due_at:type_name -> google.protobuf.Timestamp
-	239, // 70: lms.v1.FollowUp.done_at:type_name -> google.protobuf.Timestamp
-	239, // 71: lms.v1.FollowUp.created_at:type_name -> google.protobuf.Timestamp
-	239, // 72: lms.v1.FollowUpInput.due_at:type_name -> google.protobuf.Timestamp
-	81,  // 73: lms.v1.FunnelReport.stages:type_name -> lms.v1.FunnelStage
-	183, // 74: lms.v1.FunnelReport.sources:type_name -> lms.v1.SourceRow
-	162, // 75: lms.v1.FunnelReport.lost_reasons:type_name -> lms.v1.ReasonRow
-	82,  // 76: lms.v1.GstReport.months:type_name -> lms.v1.GstMonth
-	82,  // 77: lms.v1.GstReport.totals:type_name -> lms.v1.GstMonth
-	90,  // 78: lms.v1.InstallmentsInput.installments:type_name -> lms.v1.InstallmentInput
-	91,  // 79: lms.v1.InstallmentsInput.plan:type_name -> lms.v1.InstallmentPlan
-	239, // 80: lms.v1.Lead.assigned_at:type_name -> google.protobuf.Timestamp
-	239, // 81: lms.v1.Lead.sla_due_at:type_name -> google.protobuf.Timestamp
-	239, // 82: lms.v1.Lead.first_contacted_at:type_name -> google.protobuf.Timestamp
-	239, // 83: lms.v1.Lead.last_activity_at:type_name -> google.protobuf.Timestamp
-	239, // 84: lms.v1.Lead.next_follow_up_at:type_name -> google.protobuf.Timestamp
-	239, // 85: lms.v1.Lead.created_at:type_name -> google.protobuf.Timestamp
-	239, // 86: lms.v1.Lead.updated_at:type_name -> google.protobuf.Timestamp
-	240, // 87: lms.v1.LeadActivity.data:type_name -> google.protobuf.Struct
-	239, // 88: lms.v1.LeadActivity.created_at:type_name -> google.protobuf.Timestamp
-	94,  // 89: lms.v1.LeadCreated.lead:type_name -> lms.v1.Lead
-	94,  // 90: lms.v1.LeadDetail.lead:type_name -> lms.v1.Lead
-	95,  // 91: lms.v1.LeadDetail.activities:type_name -> lms.v1.LeadActivity
-	78,  // 92: lms.v1.LeadDetail.follow_ups:type_name -> lms.v1.FollowUp
-	226, // 93: lms.v1.LeadDetail.whatsapp:type_name -> lms.v1.WaContact
-	94,  // 94: lms.v1.LeadList.items:type_name -> lms.v1.Lead
-	235, // 95: lms.v1.LeadList.stage_counts:type_name -> lms.v1.LeadList.StageCountsEntry
-	105, // 96: lms.v1.LiveAttendanceInput.records:type_name -> lms.v1.LiveAttendanceMark
-	109, // 97: lms.v1.LiveDetail.session:type_name -> lms.v1.LiveSession
-	108, // 98: lms.v1.LiveDetail.roster:type_name -> lms.v1.LiveRosterRow
-	239, // 99: lms.v1.LiveInput.starts_at:type_name -> google.protobuf.Timestamp
-	239, // 100: lms.v1.LiveInput.ends_at:type_name -> google.protobuf.Timestamp
-	110, // 101: lms.v1.LiveInput.targets:type_name -> lms.v1.LiveTarget
-	239, // 102: lms.v1.LiveRosterRow.joined_at:type_name -> google.protobuf.Timestamp
-	239, // 103: lms.v1.LiveSession.starts_at:type_name -> google.protobuf.Timestamp
-	239, // 104: lms.v1.LiveSession.ends_at:type_name -> google.protobuf.Timestamp
-	239, // 105: lms.v1.LiveSession.last_synced_at:type_name -> google.protobuf.Timestamp
-	110, // 106: lms.v1.LiveSession.targets:type_name -> lms.v1.LiveTarget
-	239, // 107: lms.v1.ModerationComment.created_at:type_name -> google.protobuf.Timestamp
-	239, // 108: lms.v1.MyClassAttendance.starts_at:type_name -> google.protobuf.Timestamp
-	239, // 109: lms.v1.MyClassAttendance.marked_at:type_name -> google.protobuf.Timestamp
-	239, // 110: lms.v1.MyCourse.enrolled_at:type_name -> google.protobuf.Timestamp
-	118, // 111: lms.v1.MyCourseDetail.course:type_name -> lms.v1.MyCourse
-	241, // 112: lms.v1.MyCourseDetail.mentors:type_name -> lms.v1.Person
-	141, // 113: lms.v1.MyCourseDetail.playlist:type_name -> lms.v1.PlaylistItem
-	48,  // 114: lms.v1.MyEarnings.row:type_name -> lms.v1.CommissionRow
-	47,  // 115: lms.v1.MyEarnings.entries:type_name -> lms.v1.CommissionEntry
-	135, // 116: lms.v1.MyEarnings.payouts:type_name -> lms.v1.Payout
-	174, // 117: lms.v1.MySales.counts:type_name -> lms.v1.SalesCounts
-	204, // 118: lms.v1.MySales.target:type_name -> lms.v1.TargetProgress
-	239, // 119: lms.v1.MyTask.due_at:type_name -> google.protobuf.Timestamp
-	239, // 120: lms.v1.MyTask.submitted_at:type_name -> google.protobuf.Timestamp
-	239, // 121: lms.v1.Notification.read_at:type_name -> google.protobuf.Timestamp
-	239, // 122: lms.v1.Notification.created_at:type_name -> google.protobuf.Timestamp
-	126, // 123: lms.v1.NotificationFeed.items:type_name -> lms.v1.Notification
-	239, // 124: lms.v1.OnlineUser.last_seen:type_name -> google.protobuf.Timestamp
-	55,  // 125: lms.v1.Overview.counts:type_name -> lms.v1.Counts
-	68,  // 126: lms.v1.Overview.daily:type_name -> lms.v1.DayPoint
-	59,  // 127: lms.v1.Overview.courses:type_name -> lms.v1.CourseStat
-	16,  // 128: lms.v1.Overview.attendance:type_name -> lms.v1.AttendanceStat
-	239, // 129: lms.v1.Payment.approved_at:type_name -> google.protobuf.Timestamp
-	239, // 130: lms.v1.Payment.created_at:type_name -> google.protobuf.Timestamp
-	239, // 131: lms.v1.Payout.created_at:type_name -> google.protobuf.Timestamp
-	54,  // 132: lms.v1.PerformanceReport.rows:type_name -> lms.v1.CounsellorPerformance
-	115, // 133: lms.v1.PermissionCatalog.modules:type_name -> lms.v1.ModuleDef
-	139, // 134: lms.v1.PlayQuestion.options:type_name -> lms.v1.PlayOption
-	214, // 135: lms.v1.Presigned.upload:type_name -> lms.v1.Upload
-	236, // 136: lms.v1.Presigned.headers:type_name -> lms.v1.Presigned.HeadersEntry
-	145, // 137: lms.v1.PublicCourseDetail.course:type_name -> lms.v1.PublicCourse
-	147, // 138: lms.v1.PublicCourseDetail.lessons:type_name -> lms.v1.PublicLesson
-	241, // 139: lms.v1.PublicCourseDetail.mentors:type_name -> lms.v1.Person
-	144, // 140: lms.v1.PublicCourseDetail.batches:type_name -> lms.v1.PublicBatch
-	239, // 141: lms.v1.PublicPost.published_at:type_name -> google.protobuf.Timestamp
-	157, // 142: lms.v1.Quiz.questions:type_name -> lms.v1.QuizQuestion
-	239, // 143: lms.v1.QuizAttemptRow.started_at:type_name -> google.protobuf.Timestamp
-	239, // 144: lms.v1.QuizAttemptRow.submitted_at:type_name -> google.protobuf.Timestamp
-	158, // 145: lms.v1.QuizInput.questions:type_name -> lms.v1.QuizQuestionInput
-	239, // 146: lms.v1.QuizPlay.started_at:type_name -> google.protobuf.Timestamp
-	239, // 147: lms.v1.QuizPlay.deadline:type_name -> google.protobuf.Timestamp
-	140, // 148: lms.v1.QuizPlay.questions:type_name -> lms.v1.PlayQuestion
-	154, // 149: lms.v1.QuizQuestion.options:type_name -> lms.v1.QuizOption
-	155, // 150: lms.v1.QuizQuestionInput.options:type_name -> lms.v1.QuizOptionInput
-	149, // 151: lms.v1.QuizResult.review:type_name -> lms.v1.QuestionReview
-	151, // 152: lms.v1.QuizSubmitInput.answers:type_name -> lms.v1.QuizAnswer
-	239, // 153: lms.v1.Refund.created_at:type_name -> google.protobuf.Timestamp
-	239, // 154: lms.v1.RequestLog.at:type_name -> google.protobuf.Timestamp
-	237, // 155: lms.v1.Role.permissions:type_name -> lms.v1.Role.PermissionsEntry
-	238, // 156: lms.v1.RoleInput.permissions:type_name -> lms.v1.RoleInput.PermissionsEntry
-	239, // 157: lms.v1.RosterRow.marked_at:type_name -> google.protobuf.Timestamp
-	31,  // 158: lms.v1.SalesSettings.business:type_name -> lms.v1.BusinessSettings
-	134, // 159: lms.v1.SalesSettings.payments:type_name -> lms.v1.PaymentSettings
-	34,  // 160: lms.v1.SalesSettings.crm:type_name -> lms.v1.CrmSettings
-	166, // 161: lms.v1.SalesSettings.reminders:type_name -> lms.v1.ReminderSettings
-	203, // 162: lms.v1.ServerOverview.system:type_name -> lms.v1.SystemInfo
-	1,   // 163: lms.v1.ServerOverview.api:type_name -> lms.v1.ApiInfo
-	213, // 164: lms.v1.ServerOverview.traffic:type_name -> lms.v1.TrafficStat
-	213, // 165: lms.v1.ServerOverview.recent:type_name -> lms.v1.TrafficStat
-	128, // 166: lms.v1.ServerOverview.online:type_name -> lms.v1.OnlineCount
-	66,  // 167: lms.v1.ServerOverview.database:type_name -> lms.v1.DatabaseBrief
-	177, // 168: lms.v1.ServerOverview.points:type_name -> lms.v1.ServerPoint
-	239, // 169: lms.v1.ServerPoint.at:type_name -> google.protobuf.Timestamp
-	28,  // 170: lms.v1.Settings.branding:type_name -> lms.v1.Branding
-	84,  // 171: lms.v1.Settings.google:type_name -> lms.v1.GoogleSettings
-	215, // 172: lms.v1.Settings.uploads:type_name -> lms.v1.UploadSettings
-	180, // 173: lms.v1.Settings.signup:type_name -> lms.v1.SignupSettings
-	178, // 174: lms.v1.SettingsView.settings:type_name -> lms.v1.Settings
-	85,  // 175: lms.v1.SettingsView.google_status:type_name -> lms.v1.GoogleStatus
-	28,  // 176: lms.v1.SiteInfo.branding:type_name -> lms.v1.Branding
-	240, // 177: lms.v1.SiteInfo.blocks:type_name -> google.protobuf.Struct
-	239, // 178: lms.v1.Staff.last_login_at:type_name -> google.protobuf.Timestamp
-	239, // 179: lms.v1.Staff.created_at:type_name -> google.protobuf.Timestamp
-	172, // 180: lms.v1.Staff.roles:type_name -> lms.v1.RoleRef
-	239, // 181: lms.v1.Student.last_login_at:type_name -> google.protobuf.Timestamp
-	239, // 182: lms.v1.Student.created_at:type_name -> google.protobuf.Timestamp
-	188, // 183: lms.v1.StudentDetail.student:type_name -> lms.v1.Student
-	73,  // 184: lms.v1.StudentDetail.enrollments:type_name -> lms.v1.Enrollment
-	2,   // 185: lms.v1.StudentFeeAccount.admission:type_name -> lms.v1.Admission
-	89,  // 186: lms.v1.StudentFeeAccount.installments:type_name -> lms.v1.Installment
-	132, // 187: lms.v1.StudentFeeAccount.payments:type_name -> lms.v1.Payment
-	190, // 188: lms.v1.StudentFees.accounts:type_name -> lms.v1.StudentFeeAccount
-	131, // 189: lms.v1.StudentFees.pay:type_name -> lms.v1.PayInfo
-	72,  // 190: lms.v1.StudentInput.enrollments:type_name -> lms.v1.EnrollInput
-	239, // 191: lms.v1.Submission.reviewed_at:type_name -> google.protobuf.Timestamp
-	239, // 192: lms.v1.Submission.created_at:type_name -> google.protobuf.Timestamp
-	197, // 193: lms.v1.Submission.items:type_name -> lms.v1.SubmissionItem
-	206, // 194: lms.v1.SubmissionDetail.task:type_name -> lms.v1.TaskBrief
-	241, // 195: lms.v1.SubmissionDetail.student:type_name -> lms.v1.Person
-	194, // 196: lms.v1.SubmissionDetail.current:type_name -> lms.v1.Submission
-	194, // 197: lms.v1.SubmissionDetail.history:type_name -> lms.v1.Submission
-	212, // 198: lms.v1.SubmissionDetail.comments:type_name -> lms.v1.ThreadComment
-	198, // 199: lms.v1.SubmissionInput.items:type_name -> lms.v1.SubmissionItemInput
-	239, // 200: lms.v1.SubmissionRow.created_at:type_name -> google.protobuf.Timestamp
-	239, // 201: lms.v1.SubmissionRow.reviewed_at:type_name -> google.protobuf.Timestamp
-	202, // 202: lms.v1.SyncResult.calendar:type_name -> lms.v1.SyncStep
-	202, // 203: lms.v1.SyncResult.attendance:type_name -> lms.v1.SyncStep
-	202, // 204: lms.v1.SyncResult.recording:type_name -> lms.v1.SyncStep
-	109, // 205: lms.v1.SyncResult.session:type_name -> lms.v1.LiveSession
-	239, // 206: lms.v1.SystemInfo.boot_time:type_name -> google.protobuf.Timestamp
-	239, // 207: lms.v1.SystemInfo.sampled_at:type_name -> google.protobuf.Timestamp
-	182, // 208: lms.v1.TargetProgress.next_slab:type_name -> lms.v1.Slab
-	239, // 209: lms.v1.Task.due_at:type_name -> google.protobuf.Timestamp
-	239, // 210: lms.v1.TaskBrief.due_at:type_name -> google.protobuf.Timestamp
-	239, // 211: lms.v1.TaskInput.due_at:type_name -> google.protobuf.Timestamp
-	206, // 212: lms.v1.TaskPage.task:type_name -> lms.v1.TaskBrief
-	209, // 213: lms.v1.TaskPage.rules:type_name -> lms.v1.TaskRules
-	194, // 214: lms.v1.TaskPage.attempts:type_name -> lms.v1.Submission
-	212, // 215: lms.v1.TaskPage.comments:type_name -> lms.v1.ThreadComment
-	239, // 216: lms.v1.Team.created_at:type_name -> google.protobuf.Timestamp
-	13,  // 217: lms.v1.ThreadComment.attachment:type_name -> lms.v1.Attachment
-	239, // 218: lms.v1.ThreadComment.created_at:type_name -> google.protobuf.Timestamp
-	205, // 219: lms.v1.Video.tasks:type_name -> lms.v1.Task
-	239, // 220: lms.v1.VideoComment.created_at:type_name -> google.protobuf.Timestamp
-	217, // 221: lms.v1.VideoComment.replies:type_name -> lms.v1.VideoComment
-	29,  // 222: lms.v1.WaBroadcast.audience:type_name -> lms.v1.BroadcastAudience
-	239, // 223: lms.v1.WaBroadcast.created_at:type_name -> google.protobuf.Timestamp
-	239, // 224: lms.v1.WaBroadcast.finished_at:type_name -> google.protobuf.Timestamp
-	29,  // 225: lms.v1.WaBroadcastInput.audience:type_name -> lms.v1.BroadcastAudience
-	239, // 226: lms.v1.WaContact.last_inbound_at:type_name -> google.protobuf.Timestamp
-	239, // 227: lms.v1.WaContact.last_message_at:type_name -> google.protobuf.Timestamp
-	239, // 228: lms.v1.WaMessage.created_at:type_name -> google.protobuf.Timestamp
-	232, // 229: lms.v1.WaSendInput.template:type_name -> lms.v1.WaTemplateSend
-	239, // 230: lms.v1.WaTemplate.synced_at:type_name -> google.protobuf.Timestamp
-	226, // 231: lms.v1.WaThread.contact:type_name -> lms.v1.WaContact
-	227, // 232: lms.v1.WaThread.messages:type_name -> lms.v1.WaMessage
-	216, // 233: lms.v1.WatchPage.video:type_name -> lms.v1.Video
-	141, // 234: lms.v1.WatchPage.playlist:type_name -> lms.v1.PlaylistItem
-	123, // 235: lms.v1.WatchPage.tasks:type_name -> lms.v1.MyTask
-	121, // 236: lms.v1.WatchPage.quizzes:type_name -> lms.v1.MyQuiz
-	0,   // 237: lms.v1.Role.PermissionsEntry.value:type_name -> lms.v1.StringList
-	0,   // 238: lms.v1.RoleInput.PermissionsEntry.value:type_name -> lms.v1.StringList
-	239, // [239:239] is the sub-list for method output_type
-	239, // [239:239] is the sub-list for method input_type
-	239, // [239:239] is the sub-list for extension type_name
-	239, // [239:239] is the sub-list for extension extendee
-	0,   // [0:239] is the sub-list for field type_name
+	243, // 22: lms.v1.BlogPost.published_at:type_name -> google.protobuf.Timestamp
+	243, // 23: lms.v1.BlogPost.created_at:type_name -> google.protobuf.Timestamp
+	243, // 24: lms.v1.BlogPost.updated_at:type_name -> google.protobuf.Timestamp
+	244, // 25: lms.v1.CmsBlock.data:type_name -> google.protobuf.Struct
+	243, // 26: lms.v1.CmsBlock.updated_at:type_name -> google.protobuf.Timestamp
+	244, // 27: lms.v1.CmsInput.data:type_name -> google.protobuf.Struct
+	243, // 28: lms.v1.CallInput.started_at:type_name -> google.protobuf.Timestamp
+	243, // 29: lms.v1.Certificate.issued_at:type_name -> google.protobuf.Timestamp
+	243, // 30: lms.v1.Certificate.revoked_at:type_name -> google.protobuf.Timestamp
+	37,  // 31: lms.v1.CertificateTemplate.fields:type_name -> lms.v1.CertificateField
+	243, // 32: lms.v1.CertificateTemplate.created_at:type_name -> google.protobuf.Timestamp
+	243, // 33: lms.v1.CertificateTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	37,  // 34: lms.v1.CertificateTemplateInput.fields:type_name -> lms.v1.CertificateField
+	243, // 35: lms.v1.CertificateVerification.issued_at:type_name -> google.protobuf.Timestamp
+	243, // 36: lms.v1.ClassInput.starts_at:type_name -> google.protobuf.Timestamp
+	243, // 37: lms.v1.ClassInput.ends_at:type_name -> google.protobuf.Timestamp
+	243, // 38: lms.v1.ClassQr.expires_at:type_name -> google.protobuf.Timestamp
+	243, // 39: lms.v1.ClassSession.starts_at:type_name -> google.protobuf.Timestamp
+	243, // 40: lms.v1.ClassSession.ends_at:type_name -> google.protobuf.Timestamp
+	243, // 41: lms.v1.ClassSession.qr_expires_at:type_name -> google.protobuf.Timestamp
+	48,  // 42: lms.v1.CollectionsReport.rows:type_name -> lms.v1.CollectionRow
+	243, // 43: lms.v1.CommissionEntry.created_at:type_name -> google.protobuf.Timestamp
+	208, // 44: lms.v1.CommissionRow.target:type_name -> lms.v1.TargetProgress
+	52,  // 45: lms.v1.CommissionSummary.rows:type_name -> lms.v1.CommissionRow
+	52,  // 46: lms.v1.CommissionSummary.totals:type_name -> lms.v1.CommissionRow
+	186, // 47: lms.v1.CommissionTarget.slabs:type_name -> lms.v1.Slab
+	186, // 48: lms.v1.CommissionTargetInput.slabs:type_name -> lms.v1.Slab
+	243, // 49: lms.v1.Counsellor.last_assigned_at:type_name -> google.protobuf.Timestamp
+	243, // 50: lms.v1.Counsellor.last_seen_at:type_name -> google.protobuf.Timestamp
+	245, // 51: lms.v1.Course.mentors:type_name -> lms.v1.Person
+	243, // 52: lms.v1.Course.created_at:type_name -> google.protobuf.Timestamp
+	243, // 53: lms.v1.Course.updated_at:type_name -> google.protobuf.Timestamp
+	243, // 54: lms.v1.DbTable.last_vacuum:type_name -> google.protobuf.Timestamp
+	69,  // 55: lms.v1.Dashboard.stats:type_name -> lms.v1.DashboardStats
+	122, // 56: lms.v1.Dashboard.courses:type_name -> lms.v1.MyCourse
+	127, // 57: lms.v1.Dashboard.next_tasks:type_name -> lms.v1.MyTask
+	113, // 58: lms.v1.Dashboard.upcoming_live:type_name -> lms.v1.LiveSession
+	8,   // 59: lms.v1.Dashboard.announcements:type_name -> lms.v1.Announcement
+	243, // 60: lms.v1.DatabaseStats.started_at:type_name -> google.protobuf.Timestamp
+	64,  // 61: lms.v1.DatabaseStats.pool:type_name -> lms.v1.DbPool
+	67,  // 62: lms.v1.DatabaseStats.users:type_name -> lms.v1.DbUser
+	66,  // 63: lms.v1.DatabaseStats.tables:type_name -> lms.v1.DbTable
+	65,  // 64: lms.v1.DatabaseStats.running:type_name -> lms.v1.DbQuery
+	73,  // 65: lms.v1.DuesReport.rows:type_name -> lms.v1.DueRow
+	7,   // 66: lms.v1.DuesReport.aging:type_name -> lms.v1.AgingBucket
+	243, // 67: lms.v1.Enrollment.enrolled_at:type_name -> google.protobuf.Timestamp
+	243, // 68: lms.v1.Enrollment.completed_at:type_name -> google.protobuf.Timestamp
+	3,   // 69: lms.v1.FeeQuote.lines:type_name -> lms.v1.AdmissionCourse
+	94,  // 70: lms.v1.FeeQuote.installments:type_name -> lms.v1.InstallmentInput
+	79,  // 71: lms.v1.FeeQuoteInput.courses:type_name -> lms.v1.FeeLineInput
+	95,  // 72: lms.v1.FeeQuoteInput.plan:type_name -> lms.v1.InstallmentPlan
+	243, // 73: lms.v1.FollowUp.due_at:type_name -> google.protobuf.Timestamp
+	243, // 74: lms.v1.FollowUp.done_at:type_name -> google.protobuf.Timestamp
+	243, // 75: lms.v1.FollowUp.created_at:type_name -> google.protobuf.Timestamp
+	243, // 76: lms.v1.FollowUpInput.due_at:type_name -> google.protobuf.Timestamp
+	85,  // 77: lms.v1.FunnelReport.stages:type_name -> lms.v1.FunnelStage
+	187, // 78: lms.v1.FunnelReport.sources:type_name -> lms.v1.SourceRow
+	166, // 79: lms.v1.FunnelReport.lost_reasons:type_name -> lms.v1.ReasonRow
+	86,  // 80: lms.v1.GstReport.months:type_name -> lms.v1.GstMonth
+	86,  // 81: lms.v1.GstReport.totals:type_name -> lms.v1.GstMonth
+	94,  // 82: lms.v1.InstallmentsInput.installments:type_name -> lms.v1.InstallmentInput
+	95,  // 83: lms.v1.InstallmentsInput.plan:type_name -> lms.v1.InstallmentPlan
+	243, // 84: lms.v1.Lead.assigned_at:type_name -> google.protobuf.Timestamp
+	243, // 85: lms.v1.Lead.sla_due_at:type_name -> google.protobuf.Timestamp
+	243, // 86: lms.v1.Lead.first_contacted_at:type_name -> google.protobuf.Timestamp
+	243, // 87: lms.v1.Lead.last_activity_at:type_name -> google.protobuf.Timestamp
+	243, // 88: lms.v1.Lead.next_follow_up_at:type_name -> google.protobuf.Timestamp
+	243, // 89: lms.v1.Lead.created_at:type_name -> google.protobuf.Timestamp
+	243, // 90: lms.v1.Lead.updated_at:type_name -> google.protobuf.Timestamp
+	244, // 91: lms.v1.LeadActivity.data:type_name -> google.protobuf.Struct
+	243, // 92: lms.v1.LeadActivity.created_at:type_name -> google.protobuf.Timestamp
+	98,  // 93: lms.v1.LeadCreated.lead:type_name -> lms.v1.Lead
+	98,  // 94: lms.v1.LeadDetail.lead:type_name -> lms.v1.Lead
+	99,  // 95: lms.v1.LeadDetail.activities:type_name -> lms.v1.LeadActivity
+	82,  // 96: lms.v1.LeadDetail.follow_ups:type_name -> lms.v1.FollowUp
+	230, // 97: lms.v1.LeadDetail.whatsapp:type_name -> lms.v1.WaContact
+	98,  // 98: lms.v1.LeadList.items:type_name -> lms.v1.Lead
+	239, // 99: lms.v1.LeadList.stage_counts:type_name -> lms.v1.LeadList.StageCountsEntry
+	109, // 100: lms.v1.LiveAttendanceInput.records:type_name -> lms.v1.LiveAttendanceMark
+	113, // 101: lms.v1.LiveDetail.session:type_name -> lms.v1.LiveSession
+	112, // 102: lms.v1.LiveDetail.roster:type_name -> lms.v1.LiveRosterRow
+	243, // 103: lms.v1.LiveInput.starts_at:type_name -> google.protobuf.Timestamp
+	243, // 104: lms.v1.LiveInput.ends_at:type_name -> google.protobuf.Timestamp
+	114, // 105: lms.v1.LiveInput.targets:type_name -> lms.v1.LiveTarget
+	243, // 106: lms.v1.LiveRosterRow.joined_at:type_name -> google.protobuf.Timestamp
+	243, // 107: lms.v1.LiveSession.starts_at:type_name -> google.protobuf.Timestamp
+	243, // 108: lms.v1.LiveSession.ends_at:type_name -> google.protobuf.Timestamp
+	243, // 109: lms.v1.LiveSession.last_synced_at:type_name -> google.protobuf.Timestamp
+	114, // 110: lms.v1.LiveSession.targets:type_name -> lms.v1.LiveTarget
+	243, // 111: lms.v1.ModerationComment.created_at:type_name -> google.protobuf.Timestamp
+	243, // 112: lms.v1.MyClassAttendance.starts_at:type_name -> google.protobuf.Timestamp
+	243, // 113: lms.v1.MyClassAttendance.marked_at:type_name -> google.protobuf.Timestamp
+	243, // 114: lms.v1.MyCourse.enrolled_at:type_name -> google.protobuf.Timestamp
+	122, // 115: lms.v1.MyCourseDetail.course:type_name -> lms.v1.MyCourse
+	245, // 116: lms.v1.MyCourseDetail.mentors:type_name -> lms.v1.Person
+	145, // 117: lms.v1.MyCourseDetail.playlist:type_name -> lms.v1.PlaylistItem
+	52,  // 118: lms.v1.MyEarnings.row:type_name -> lms.v1.CommissionRow
+	51,  // 119: lms.v1.MyEarnings.entries:type_name -> lms.v1.CommissionEntry
+	139, // 120: lms.v1.MyEarnings.payouts:type_name -> lms.v1.Payout
+	178, // 121: lms.v1.MySales.counts:type_name -> lms.v1.SalesCounts
+	208, // 122: lms.v1.MySales.target:type_name -> lms.v1.TargetProgress
+	243, // 123: lms.v1.MyTask.due_at:type_name -> google.protobuf.Timestamp
+	243, // 124: lms.v1.MyTask.submitted_at:type_name -> google.protobuf.Timestamp
+	243, // 125: lms.v1.Notification.read_at:type_name -> google.protobuf.Timestamp
+	243, // 126: lms.v1.Notification.created_at:type_name -> google.protobuf.Timestamp
+	130, // 127: lms.v1.NotificationFeed.items:type_name -> lms.v1.Notification
+	243, // 128: lms.v1.OnlineUser.last_seen:type_name -> google.protobuf.Timestamp
+	59,  // 129: lms.v1.Overview.counts:type_name -> lms.v1.Counts
+	72,  // 130: lms.v1.Overview.daily:type_name -> lms.v1.DayPoint
+	63,  // 131: lms.v1.Overview.courses:type_name -> lms.v1.CourseStat
+	16,  // 132: lms.v1.Overview.attendance:type_name -> lms.v1.AttendanceStat
+	243, // 133: lms.v1.Payment.approved_at:type_name -> google.protobuf.Timestamp
+	243, // 134: lms.v1.Payment.created_at:type_name -> google.protobuf.Timestamp
+	243, // 135: lms.v1.Payout.created_at:type_name -> google.protobuf.Timestamp
+	58,  // 136: lms.v1.PerformanceReport.rows:type_name -> lms.v1.CounsellorPerformance
+	119, // 137: lms.v1.PermissionCatalog.modules:type_name -> lms.v1.ModuleDef
+	143, // 138: lms.v1.PlayQuestion.options:type_name -> lms.v1.PlayOption
+	218, // 139: lms.v1.Presigned.upload:type_name -> lms.v1.Upload
+	240, // 140: lms.v1.Presigned.headers:type_name -> lms.v1.Presigned.HeadersEntry
+	149, // 141: lms.v1.PublicCourseDetail.course:type_name -> lms.v1.PublicCourse
+	151, // 142: lms.v1.PublicCourseDetail.lessons:type_name -> lms.v1.PublicLesson
+	245, // 143: lms.v1.PublicCourseDetail.mentors:type_name -> lms.v1.Person
+	148, // 144: lms.v1.PublicCourseDetail.batches:type_name -> lms.v1.PublicBatch
+	243, // 145: lms.v1.PublicPost.published_at:type_name -> google.protobuf.Timestamp
+	161, // 146: lms.v1.Quiz.questions:type_name -> lms.v1.QuizQuestion
+	243, // 147: lms.v1.QuizAttemptRow.started_at:type_name -> google.protobuf.Timestamp
+	243, // 148: lms.v1.QuizAttemptRow.submitted_at:type_name -> google.protobuf.Timestamp
+	162, // 149: lms.v1.QuizInput.questions:type_name -> lms.v1.QuizQuestionInput
+	243, // 150: lms.v1.QuizPlay.started_at:type_name -> google.protobuf.Timestamp
+	243, // 151: lms.v1.QuizPlay.deadline:type_name -> google.protobuf.Timestamp
+	144, // 152: lms.v1.QuizPlay.questions:type_name -> lms.v1.PlayQuestion
+	158, // 153: lms.v1.QuizQuestion.options:type_name -> lms.v1.QuizOption
+	159, // 154: lms.v1.QuizQuestionInput.options:type_name -> lms.v1.QuizOptionInput
+	153, // 155: lms.v1.QuizResult.review:type_name -> lms.v1.QuestionReview
+	155, // 156: lms.v1.QuizSubmitInput.answers:type_name -> lms.v1.QuizAnswer
+	243, // 157: lms.v1.Refund.created_at:type_name -> google.protobuf.Timestamp
+	243, // 158: lms.v1.RequestLog.at:type_name -> google.protobuf.Timestamp
+	241, // 159: lms.v1.Role.permissions:type_name -> lms.v1.Role.PermissionsEntry
+	242, // 160: lms.v1.RoleInput.permissions:type_name -> lms.v1.RoleInput.PermissionsEntry
+	243, // 161: lms.v1.RosterRow.marked_at:type_name -> google.protobuf.Timestamp
+	31,  // 162: lms.v1.SalesSettings.business:type_name -> lms.v1.BusinessSettings
+	138, // 163: lms.v1.SalesSettings.payments:type_name -> lms.v1.PaymentSettings
+	34,  // 164: lms.v1.SalesSettings.crm:type_name -> lms.v1.CrmSettings
+	170, // 165: lms.v1.SalesSettings.reminders:type_name -> lms.v1.ReminderSettings
+	207, // 166: lms.v1.ServerOverview.system:type_name -> lms.v1.SystemInfo
+	1,   // 167: lms.v1.ServerOverview.api:type_name -> lms.v1.ApiInfo
+	217, // 168: lms.v1.ServerOverview.traffic:type_name -> lms.v1.TrafficStat
+	217, // 169: lms.v1.ServerOverview.recent:type_name -> lms.v1.TrafficStat
+	132, // 170: lms.v1.ServerOverview.online:type_name -> lms.v1.OnlineCount
+	70,  // 171: lms.v1.ServerOverview.database:type_name -> lms.v1.DatabaseBrief
+	181, // 172: lms.v1.ServerOverview.points:type_name -> lms.v1.ServerPoint
+	243, // 173: lms.v1.ServerPoint.at:type_name -> google.protobuf.Timestamp
+	28,  // 174: lms.v1.Settings.branding:type_name -> lms.v1.Branding
+	88,  // 175: lms.v1.Settings.google:type_name -> lms.v1.GoogleSettings
+	219, // 176: lms.v1.Settings.uploads:type_name -> lms.v1.UploadSettings
+	184, // 177: lms.v1.Settings.signup:type_name -> lms.v1.SignupSettings
+	182, // 178: lms.v1.SettingsView.settings:type_name -> lms.v1.Settings
+	89,  // 179: lms.v1.SettingsView.google_status:type_name -> lms.v1.GoogleStatus
+	28,  // 180: lms.v1.SiteInfo.branding:type_name -> lms.v1.Branding
+	244, // 181: lms.v1.SiteInfo.blocks:type_name -> google.protobuf.Struct
+	243, // 182: lms.v1.Staff.last_login_at:type_name -> google.protobuf.Timestamp
+	243, // 183: lms.v1.Staff.created_at:type_name -> google.protobuf.Timestamp
+	176, // 184: lms.v1.Staff.roles:type_name -> lms.v1.RoleRef
+	243, // 185: lms.v1.Student.last_login_at:type_name -> google.protobuf.Timestamp
+	243, // 186: lms.v1.Student.created_at:type_name -> google.protobuf.Timestamp
+	192, // 187: lms.v1.StudentDetail.student:type_name -> lms.v1.Student
+	77,  // 188: lms.v1.StudentDetail.enrollments:type_name -> lms.v1.Enrollment
+	2,   // 189: lms.v1.StudentFeeAccount.admission:type_name -> lms.v1.Admission
+	93,  // 190: lms.v1.StudentFeeAccount.installments:type_name -> lms.v1.Installment
+	136, // 191: lms.v1.StudentFeeAccount.payments:type_name -> lms.v1.Payment
+	194, // 192: lms.v1.StudentFees.accounts:type_name -> lms.v1.StudentFeeAccount
+	135, // 193: lms.v1.StudentFees.pay:type_name -> lms.v1.PayInfo
+	76,  // 194: lms.v1.StudentInput.enrollments:type_name -> lms.v1.EnrollInput
+	243, // 195: lms.v1.Submission.reviewed_at:type_name -> google.protobuf.Timestamp
+	243, // 196: lms.v1.Submission.created_at:type_name -> google.protobuf.Timestamp
+	201, // 197: lms.v1.Submission.items:type_name -> lms.v1.SubmissionItem
+	210, // 198: lms.v1.SubmissionDetail.task:type_name -> lms.v1.TaskBrief
+	245, // 199: lms.v1.SubmissionDetail.student:type_name -> lms.v1.Person
+	198, // 200: lms.v1.SubmissionDetail.current:type_name -> lms.v1.Submission
+	198, // 201: lms.v1.SubmissionDetail.history:type_name -> lms.v1.Submission
+	216, // 202: lms.v1.SubmissionDetail.comments:type_name -> lms.v1.ThreadComment
+	202, // 203: lms.v1.SubmissionInput.items:type_name -> lms.v1.SubmissionItemInput
+	243, // 204: lms.v1.SubmissionRow.created_at:type_name -> google.protobuf.Timestamp
+	243, // 205: lms.v1.SubmissionRow.reviewed_at:type_name -> google.protobuf.Timestamp
+	206, // 206: lms.v1.SyncResult.calendar:type_name -> lms.v1.SyncStep
+	206, // 207: lms.v1.SyncResult.attendance:type_name -> lms.v1.SyncStep
+	206, // 208: lms.v1.SyncResult.recording:type_name -> lms.v1.SyncStep
+	113, // 209: lms.v1.SyncResult.session:type_name -> lms.v1.LiveSession
+	243, // 210: lms.v1.SystemInfo.boot_time:type_name -> google.protobuf.Timestamp
+	243, // 211: lms.v1.SystemInfo.sampled_at:type_name -> google.protobuf.Timestamp
+	186, // 212: lms.v1.TargetProgress.next_slab:type_name -> lms.v1.Slab
+	243, // 213: lms.v1.Task.due_at:type_name -> google.protobuf.Timestamp
+	243, // 214: lms.v1.TaskBrief.due_at:type_name -> google.protobuf.Timestamp
+	243, // 215: lms.v1.TaskInput.due_at:type_name -> google.protobuf.Timestamp
+	210, // 216: lms.v1.TaskPage.task:type_name -> lms.v1.TaskBrief
+	213, // 217: lms.v1.TaskPage.rules:type_name -> lms.v1.TaskRules
+	198, // 218: lms.v1.TaskPage.attempts:type_name -> lms.v1.Submission
+	216, // 219: lms.v1.TaskPage.comments:type_name -> lms.v1.ThreadComment
+	243, // 220: lms.v1.Team.created_at:type_name -> google.protobuf.Timestamp
+	13,  // 221: lms.v1.ThreadComment.attachment:type_name -> lms.v1.Attachment
+	243, // 222: lms.v1.ThreadComment.created_at:type_name -> google.protobuf.Timestamp
+	209, // 223: lms.v1.Video.tasks:type_name -> lms.v1.Task
+	243, // 224: lms.v1.VideoComment.created_at:type_name -> google.protobuf.Timestamp
+	221, // 225: lms.v1.VideoComment.replies:type_name -> lms.v1.VideoComment
+	29,  // 226: lms.v1.WaBroadcast.audience:type_name -> lms.v1.BroadcastAudience
+	243, // 227: lms.v1.WaBroadcast.created_at:type_name -> google.protobuf.Timestamp
+	243, // 228: lms.v1.WaBroadcast.finished_at:type_name -> google.protobuf.Timestamp
+	29,  // 229: lms.v1.WaBroadcastInput.audience:type_name -> lms.v1.BroadcastAudience
+	243, // 230: lms.v1.WaContact.last_inbound_at:type_name -> google.protobuf.Timestamp
+	243, // 231: lms.v1.WaContact.last_message_at:type_name -> google.protobuf.Timestamp
+	243, // 232: lms.v1.WaMessage.created_at:type_name -> google.protobuf.Timestamp
+	236, // 233: lms.v1.WaSendInput.template:type_name -> lms.v1.WaTemplateSend
+	243, // 234: lms.v1.WaTemplate.synced_at:type_name -> google.protobuf.Timestamp
+	230, // 235: lms.v1.WaThread.contact:type_name -> lms.v1.WaContact
+	231, // 236: lms.v1.WaThread.messages:type_name -> lms.v1.WaMessage
+	220, // 237: lms.v1.WatchPage.video:type_name -> lms.v1.Video
+	145, // 238: lms.v1.WatchPage.playlist:type_name -> lms.v1.PlaylistItem
+	127, // 239: lms.v1.WatchPage.tasks:type_name -> lms.v1.MyTask
+	125, // 240: lms.v1.WatchPage.quizzes:type_name -> lms.v1.MyQuiz
+	0,   // 241: lms.v1.Role.PermissionsEntry.value:type_name -> lms.v1.StringList
+	0,   // 242: lms.v1.RoleInput.PermissionsEntry.value:type_name -> lms.v1.StringList
+	243, // [243:243] is the sub-list for method output_type
+	243, // [243:243] is the sub-list for method input_type
+	243, // [243:243] is the sub-list for extension type_name
+	243, // [243:243] is the sub-list for extension extendee
+	0,   // [0:243] is the sub-list for field type_name
 }
 
 func init() { file_lms_v1_types_proto_init() }
@@ -23464,48 +23983,49 @@ func file_lms_v1_types_proto_init() {
 	file_lms_v1_types_proto_msgTypes[12].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[17].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[30].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[46].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[47].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[52].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[53].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[50].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[51].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[56].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[57].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[72].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[73].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[74].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[75].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[60].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[61].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[76].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[77].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[78].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[87].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[94].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[95].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[96].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[79].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[82].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[91].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[98].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[99].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[100].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[103].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[104].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[107].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[109].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[114].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[111].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[113].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[118].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[122].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[123].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[133].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[168].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[169].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[194].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[197].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[126].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[127].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[137].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[172].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[173].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[198].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[199].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[217].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[218].OneofWrappers = []any{}
-	file_lms_v1_types_proto_msgTypes[226].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[201].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[202].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[203].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[221].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[222].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[230].OneofWrappers = []any{}
 	file_lms_v1_types_proto_msgTypes[234].OneofWrappers = []any{}
+	file_lms_v1_types_proto_msgTypes[238].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_lms_v1_types_proto_rawDesc), len(file_lms_v1_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   239,
+			NumMessages:   243,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
