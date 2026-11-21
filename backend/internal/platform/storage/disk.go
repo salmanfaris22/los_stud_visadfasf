@@ -271,19 +271,24 @@ func (d *diskStore) send(w http.ResponseWriter, r *http.Request, key string) {
 		return
 	}
 	q := r.URL.Query()
-	disp := "inline"
-	if q.Get("dl") == "1" {
-		disp = "attachment"
-	}
-	if name := q.Get("name"); name != "" {
-		if v := mime.FormatMediaType(disp, map[string]string{"filename": name}); v != "" {
-			disp = v
-		}
-	}
 	h := w.Header()
 	h.Set("Content-Type", sniff(f))
-	h.Set("Content-Disposition", disp)
+	h.Set("Content-Disposition", disposition(q.Get("dl") == "1", q.Get("name")))
 	h.Set("X-Content-Type-Options", "nosniff")
 	h.Set("Cache-Control", "private, max-age=3600")
 	http.ServeContent(w, r, "", info.ModTime(), f)
+}
+
+// disposition is the Content-Disposition value: inline to view, attachment to save, with the name.
+func disposition(download bool, name string) string {
+	disp := "inline"
+	if download {
+		disp = "attachment"
+	}
+	if name != "" {
+		if v := mime.FormatMediaType(disp, map[string]string{"filename": name}); v != "" {
+			return v
+		}
+	}
+	return disp
 }

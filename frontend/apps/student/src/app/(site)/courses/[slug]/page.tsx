@@ -6,6 +6,7 @@ import { Avatar, Badge, Button, LineBadge, LineTrack, Markdown, formatHours, lin
 import { LeadForm } from "@/components/site/lead-form";
 import { getCourse } from "@/lib/server-api";
 import { Lessons } from "./preview";
+import { imageUrl } from "@lms/api-client/image";
 
 export const revalidate = 60;
 
@@ -53,7 +54,7 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
           <div className="h-fit overflow-hidden rounded-[28px] border bg-card p-2 shadow-xl dark:shadow-none lg:sticky lg:top-24">
             <div className="relative aspect-video overflow-hidden rounded-[20px]" style={{ background: `color-mix(in oklab, ${color} 22%, var(--card))` }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              {c.thumbnailUrl ? <img src={c.thumbnailUrl} alt="" className="size-full object-cover" /> : <div className="map-grid flex size-full items-center justify-center"><LineBadge id={c.id} name={c.title} size="xl" className="size-20 text-2xl" /></div>}
+              {c.thumbnailUrl ? <img src={imageUrl(c.thumbnailUrl, 1280)} fetchPriority="high" decoding="async" alt="" className="size-full object-cover" /> : <div className="map-grid flex size-full items-center justify-center"><LineBadge id={c.id} name={c.title} size="xl" className="size-20 text-2xl" /></div>}
               <span className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: color }} />
             </div>
             <div className="space-y-3 p-4">

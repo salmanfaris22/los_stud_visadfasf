@@ -11,6 +11,7 @@ import { invalidateRpc, AdminService, CommentService, CourseService, LiveService
 
 import { useSession } from "@/lib/session";
 import { Coil, Flower } from "@/features/dashboard/lilac-art";
+import { imageUrl } from "@lms/api-client/image";
 
 const box = "rounded-[24px] bg-card";
 const DAY = 86_400_000;
@@ -270,7 +271,7 @@ function LatestCourses() {
         {items.map((c) => (
           <Link key={c.id} href={`/courses/${c.id}`} className={cn(box, "group w-[168px] shrink-0 snap-start p-2 transition hover:-translate-y-0.5")}>
             <div className="relative aspect-[4/3] overflow-hidden rounded-[14px] bg-gradient-to-br from-[var(--lilac-soft)] to-[var(--blush-soft)]">
-              {c.thumbnailUrl ? <img src={c.thumbnailUrl} alt="" className="size-full object-cover transition group-hover:scale-105" /> : <BookOpen className="absolute inset-0 m-auto size-8 text-[var(--lilac-deep)]" />}
+              {c.thumbnailUrl ? <img src={imageUrl(c.thumbnailUrl, 640)} loading="lazy" decoding="async" alt="" className="size-full object-cover transition group-hover:scale-105" /> : <BookOpen className="absolute inset-0 m-auto size-8 text-[var(--lilac-deep)]" />}
               <span className="absolute right-1.5 bottom-1.5 rounded-full bg-[#141318] px-2 py-0.5 text-[11px] font-medium text-white">{c.videoCount} videos</span>
             </div>
             <div className="mt-2 line-clamp-3 min-h-[3.4rem] px-1 text-[13px] leading-snug font-medium">{c.title}</div>

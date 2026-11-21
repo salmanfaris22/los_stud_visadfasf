@@ -802,18 +802,22 @@ func TestAPI(t *testing.T) {
 		if str(ready, "status") != "ready" || num(ready, "sizeBytes") != float64(len(png)) {
 			t.Fatalf("upload = %v", ready)
 		}
-		code, _, hdr := ann.raw("GET", "/api/v1/files/"+str(up, "id"), nil, true)
-		if code != 302 || !strings.HasPrefix(hdr.Get("Location"), storage.DiskPathPrefix) {
-			t.Fatalf("file link %d %s", code, hdr.Get("Location"))
-		}
-		res, err = http.Get(dsrv.URL + hdr.Get("Location"))
+		// Views get the image itself (no redirect), cached for a year: avatars are public and never
+		// change under the same id. Anyone may open a public image, even without a session.
+		res, err = http.Get(dsrv.URL + "/api/v1/files/" + str(up, "id") + "?w=128")
 		if err != nil {
 			t.Fatal(err)
 		}
 		body, _ := io.ReadAll(res.Body)
 		res.Body.Close()
-		if res.StatusCode != 200 || !bytes.Equal(body, png) || res.Header.Get("Content-Type") != "image/png" {
-			t.Fatalf("image = %d %q (%d bytes)", res.StatusCode, res.Header.Get("Content-Type"), len(body))
+		if res.StatusCode != 200 || !strings.HasPrefix(res.Header.Get("Content-Type"), "image/") ||
+			!strings.Contains(res.Header.Get("Cache-Control"), "immutable") || len(body) == 0 {
+			t.Fatalf("image = %d %q %q (%d bytes)", res.StatusCode, res.Header.Get("Content-Type"), res.Header.Get("Cache-Control"), len(body))
+		}
+		// Downloads get the original bytes.
+		code, body, _ := ann.raw("GET", "/api/v1/files/"+str(up, "id")+"?download=1", nil, true)
+		if code != 200 || !bytes.Equal(body, png) {
+			t.Fatalf("download = %d (%d bytes)", code, len(body))
 		}
 	})
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Play } from "lucide-react";
 import type { PlaylistItem } from "@lms/api-client";
 import { RouteGutter, cn, formatDuration } from "@lms/ui";
+import { imageUrl } from "@lms/api-client/image";
 
 /**
  * Course playlist drawn as a route: each video is a stop, done = every task of the video approved.
@@ -22,7 +23,7 @@ export function Playlist({ items, currentId, compact, color }: { items: Playlist
             <span className="flex min-w-0 flex-1 gap-3 py-2">
               <span className={cn("relative shrink-0 overflow-hidden rounded-xl bg-muted", compact ? "h-[54px] w-24" : "h-[72px] w-32")}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {v.thumbnailUrl && <img src={v.thumbnailUrl} alt="" className="size-full object-cover" />}
+                {v.thumbnailUrl && <img src={imageUrl(v.thumbnailUrl, 320)} loading="lazy" decoding="async" alt="" className="size-full object-cover" />}
                 {v.id === currentId && <span className="absolute inset-0 flex items-center justify-center bg-black/35"><Play className="size-5 fill-white text-white" /></span>}
                 {v.durationSeconds > 0 && <span className="absolute right-1 bottom-1 rounded-md bg-black/80 px-1 text-[10px] font-medium text-white tabular-nums">{formatDuration(v.durationSeconds)}</span>}
               </span>

@@ -3,6 +3,7 @@ import * as React from "react";
 import { ImagePlus, RefreshCw, UploadCloud, X } from "lucide-react";
 import { errorMessage, uploadFile, useApi, type UploadPurpose } from "@lms/api-client";
 import { Button, Progress, cn, toast } from "@lms/ui";
+import { imageUrl } from "@lms/api-client/image";
 
 const ACCEPT = ["image/png", "image/jpeg", "image/webp", "image/gif"];
 
@@ -52,7 +53,7 @@ export function ImageUpload({ value, onChange, purpose = "thumbnail", className,
       {value ? (
         <>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="" className="size-full object-cover" />
+          <img src={imageUrl(value, 640)} decoding="async" alt="" className="size-full object-cover" />
           <div className="absolute top-2 right-2 flex gap-1.5">
             <Button type="button" size="icon-sm" variant="secondary" onClick={() => input.current?.click()} disabled={busy} aria-label="Replace image" title="Replace image"><RefreshCw /></Button>
             <Button type="button" size="icon-sm" variant="secondary" onClick={() => onChange("")} disabled={busy} aria-label="Remove image" title="Remove image"><X /></Button>

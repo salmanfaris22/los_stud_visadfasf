@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ClipboardCheck, Lock, MonitorPlay, Play } from "lucide-react";
 import type { MyCourse, PublicCourse } from "@lms/api-client";
 import { cn, lineColor } from "@lms/ui";
+import { imageUrl } from "@lms/api-client/image";
 
 /** Brand blue accent (the signal colour), used for progress and the main buttons on the course pages. */
 export const accent = {
@@ -46,7 +47,7 @@ export function CourseCover({
 }) {
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt="" className={cn("size-full object-cover", className)} />;
+    return <img src={imageUrl(src, 640)} loading="lazy" decoding="async" alt="" className={cn("size-full object-cover", className)} />;
   }
   const color = lineColor(id);
   return (

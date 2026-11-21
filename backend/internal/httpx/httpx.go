@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -25,6 +26,7 @@ import (
 
 type routes struct {
 	s       *service.Services
+	store   *storage.Store
 	cfg     *config.Config
 	tokens  *auth.Tokens
 	cookies auth.CookieFactory
@@ -32,7 +34,7 @@ type routes struct {
 
 // Register mounts the plain-HTTP routes.
 func Register(r chi.Router, s *service.Services, d *service.Deps) {
-	h := &routes{s: s, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies}
+	h := &routes{s: s, store: d.Store, cfg: d.Cfg, tokens: d.Tokens, cookies: d.Cookies}
 	r.Get("/api/v1/auth/google/start", h.googleStart)
 	r.Get("/api/v1/auth/google/callback", h.googleCallback)
 	r.Get("/api/v1/settings/google/connect", h.googleConnect)
@@ -167,7 +169,24 @@ func (h *routes) file(w http.ResponseWriter, r *http.Request) {
 	if p == nil { // links opened in a new tab carry cookies but not the X-LMS-App header
 		p = middleware.PrincipalFromAnyCookie(r, h.tokens, h.s.Access, "")
 	}
-	link, public, err := h.s.Uploads.DownloadURL(r.Context(), p, id, r.URL.Query().Get("download") == "1")
+	download := r.URL.Query().Get("download") == "1"
+	if h.store.ImagesOnly() {
+		// Disk storage: send the image itself (one request, no redirect). Public images never
+		// change under the same id, so browsers and the CDN in front of the web apps keep them.
+		u, err := h.s.Uploads.Readable(r.Context(), p, id)
+		if err != nil {
+			http.Error(w, message(err), status(err))
+			return
+		}
+		cache := "private, max-age=3600"
+		if u.IsPublic {
+			cache = "public, max-age=31536000, s-maxage=31536000, immutable"
+		}
+		width, _ := strconv.Atoi(r.URL.Query().Get("w"))
+		h.store.ServeImage(w, r, u.ObjectKey, u.FileName, download, cache, width)
+		return
+	}
+	link, public, err := h.s.Uploads.DownloadURL(r.Context(), p, id, download)
 	if err != nil {
 		http.Error(w, message(err), status(err))
 		return

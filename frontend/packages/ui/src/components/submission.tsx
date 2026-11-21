@@ -6,6 +6,7 @@ import { Button } from "./button";
 import { Textarea } from "./input";
 import { Avatar } from "./primitives";
 import { CodeBlock } from "./content";
+import { imageUrl } from "@lms/api-client/image";
 
 export type SubmissionItemView = { id: string; kind: string; content: string; language?: string; fileName?: string; mime?: string; sizeBytes?: number | bigint; url?: string };
 
@@ -19,7 +20,7 @@ export function SubmissionItems({ items }: { items: SubmissionItemView[] }) {
             return (
               <a key={it.id} href={it.url} target="_blank" rel="noreferrer" className="block w-fit overflow-hidden rounded-xl border">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={it.url} alt={it.fileName} className="max-h-96 object-contain" />
+                <img src={imageUrl(it.url, 1280)} loading="lazy" decoding="async" alt={it.fileName} className="max-h-96 object-contain" />
                 <span className="block border-t px-3 py-1.5 text-xs text-muted-foreground">{it.fileName} · {formatBytes(it.sizeBytes)}</span>
               </a>
             );

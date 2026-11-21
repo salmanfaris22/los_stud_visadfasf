@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"path"
 	"regexp"
 	"strings"
@@ -156,17 +157,34 @@ func (s *UploadService) Complete(ctx context.Context, actor *auth.Principal, id 
 	if u, err = s.Q.MarkUploadReady(ctx, repository.MarkUploadReadyParams{ID: id, SizeBytes: size}); err != nil {
 		return dto.Upload{}, dbErr(err, "upload")
 	}
+	if imageMimes[u.Mime] && s.Store.ImagesOnly() {
+		// Make the compressed copy now, so the first view does not wait for it.
+		go func(key string) {
+			if err := s.Store.WarmImage(key); err != nil {
+				slog.Warn("image copy", "key", key, "err", err)
+			}
+		}(u.ObjectKey)
+	}
 	return s.toUpload(u), nil
+}
+
+// Readable returns a finished upload the principal may open.
+func (s *UploadService) Readable(ctx context.Context, actor *auth.Principal, id uuid.UUID) (repository.Upload, error) {
+	u, err := s.Q.GetUpload(ctx, id)
+	if err != nil || u.Status != "ready" {
+		return u, apperr.NotFound("file")
+	}
+	if !s.canRead(ctx, actor, u) {
+		return u, apperr.Forbidden("you cannot open this file")
+	}
+	return u, nil
 }
 
 // DownloadURL returns a signed link when the principal may read the file.
 func (s *UploadService) DownloadURL(ctx context.Context, actor *auth.Principal, id uuid.UUID, download bool) (string, bool, error) {
-	u, err := s.Q.GetUpload(ctx, id)
-	if err != nil || u.Status != "ready" {
-		return "", false, apperr.NotFound("file")
-	}
-	if !s.canRead(ctx, actor, u) {
-		return "", false, apperr.Forbidden("you cannot open this file")
+	u, err := s.Readable(ctx, actor, id)
+	if err != nil {
+		return "", false, err
 	}
 	ttl := 10 * time.Minute
 	if u.IsPublic {

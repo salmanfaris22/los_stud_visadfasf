@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Badge, Markdown, formatDate } from "@lms/ui";
 import { getPost } from "@/lib/server-api";
+import { imageUrl } from "@lms/api-client/image";
 
 export const revalidate = 60;
 
@@ -23,7 +24,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <h1 className="mt-5 font-display text-4xl leading-[1.06] font-extrabold sm:text-5xl">{p.title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{p.authorName} · {formatDate(p.publishedAt)}</p>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      {p.coverUrl && <img src={p.coverUrl} alt="" className="mt-10 w-full rounded-[24px] border" />}
+      {p.coverUrl && <img src={imageUrl(p.coverUrl, 1280)} decoding="async" alt="" className="mt-10 w-full rounded-[24px] border" />}
       <Markdown className="mt-8 text-base">{p.content}</Markdown>
     </article>
   );

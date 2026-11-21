@@ -10,6 +10,7 @@ import { feedback } from "@/lib/feedback";
 import { Can } from "@/lib/session";
 import { CourseForm, emptyCourse } from "@/features/courses/course-form";
 import { CourseService, useRpcMutation, useRpcQuery } from "@lms/api-client";
+import { imageUrl } from "@lms/api-client/image";
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function CoursesPage() {
               <div className="relative aspect-video overflow-hidden" style={{ background: `color-mix(in oklab, ${lineColor(c.id)} 18%, var(--card))` }}>
                 {c.thumbnailUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.thumbnailUrl} alt="" className="size-full object-cover transition duration-500 group-hover:scale-[1.04]" />
+                  <img src={imageUrl(c.thumbnailUrl, 640)} loading="lazy" decoding="async" alt="" className="size-full object-cover transition duration-500 group-hover:scale-[1.04]" />
                 ) : (
                   <div className="map-grid flex size-full items-center justify-center"><LineBadge id={c.id} name={c.title} size="xl" /></div>
                 )}

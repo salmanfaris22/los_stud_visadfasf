@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { AuthService, useRpcQuery } from "@lms/api-client";
 import { BrandMark, ThemeToggle, cn } from "@lms/ui";
+import { imageUrl } from "@lms/api-client/image";
 
 const LINKS = [
   { href: "/#features", label: "Features" },
@@ -20,7 +21,7 @@ export function Brand({ name, logo }: { name: string; logo?: string }) {
     <Link href="/" className="flex items-center gap-2 rounded-full text-[22px] font-bold tracking-[-0.035em] text-[var(--site-violet)]">
       {logo ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={logo} alt="" className="h-8 w-auto" />
+        <img src={imageUrl(logo, 320)} decoding="async" alt="" className="h-8 w-auto" />
       ) : (
         <BrandMark />
       )}

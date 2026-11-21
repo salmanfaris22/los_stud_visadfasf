@@ -12,6 +12,7 @@ import { QuizBuilder } from "./quiz-builder";
 import { TaskDialog } from "./task-dialog";
 import { useVersionSummary } from "./version-dialog";
 import { VideoDialog } from "./video-dialog";
+import { imageUrl } from "@lms/api-client/image";
 
 const providerColor: Record<string, string> = { youtube: "bg-red-500/15 text-red-500", vimeo: "bg-sky-500/15 text-sky-500", bunny: "bg-orange-500/15 text-orange-500", cloudflare: "bg-amber-500/15 text-amber-600" };
 
@@ -60,7 +61,7 @@ function VideoCard({ courseId, video, handle }: { courseId: string; video: Video
         {can("courses", "edit") && handle}
         <div className="relative hidden h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-muted sm:block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {video.thumbnailUrl ? <img src={video.thumbnailUrl} alt="" className="size-full object-cover" /> : <Video className="m-auto mt-5 size-6 text-muted-foreground" />}
+          {video.thumbnailUrl ? <img src={imageUrl(video.thumbnailUrl, 320)} loading="lazy" decoding="async" alt="" className="size-full object-cover" /> : <Video className="m-auto mt-5 size-6 text-muted-foreground" />}
           {video.durationSeconds > 0 && <span className="absolute right-1 bottom-1 rounded bg-black/80 px-1 text-[10px] text-white">{formatDuration(video.durationSeconds)}</span>}
         </div>
         <button className="min-w-0 flex-1 text-left" onClick={() => setOpen(!open)}>

@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./rpc": "./src/rpc.ts",
-    "./proxy": "./src/proxy.ts"
+    "./proxy": "./src/proxy.ts",
+    "./image": "./src/image.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

@@ -6,6 +6,7 @@ import { Award, CheckCircle2, ChevronRight, Clock, PlayCircle, Plus, Users } fro
 import type { PublicCourse } from "@lms/api-client";
 import { cn, formatHours } from "@lms/ui";
 import { FeatureVignette } from "./vignettes";
+import { imageUrl } from "@lms/api-client/image";
 
 type Block = Record<string, unknown>;
 const str = (b: Block | undefined, k: string, d = "") => (typeof b?.[k] === "string" && b[k] ? (b[k] as string) : d);
@@ -119,7 +120,7 @@ export function CourseCard({ c }: { c: PublicCourse; index?: number }) {
       <div className="relative aspect-[16/10] overflow-hidden rounded-[20px]">
         {c.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.thumbnailUrl} alt="" className="size-full object-cover" />
+          <img src={imageUrl(c.thumbnailUrl, 640)} loading="lazy" decoding="async" alt="" className="size-full object-cover" />
         ) : (
           <CourseCover id={c.id} />
         )}
@@ -204,7 +205,7 @@ export function Testimonials({ data }: { data?: Block }) {
             <figcaption className="mt-7 flex items-center gap-3">
               {t.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={t.avatar_url} alt="" className="size-11 rounded-full object-cover" />
+                <img src={imageUrl(t.avatar_url, 128)} loading="lazy" decoding="async" alt="" className="size-11 rounded-full object-cover" />
               ) : (
                 <span className="flex size-11 items-center justify-center rounded-full bg-[var(--site-violet-soft)] text-[14px] font-bold text-[var(--site-violet)]">
                   {t.name.split(/\s+/).map((p) => p[0]).join("").slice(0, 2).toUpperCase()}

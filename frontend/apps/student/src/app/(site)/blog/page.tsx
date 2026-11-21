@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { Badge, EmptyState, formatDate, lineColor } from "@lms/ui";
 import { getPosts } from "@/lib/server-api";
+import { imageUrl } from "@lms/api-client/image";
 
 export const metadata: Metadata = { title: "Blog", description: "Guides, career tips and news." };
 export const revalidate = 60;
@@ -19,7 +20,7 @@ export default async function BlogPage() {
             <Link key={p.id} href={`/blog/${p.slug}`} className="group overflow-hidden rounded-[20px] border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:shadow-none">
               <div className="map-grid relative aspect-[16/9] overflow-hidden" style={{ background: `color-mix(in oklab, ${lineColor(p.id)} 16%, var(--card))` }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {p.coverUrl && <img src={p.coverUrl} alt="" className="size-full object-cover transition duration-700 group-hover:scale-[1.04]" />}
+                {p.coverUrl && <img src={imageUrl(p.coverUrl, 640)} loading="lazy" decoding="async" alt="" className="size-full object-cover transition duration-700 group-hover:scale-[1.04]" />}
                 <span className="absolute inset-x-0 bottom-0 h-1.5" style={{ background: lineColor(p.id) }} />
               </div>
               <div className="p-6">

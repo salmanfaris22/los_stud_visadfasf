@@ -10,11 +10,12 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Check, Minus } from "lucide-react";
 import { cn, initials } from "../lib/utils";
+import { imageUrl } from "@lms/api-client/image";
 
 export function Avatar({ src, name, className }: { src?: string | null; name?: string | null; className?: string }) {
   return (
     <AvatarPrimitive.Root className={cn("relative flex size-9 shrink-0 overflow-hidden rounded-full bg-[var(--avatar-bg,var(--foreground))]", className)}>
-      {src ? <AvatarPrimitive.Image src={src} alt={name ?? ""} className="aspect-square size-full object-cover" /> : null}
+      {src ? <AvatarPrimitive.Image src={imageUrl(src, 128)} loading="lazy" decoding="async" alt={name ?? ""} className="aspect-square size-full object-cover" /> : null}
       <AvatarPrimitive.Fallback className="flex size-full items-center justify-center text-xs font-bold text-[var(--avatar-fg,var(--signal))]">{initials(name)}</AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
   );
